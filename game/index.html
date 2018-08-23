@@ -1,0 +1,246 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Treasure hunter</title>
+<body>
+  <div id="debug">
+  <div id="playerCurrent">
+    <span class="label">Current</span>
+    <span class="data"></span>
+  </div>
+  <div id="playerNorth">
+    <span class="label">North</span>
+    <span class="data"></span>
+  </div>
+  <div id="playerEast">
+    <span class="label">East</span>
+    <span class="data"></span>
+  </div>
+  <div id="playerSouth">
+    <span class="label">South</span>
+    <span class="data"></span>
+  </div>
+  <div id="playerWest">
+    <span class="label">West</span>
+    <span class="data"></span>
+  </div>
+</div>
+<!-- Import the Ga game engine files -->
+<script src="ga.js"></script>
+<script src="../plugins.js"></script>
+<script src="../custom.js"></script>
+<script>
+//All of your game code will go here
+var g = ga(
+  1024, 768, setup,
+  [
+    "chimes.wav",
+    'world.json',
+    'tileset.png',
+    'player.png',
+  ]
+);
+//Start the Ga engine
+g.start();
+//Declare your global variables (global to this game)
+var dungeon, player, treasure, enemies, chimes, exit,
+    healthBar, message, gameScene, gameOverScene;
+
+//The `setup` function will run only once.
+//Use it for initialization tasks
+function setup() {
+  //Set the canvas border and background color
+  g.canvas.style.border = "none";
+  g.backgroundColor = "black";
+
+  world = g.makeTiledWorld('world.json', 'tileset.png');
+
+  console.log('World:', world);
+  console.log(world.objects[0].data);
+
+  //Create the `gameScene` group
+  gameScene = g.group();
+  //The exit door
+  exit = world.getObject('door');
+  airs = world.getObjects('air');
+  floors = world.getObjects('floor');
+  ladders = world.getObjects('ladder');
+
+  player = g.sprite('player.png');
+
+  player.x = 352;
+  player.y = 704;
+
+  floors.forEach(floor => {
+    gameScene.addChild(floor);
+  })
+  airs.forEach(air => {
+    gameScene.addChild(air);
+  })
+  ladders.forEach(ladder => {
+    gameScene.addChild(ladder);
+  })
+  gameScene.addChild(exit);
+
+  gameScene.addChild(player);
+
+  //Add some text for the game over message
+  message = g.text("Game Over!", "64px Futura", "black", 20, 20);
+  message.x = 120;
+  message.y = g.canvas.height / 2 - 64;
+  //Create a `gameOverScene` group and add the message sprite to it
+  gameOverScene = g.group(message);
+  //Make the `gameOverScene` invisible for now
+  gameOverScene.visible = false;
+  //Assign the player's keyboard controllers
+  // g.fourKeyController(player, 2, 38, 39, 40, 37);
+  //You can also do it the long way, like this:
+
+  //Left arrow key `press` method
+  directions = {
+    up: 'up',
+    down: 'down',
+    left: 'left',
+    right: 'right',
+    still: 'still',
+  }
+  movement = {
+    moving: false,
+    direction: directions.still,
+    left: false,
+    right: false,
+    up: false,
+    down: false,
+  }
+
+  g.key.leftArrow.press = function() {
+    movement.left = true;
+    movement.direction = directions.left;
+  };
+  g.key.leftArrow.release = function() {
+    movement.left = false;
+    movement.direction = directions.still;
+  };
+  g.key.upArrow.press = function() {
+    movement.up = true;
+    movement.direction = directions.up;
+  };
+  g.key.upArrow.release = function() {
+    movement.up = false;
+    movement.direction = directions.still;
+  };
+  g.key.rightArrow.press = function() {
+    movement.right = true;
+    movement.direction = directions.right;
+  };
+  g.key.rightArrow.release = function() {
+    movement.right = false;
+    movement.direction = directions.still;
+  };
+  g.key.downArrow.press = function() {
+    movement.down = true;
+    movement.direction = directions.down;
+  };
+  g.key.downArrow.release = function() {
+    movement.down = false;
+    movement.direction = directions.still;
+  };
+
+  //set the game state to `play`
+  g.state = play;
+}
+
+$playerCurrent = document.getElementById('playerCurrent').querySelector('.data');
+$playerNorth = document.getElementById('playerNorth').querySelector('.data');
+$playerEast = document.getElementById('playerEast').querySelector('.data');
+$playerSouth = document.getElementById('playerSouth').querySelector('.data');
+$playerWest = document.getElementById('playerWest').querySelector('.data');
+
+//The `play` state
+function play() {
+  //Move the player
+  currentTile = g.getSpriteIndex(player);
+  playerData = g.getAdjacentTiles(currentTile);
+
+  $playerCurrent.innerHTML = `${playerData.c.index} - ${playerData.c.type}`;
+  $playerNorth.innerHTML = `${playerData.n.index} - ${playerData.n.type}`;
+  $playerEast.innerHTML = `${playerData.e.index} - ${playerData.e.type}`;
+  $playerSouth.innerHTML = `${playerData.s.index} - ${playerData.s.type}`;
+  $playerWest.innerHTML = `${playerData.w.index} - ${playerData.w.type}`;
+  
+  // g.move(player, playerData);
+  if(!movement.moving) {
+    
+    currentCoords = g.getTile(currentTile, world.objects[0].data, world);
+    nextCoords = g.getTile(playerData.e.index, world.objects[0].data, world);
+
+    switch(movement.direction) {
+      case directions.right:
+        movement.moving = true;
+        nextX = nextCoords.x + 1;
+        nextY = currentCoords.y;
+        spriteSlide = g.slide(player, nextX, nextY, 15, "linear", false, 0);
+        spriteSlide.onComplete = function() {
+          console.log('Slide complete', g.getTile(currentCoords, world.objects[0].data, world));
+          movement.moving = false;
+        }
+        break;
+      case directions.left:
+        movement.moving = true;
+        nextCoords = g.getTile(playerData.w.index, world.objects[0].data, world);
+        nextX = nextCoords.x - 1;
+        nextY = currentCoords.y;
+        spriteSlide = g.slide(player, nextX, nextY, 15, "linear", false, 0);
+        spriteSlide.onComplete = function() {
+          console.log('Slide complete', g.getTile(currentCoords, world.objects[0].data, world));
+          movement.moving = false;
+        }
+        break;
+      case directions.up:
+        movement.moving = true;
+        nextCoords = g.getTile(playerData.n.index, world.objects[0].data, world);
+        nextX = currentCoords.x;
+        nextY = nextCoords.y - 1;
+        spriteSlide = g.slide(player, nextX, nextY, 15, "linear", false, 0);
+        spriteSlide.onComplete = function() {
+          console.log('Slide complete', g.getTile(currentCoords, world.objects[0].data, world));
+          movement.moving = false;
+        }
+        break;
+      case directions.down:
+        movement.moving = true;
+        nextCoords = g.getTile(playerData.s.index, world.objects[0].data, world);
+        nextX = currentCoords.x;
+        nextY = nextCoords.y + 1;
+        spriteSlide = g.slide(player, nextX, nextY, 15, "linear", false, 0);
+        spriteSlide.onComplete = function() {
+          console.log('Slide complete', g.getTile(currentCoords, world.objects[0].data, world));
+          movement.moving = false;
+        }
+        break;
+    }
+  }
+  //Keep the player contained inside the stage's area
+  g.contain(player, g.stage.localBounds);
+
+  //Check for the end of the game
+  //Does the player have enough health? If the width of the `innerBar`
+  //is less than zero, end the game and display "You lost!"
+  if (1 < 0) {
+    g.state = end;
+    message.content = "You lost!";
+  }
+  //If the player has brought the treasure to the exit,
+  //end the game and display "You won!"
+  // if (g.hitTestRectangle(player, exit)) {
+  //   g.state = end;
+  //   message.content = "You won!";
+  // }
+}
+function end() {
+  //Hide the `gameScene` and display the `gameOverScene`
+  gameScene.visible = false;
+  gameOverScene.visible = true;
+}
+</script>
+
+</body>
