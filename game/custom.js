@@ -11,38 +11,38 @@ GA.custom = function(ga) {
   ga.getAdjacentTiles = function(index) {
     return {
       c: getAdjacentTile(index, 'c'),
-      n: getAdjacentTile(index, 'n'),
-      e: getAdjacentTile(index, 'e'),
-      s: getAdjacentTile(index, 's'),
-      w: getAdjacentTile(index, 'w'),
+      u: getAdjacentTile(index, 'u'),
+      r: getAdjacentTile(index, 'r'),
+      d: getAdjacentTile(index, 'd'),
+      l: getAdjacentTile(index, 'l'),
     }
   }
 
   function getAdjacentTile(index, dir) {
     tileIndex = undefined;
     switch(dir) {
-      case 'n':
+      case 'u':
         if(index < world.widthInTiles) {
           tileIndex = null;
         } else {
           tileIndex = index - 32;
         }
         break;
-      case 'e':
+      case 'r':
         if((index + 1) % 32 === 0) {
           tileIndex = null;
         } else {
           tileIndex = index + 1;
         }
         break;
-      case 's':
+      case 'd':
         if(index >= world.widthInTiles * world.heightInTiles - world.widthInTiles) {
           tileIndex = null;
         } else {
           tileIndex = index + 32;
         }
         break;
-      case 'w':
+      case 'l':
         if(index % 32 === 0) {
           tileIndex = null;
         } else {

@@ -59,17 +59,14 @@ function setup() {
 
   //Create the `gameScene` group
   gameScene = g.group();
-  //The exit door
+
+  // Create reference to level tiles
   exit = world.getObject('door');
   airs = world.getObjects('air');
   floors = world.getObjects('floor');
   ladders = world.getObjects('ladder');
 
-  player = g.sprite('player.png');
-
-  player.x = 352;
-  player.y = 704;
-
+  // Render level tiles
   floors.forEach(floor => {
     gameScene.addChild(floor);
   })
@@ -81,6 +78,10 @@ function setup() {
   })
   gameScene.addChild(exit);
 
+  // Create and render player
+  player = g.sprite('player.png');
+  player.x = 352;
+  player.y = 704;
   gameScene.addChild(player);
 
   //Add some text for the game over message
@@ -97,10 +98,10 @@ function setup() {
 
   //Left arrow key `press` method
   directions = {
-    up: 'up',
-    down: 'down',
-    left: 'left',
-    right: 'right',
+    up: 'u',
+    down: 'd',
+    left: 'l',
+    right: 'r',
     still: 'still',
   }
   movement = {
@@ -112,32 +113,32 @@ function setup() {
     down: false,
   }
 
+  g.key.rightArrow.press = function() {
+    moveOneTile(directions.right);
+    // movement.direction = directions.right;
+  };
+  g.key.rightArrow.release = function() {
+    movement.right = false;
+    movement.direction = directions.still;
+  };
   g.key.leftArrow.press = function() {
-    movement.left = true;
-    movement.direction = directions.left;
+    moveOneTile(directions.left);
+    // movement.direction = directions.left;
   };
   g.key.leftArrow.release = function() {
     movement.left = false;
     movement.direction = directions.still;
   };
   g.key.upArrow.press = function() {
-    movement.up = true;
+    moveOneTile(directions.up);
     movement.direction = directions.up;
   };
   g.key.upArrow.release = function() {
     movement.up = false;
     movement.direction = directions.still;
   };
-  g.key.rightArrow.press = function() {
-    movement.right = true;
-    movement.direction = directions.right;
-  };
-  g.key.rightArrow.release = function() {
-    movement.right = false;
-    movement.direction = directions.still;
-  };
   g.key.downArrow.press = function() {
-    movement.down = true;
+    moveOneTile(directions.down);
     movement.direction = directions.down;
   };
   g.key.downArrow.release = function() {
@@ -147,6 +148,18 @@ function setup() {
 
   //set the game state to `play`
   g.state = play;
+}
+
+function moveOneTile(dir) {
+  console.log('moveonetile')
+  currentTile = g.getSpriteIndex(player);
+  playerData = g.getAdjacentTiles(currentTile);
+  currentCoords = g.getTile(currentTile, world.objects[0].data, world);
+  nextCoords = g.getTile(playerData[dir].index, world.objects[0].data, world);
+  nextX = nextCoords.x;
+  nextY = nextCoords.y;
+  player.x = nextX;
+  player.y = nextY;
 }
 
 $playerCurrent = document.getElementById('playerCurrent').querySelector('.data');
@@ -160,65 +173,25 @@ function play() {
   //Move the player
   currentTile = g.getSpriteIndex(player);
   playerData = g.getAdjacentTiles(currentTile);
+  // currentCoords = g.getTile(currentTile, world.objects[0].data, world);
+  // nextCoords = g.getTile(playerData.r.index, world.objects[0].data, world);
+  // movement.moving = true;
+  // nextX = nextCoords.x + 1;
+  // nextY = currentCoords.y;
+  // spriteSlide = g.slide(player, nextX, nextY, 15, "linear", false, 0);
+  // spriteSlide.onComplete = function() {
+  //   console.log('Slide complete', g.getTile(currentCoords, world.objects[0].data, world));
+  //   movement.moving = false;
+  // }
 
   $playerCurrent.innerHTML = `${playerData.c.index} - ${playerData.c.type}`;
-  $playerNorth.innerHTML = `${playerData.n.index} - ${playerData.n.type}`;
-  $playerEast.innerHTML = `${playerData.e.index} - ${playerData.e.type}`;
-  $playerSouth.innerHTML = `${playerData.s.index} - ${playerData.s.type}`;
-  $playerWest.innerHTML = `${playerData.w.index} - ${playerData.w.type}`;
+  $playerNorth.innerHTML = `${playerData.u.index} - ${playerData.u.type}`;
+  $playerEast.innerHTML = `${playerData.r.index} - ${playerData.r.type}`;
+  $playerSouth.innerHTML = `${playerData.d.index} - ${playerData.d.type}`;
+  $playerWest.innerHTML = `${playerData.l.index} - ${playerData.l.type}`;
   
   // g.move(player, playerData);
-  if(!movement.moving) {
-    
-    currentCoords = g.getTile(currentTile, world.objects[0].data, world);
-    nextCoords = g.getTile(playerData.e.index, world.objects[0].data, world);
 
-    switch(movement.direction) {
-      case directions.right:
-        movement.moving = true;
-        nextX = nextCoords.x + 1;
-        nextY = currentCoords.y;
-        spriteSlide = g.slide(player, nextX, nextY, 15, "linear", false, 0);
-        spriteSlide.onComplete = function() {
-          console.log('Slide complete', g.getTile(currentCoords, world.objects[0].data, world));
-          movement.moving = false;
-        }
-        break;
-      case directions.left:
-        movement.moving = true;
-        nextCoords = g.getTile(playerData.w.index, world.objects[0].data, world);
-        nextX = nextCoords.x - 1;
-        nextY = currentCoords.y;
-        spriteSlide = g.slide(player, nextX, nextY, 15, "linear", false, 0);
-        spriteSlide.onComplete = function() {
-          console.log('Slide complete', g.getTile(currentCoords, world.objects[0].data, world));
-          movement.moving = false;
-        }
-        break;
-      case directions.up:
-        movement.moving = true;
-        nextCoords = g.getTile(playerData.n.index, world.objects[0].data, world);
-        nextX = currentCoords.x;
-        nextY = nextCoords.y - 1;
-        spriteSlide = g.slide(player, nextX, nextY, 15, "linear", false, 0);
-        spriteSlide.onComplete = function() {
-          console.log('Slide complete', g.getTile(currentCoords, world.objects[0].data, world));
-          movement.moving = false;
-        }
-        break;
-      case directions.down:
-        movement.moving = true;
-        nextCoords = g.getTile(playerData.s.index, world.objects[0].data, world);
-        nextX = currentCoords.x;
-        nextY = nextCoords.y + 1;
-        spriteSlide = g.slide(player, nextX, nextY, 15, "linear", false, 0);
-        spriteSlide.onComplete = function() {
-          console.log('Slide complete', g.getTile(currentCoords, world.objects[0].data, world));
-          movement.moving = false;
-        }
-        break;
-    }
-  }
   //Keep the player contained inside the stage's area
   g.contain(player, g.stage.localBounds);
 
