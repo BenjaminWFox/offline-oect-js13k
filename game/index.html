@@ -123,10 +123,6 @@ function setup() {
     falling: false,
     moving: false,
     direction: directions.still,
-    left: false,
-    right: false,
-    up: false,
-    down: false,
   }
 
   g.key.rightArrow.press = function() {
@@ -147,20 +143,24 @@ function setup() {
   };
 
   g.key.rightArrow.release = function() {
-    movement.right = false;
-    movement.direction = directions.still;
+    if(movement.direction === directions.right) {
+      movement.direction = directions.still;
+    }
   };
   g.key.leftArrow.release = function() {
-    movement.left = false;
-    movement.direction = directions.still;
+    if(movement.direction === directions.left) {
+      movement.direction = directions.still;
+    }
   };
   g.key.upArrow.release = function() {
-    movement.up = false;
-    movement.direction = directions.still;
+    if(movement.direction === directions.up) {
+      movement.direction = directions.still;
+    }
   };
   g.key.downArrow.release = function() {
-    movement.down = false;
-    movement.direction = directions.still;
+    if(movement.direction === directions.down) {
+      movement.direction = directions.still;
+    }
   };
 
   //set the game state to `play`
