@@ -159,24 +159,24 @@ function moveOneTile(sprite, dir) {
 
   switch(dir) {
     case directions.up:
-      if(adjacentTiles.c.type === g.tileTypes.ladder && adjacentTiles.u.type !== g.tileTypes.floor) {
+      if(adjacentTiles.u.type && adjacentTiles.c.type === g.tileTypes.ladder && adjacentTiles.u.type !== g.tileTypes.floor) {
         canMove = true;
       }
     break;
     case directions.down:
-      if(adjacentTiles.c.type === g.tileTypes.ladder && adjacentTiles.d.type !== g.tileTypes.floor || 
-        adjacentTiles.d.type === g.tileTypes.ladder ||
-        movement.falling) {
+      if(adjacentTiles.d.type && adjacentTiles.c.type === g.tileTypes.ladder && adjacentTiles.d.type !== g.tileTypes.floor || 
+        adjacentTiles.d.type && adjacentTiles.d.type === g.tileTypes.ladder ||
+        adjacentTiles.d.type && movement.falling) {
         canMove = true;
       }
     break;
     case directions.right:
-      if(adjacentTiles.r.type !== g.tileTypes.floor) {
+      if(adjacentTiles.r.type && adjacentTiles.r.type !== g.tileTypes.floor) {
         canMove = true;
       }
     break;
     case directions.left:
-      if(adjacentTiles.l.type !== g.tileTypes.floor) {
+      if(adjacentTiles.l.type && adjacentTiles.l.type !== g.tileTypes.floor) {
         canMove = true;
       }
     break;
