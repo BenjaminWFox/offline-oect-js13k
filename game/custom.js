@@ -1,4 +1,12 @@
 GA.custom = function(ga) {
+  // CONFIG
+  ga.tileTypes = {
+    air: 'air',
+    floor: 'floor',
+    ladder: 'ladder',
+    door: 'door',
+  }
+
   //#### getIndex
   //The `getIndex` helper method
   //converts a sprite's x and y position to an array index number.

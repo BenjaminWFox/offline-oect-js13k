@@ -61,10 +61,10 @@ function setup() {
   gameScene = g.group();
 
   // Create reference to level tiles
-  exit = world.getObject('door');
-  airs = world.getObjects('air');
-  floors = world.getObjects('floor');
-  ladders = world.getObjects('ladder');
+  exit = world.getObject(g.tileTypes.door);
+  airs = world.getObjects(g.tileTypes.air);
+  floors = world.getObjects(g.tileTypes.floor);
+  ladders = world.getObjects(g.tileTypes.ladder);
 
   // Render level tiles
   floors.forEach(floor => {
@@ -105,6 +105,7 @@ function setup() {
     still: 'still',
   }
   movement = {
+    falling: false,
     moving: false,
     direction: directions.still,
     left: false,
@@ -114,32 +115,33 @@ function setup() {
   }
 
   g.key.rightArrow.press = function() {
-    moveOneTile(directions.right);
-    // movement.direction = directions.right;
+    // moveOneTile(directions.right);
+    movement.direction = directions.right;
   };
+  g.key.leftArrow.press = function() {
+    // moveOneTile(directions.left);
+    movement.direction = directions.left;
+  };
+  g.key.upArrow.press = function() {
+    // moveOneTile(directions.up);
+    movement.direction = directions.up;
+  };
+  g.key.downArrow.press = function() {
+    // moveOneTile(directions.down);
+    movement.direction = directions.down;
+  };
+
   g.key.rightArrow.release = function() {
     movement.right = false;
     movement.direction = directions.still;
-  };
-  g.key.leftArrow.press = function() {
-    moveOneTile(directions.left);
-    // movement.direction = directions.left;
   };
   g.key.leftArrow.release = function() {
     movement.left = false;
     movement.direction = directions.still;
   };
-  g.key.upArrow.press = function() {
-    moveOneTile(directions.up);
-    movement.direction = directions.up;
-  };
   g.key.upArrow.release = function() {
     movement.up = false;
     movement.direction = directions.still;
-  };
-  g.key.downArrow.press = function() {
-    moveOneTile(directions.down);
-    movement.direction = directions.down;
   };
   g.key.downArrow.release = function() {
     movement.down = false;
@@ -150,16 +152,64 @@ function setup() {
   g.state = play;
 }
 
-function moveOneTile(dir) {
-  console.log('moveonetile')
-  currentTile = g.getSpriteIndex(player);
-  playerData = g.getAdjacentTiles(currentTile);
-  currentCoords = g.getTile(currentTile, world.objects[0].data, world);
-  nextCoords = g.getTile(playerData[dir].index, world.objects[0].data, world);
-  nextX = nextCoords.x;
-  nextY = nextCoords.y;
-  player.x = nextX;
-  player.y = nextY;
+function moveOneTile(sprite, dir) {
+  currentTile = g.getSpriteIndex(sprite);
+  adjacentTiles = g.getAdjacentTiles(currentTile);
+  canMove = false;
+
+  switch(dir) {
+    case directions.up:
+      if(adjacentTiles.c.type === g.tileTypes.ladder && adjacentTiles.u.type !== g.tileTypes.floor) {
+        canMove = true;
+      }
+    break;
+    case directions.down:
+      if(adjacentTiles.c.type === g.tileTypes.ladder && adjacentTiles.d.type !== g.tileTypes.floor || 
+        adjacentTiles.d.type === g.tileTypes.ladder ||
+        movement.falling) {
+        canMove = true;
+      }
+    break;
+    case directions.right:
+      if(adjacentTiles.r.type !== g.tileTypes.floor) {
+        canMove = true;
+      }
+    break;
+    case directions.left:
+      if(adjacentTiles.l.type !== g.tileTypes.floor) {
+        canMove = true;
+      }
+    break;
+  }
+
+  if(canMove) {
+    currentCoords = g.getTile(currentTile, world.objects[0].data, world);
+    nextCoords = g.getTile(adjacentTiles[dir].index, world.objects[0].data, world);
+    nextX = nextCoords.x;
+    nextY = nextCoords.y;
+    sprite.x = nextX;
+    sprite.y = nextY;
+    checkIfFalling(sprite);
+  } else {
+    return false;
+  }
+
+  return true;
+
+  function checkIfFalling(sprite) {
+    currentTile = g.getSpriteIndex(sprite);
+    adjacentTiles = g.getAdjacentTiles(currentTile);
+
+    if(adjacentTiles.c.type !== g.tileTypes.ladder && adjacentTiles.d.type === g.tileTypes.air) {
+      movement.falling = true;
+    } else {
+      movement.falling = false;
+    }
+  }
+}
+
+function moveAgain() {
+  movement.moving = false;
 }
 
 $playerCurrent = document.getElementById('playerCurrent').querySelector('.data');
@@ -173,16 +223,19 @@ function play() {
   //Move the player
   currentTile = g.getSpriteIndex(player);
   playerData = g.getAdjacentTiles(currentTile);
-  // currentCoords = g.getTile(currentTile, world.objects[0].data, world);
-  // nextCoords = g.getTile(playerData.r.index, world.objects[0].data, world);
-  // movement.moving = true;
-  // nextX = nextCoords.x + 1;
-  // nextY = currentCoords.y;
-  // spriteSlide = g.slide(player, nextX, nextY, 15, "linear", false, 0);
-  // spriteSlide.onComplete = function() {
-  //   console.log('Slide complete', g.getTile(currentCoords, world.objects[0].data, world));
-  //   movement.moving = false;
-  // }
+  
+  if(movement.direction !== directions.still && !movement.moving || movement.falling && !movement.moving) {
+    if(movement.falling) {
+      didMove = moveOneTile(player, directions.down);
+    } else {
+      didMove = moveOneTile(player, movement.direction);
+    }
+    
+    if(didMove) {
+      movement.moving = true;
+      g.wait(150, moveAgain);
+    }
+  }
 
   $playerCurrent.innerHTML = `${playerData.c.index} - ${playerData.c.type}`;
   $playerNorth.innerHTML = `${playerData.u.index} - ${playerData.u.type}`;
