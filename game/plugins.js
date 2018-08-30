@@ -1736,6 +1736,8 @@ GA.plugins = function(ga) {
       o.playing = true;
     };
     
+    o.onComplete = {};
+
     //Return the tween object
     return o;
   };

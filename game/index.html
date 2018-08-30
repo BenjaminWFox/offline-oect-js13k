@@ -69,8 +69,8 @@ function setup() {
 
   world = g.makeTiledWorld('world.json', 'tileset.png');
 
-  console.log('World:', world);
-  console.log(world.objects[0].data);
+  // console.log('World:', world);
+  // console.log(world.objects[0].data);
 
   //Create the `gameScene` group
   gameScene = g.group();
@@ -119,6 +119,7 @@ function setup() {
     right: 'r',
     still: 'still',
   }
+
   movement = {
     falling: false,
     moving: false,
@@ -140,6 +141,14 @@ function setup() {
   g.key.downArrow.press = function() {
     // moveOneTile(directions.down);
     movement.direction = directions.down;
+  };
+  g.key.a.press = function() {
+    // moveOneTile(directions.down);
+    destroyBlock('dl');
+  };
+  g.key.d.press = function() {
+    // moveOneTile(directions.down);
+    destroyBlock('dr');
   };
 
   g.key.rightArrow.release = function() {
@@ -167,6 +176,36 @@ function setup() {
   g.state = play;
 }
 
+destroyedBlockQueue = [];
+
+function destroyBlock(dir) {
+  currentTile = g.getSpriteIndex(player);
+  
+  tileToDestroy = g.getAdjacentTile(currentTile, dir);
+
+  console.log('BTD', tileToDestroy);
+  console.log('World', world.children[0].data[tileToDestroy.index]);
+
+  spriteToDestroy = floors.find(el => {
+    return el.index === tileToDestroy.index;
+  })
+
+  if(spriteToDestroy.visible) {
+    // spriteToDestroy.visible = !spriteToDestroy.visible;
+    world.children[0].data[tileToDestroy.index] = 1;
+    g.fadeOut(spriteToDestroy, 15);
+    destroyedBlockQueue.push({'sprite': spriteToDestroy, 'tile': tileToDestroy, 'time': Date.now()});
+  }
+}
+
+function respawnBlock(blockObj) {
+  let tween = g.fadeIn(blockObj.sprite, 15)
+  world.children[0].data[blockObj.tile.index] = 2;
+  // tween.onComplete = function(obj) {
+  // };
+  // blockObj.sprite.visible = true;
+}
+
 function moveOneTile(sprite, dir) {
   currentTile = g.getSpriteIndex(sprite);
   adjacentTiles = g.getAdjacentTiles(currentTile);
@@ -174,7 +213,9 @@ function moveOneTile(sprite, dir) {
 
   switch(dir) {
     case directions.up:
-      if(adjacentTiles.u.type && adjacentTiles.c.type === g.tileTypes.ladder && adjacentTiles.u.type !== g.tileTypes.floor) {
+      if(adjacentTiles.u.type && 
+        adjacentTiles.c.type === g.tileTypes.ladder && 
+        adjacentTiles.u.type !== g.tileTypes.floor) {
         canMove = true;
       }
     break;
@@ -182,6 +223,7 @@ function moveOneTile(sprite, dir) {
       if(adjacentTiles.d.type && adjacentTiles.c.type === g.tileTypes.ladder && adjacentTiles.d.type !== g.tileTypes.floor || 
         adjacentTiles.d.type && adjacentTiles.d.type === g.tileTypes.ladder ||
         adjacentTiles.d.type && movement.falling) {
+        console.log(adjacentTiles.d.type);
         canMove = true;
       }
     break;
@@ -237,8 +279,12 @@ $playerWest = document.getElementById('playerWest').querySelector('.data');
 function play() {
   //Move the player
   currentTile = g.getSpriteIndex(player);
-  playerData = g.getAdjacentTiles(currentTile);
+  // playerData = g.getAdjacentTiles(currentTile);
   
+  if (destroyedBlockQueue.length && Date.now() - destroyedBlockQueue[0].time > 500) {
+    respawnBlock(destroyedBlockQueue.shift());
+  } 
+
   if(movement.direction !== directions.still && !movement.moving || movement.falling && !movement.moving) {
     if(movement.falling) {
       didMove = moveOneTile(player, directions.down);
@@ -252,11 +298,11 @@ function play() {
     }
   }
 
-  $playerCurrent.innerHTML = `${playerData.c.index} - ${playerData.c.type}`;
-  $playerNorth.innerHTML = `${playerData.u.index} - ${playerData.u.type}`;
-  $playerEast.innerHTML = `${playerData.r.index} - ${playerData.r.type}`;
-  $playerSouth.innerHTML = `${playerData.d.index} - ${playerData.d.type}`;
-  $playerWest.innerHTML = `${playerData.l.index} - ${playerData.l.type}`;
+  // $playerCurrent.innerHTML = `${playerData.c.index} - ${playerData.c.type}`;
+  // $playerNorth.innerHTML = `${playerData.u.index} - ${playerData.u.type}`;
+  // $playerEast.innerHTML = `${playerData.r.index} - ${playerData.r.type}`;
+  // $playerSouth.innerHTML = `${playerData.d.index} - ${playerData.d.type}`;
+  // $playerWest.innerHTML = `${playerData.l.index} - ${playerData.l.type}`;
   
   // g.move(player, playerData);
 

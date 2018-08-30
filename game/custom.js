@@ -18,15 +18,18 @@ GA.custom = function(ga) {
 
   ga.getAdjacentTiles = function(index) {
     return {
-      c: getAdjacentTile(index, 'c'),
-      u: getAdjacentTile(index, 'u'),
-      r: getAdjacentTile(index, 'r'),
-      d: getAdjacentTile(index, 'd'),
-      l: getAdjacentTile(index, 'l'),
+      c: ga.getAdjacentTile(index, 'c'),
+      u: ga.getAdjacentTile(index, 'u'),
+      r: ga.getAdjacentTile(index, 'r'),
+      d: ga.getAdjacentTile(index, 'd'),
+      l: ga.getAdjacentTile(index, 'l'),
+      dl: ga.getAdjacentTile(index, 'dl'),
+      dr: ga.getAdjacentTile(index, 'dr'),
     }
   }
 
-  function getAdjacentTile(index, dir) {
+  ga.getAdjacentTile = function(index, dir) {
+    console.log('GAT:', index, dir)
     tileIndex = undefined;
     switch(dir) {
       case 'u':
@@ -56,6 +59,16 @@ GA.custom = function(ga) {
         } else {
           tileIndex = index - 1;
         }
+        break;
+      case 'dl':
+        leftTile = ga.getAdjacentTile(index, 'l'); 
+        downTile = ga.getAdjacentTile(index, 'd');
+        tileIndex = leftTile ? downTile.index - 1 : null;
+        break;
+      case 'dr':
+        rightTile = ga.getAdjacentTile(index, 'r');
+        downTile = ga.getAdjacentTile(index, 'd');
+        tileIndex = rightTile ? downTile.index + 1 : null;
         break;
       default:
         tileIndex = index;
