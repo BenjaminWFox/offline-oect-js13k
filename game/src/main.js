@@ -17,6 +17,14 @@ General TODO List:
 
 ***********************************************************************************/
 
+var config = {
+  playerMoveSpeed: 150,
+  enemyMoveSpeed: 250,
+  blockRespawnSpeed: 2000,
+  pathUpdateFrequency: 250,
+}
+config.enemyUnstuckSpeed = config.blockRespawnSpeed / 2;
+
 //Start the Ga engine
 g.start();
 //Declare your global variables (global to this game)
@@ -81,8 +89,10 @@ function setup() {
   player = g.sprite({image: "tileset.png", x: 128, y: 0, width: 32, height: 32})
   // player.x = 320;
   // player.y = 608;
-  player.x = 576;
-  player.y = 704;
+  player.spawnX = 576;
+  player.spawnY = 704;
+  player.x = player.spawnX;
+  player.y = player.spawnY;
   player.movement = {
     falling: false,
     moving: false,
@@ -91,11 +101,15 @@ function setup() {
   gameScene.addChild(player);
 
   enemy = g.sprite({image: "tileset.png", x: 160, y: 0, width: 32, height: 32})
-  enemy.x = 608;
-  enemy.y = 704;
+  enemy.spawnX = 608;
+  enemy.spawnY = 704;
+  enemy.x = enemy.spawnX;
+  enemy.y = enemy.spawnY;
   enemy.movement = {
     falling: false,
     moving: false,
+    stuck: false,
+    stuckAt: undefined,
     direction: directions.still,
   }
   enemy.needsPath = true;
@@ -171,8 +185,6 @@ function setup() {
     }
 
     /* Log here */
-    console.log(costs);
-    console.log(parents);
 
     let optimalPath = [finish];
     let parent = parents[finish];
@@ -193,7 +205,6 @@ function setup() {
 
     return results;
   };
-  console.log(dijkstra(723, 722));
 
   function makeLevelGraph() {
     const graph = {};
@@ -205,9 +216,11 @@ function setup() {
     for(let i = 1, len = objects.length; i < objects.length; i++) {
       let co = objects[i]
       if(co.name !== g.tileTypes.floor) {
-        ruleOut = {current: g.getAdjacentTile(co.index, 'c'), below: g.getAdjacentTile(co.index, 'd')}
+        // Can re-enable this to omit some tiles from the graph.
+        // But currently causes some undefined issues.
+        // ruleOut = {current: g.getAdjacentTile(co.index, 'c'), below: g.getAdjacentTile(co.index, 'd')}
 
-        if(ruleOut.current.type !== g.tileTypes.ladder && !ruleOut.below.isStable) {
+        if(1 === 2) {// ruleOut.current.type !== g.tileTypes.ladder && !ruleOut.below.isStable) {
           // skip
         } else {
           graph[co.index] = {};
@@ -367,16 +380,24 @@ function moveOneTile(sprite, dir) {
   }
 
   return true;
+}
+function teleportTo(sprite, tile) {
+    nextCoords = g.getTile(tile, world.objects[0].data, world);
+    nextX = nextCoords.x;
+    nextY = nextCoords.y;
+    sprite.x = nextX;
+    sprite.y = nextY;
+    return true;
+}
 
-  function checkIfFalling(sprite) {
-    currentTile = g.getSpriteIndex(sprite);
-    adjacentTiles = g.getAdjacentTiles(currentTile);
+function checkIfFalling(sprite) {
+  currentTile = g.getSpriteIndex(sprite);
+  adjacentTiles = g.getAdjacentTiles(currentTile);
 
-    if(adjacentTiles.c.type !== g.tileTypes.ladder && adjacentTiles.d.type === g.tileTypes.air) {
-      sprite.movement.falling = true;
-    } else {
-      sprite.movement.falling = false;
-    }
+  if(adjacentTiles.c.type !== g.tileTypes.ladder && adjacentTiles.d.type === g.tileTypes.air) {
+    sprite.movement.falling = true;
+  } else {
+    sprite.movement.falling = false;
   }
 }
 
@@ -384,28 +405,55 @@ function moveAgain() {
   player.movement.moving = false;
 }
 
-function moveEnemy(sprite) {
+function moveEnemy(eSprite) {
   enemyMoved = false;
 
-  let currentTile = sprite.pathData.path[0];
-  let nextTile = sprite.pathData.path[1];
-  if(nextTile < currentTile) {
-    // moving l/u
-    if(nextTile + 1 === currentTile) {
-      enemyMoved = moveOneTile(sprite, directions.left);
-    } else {
-      enemyMoved = moveOneTile(sprite, directions.up)
+  let currentTile = eSprite.pathData.path[0];
+  let nextTile = eSprite.pathData.path[1];
+
+  if(!eSprite.movement.stuck) {
+    checkIfFalling(eSprite);
+  }
+
+  if(!eSprite.movement.falling && !eSprite.movement.stuck) {
+    if(nextTile < currentTile) {
+      // moving l/u
+      if(nextTile + 1 === currentTile) {
+        enemyMoved = moveOneTile(eSprite, directions.left);
+      } else {
+        enemyMoved = moveOneTile(eSprite, directions.up)
+      }
+    } else if (nextTile > currentTile) {
+      // moving r/d
+      if(nextTile - 1 === currentTile) {
+        enemyMoved = moveOneTile(eSprite, directions.right)
+      } else {
+        enemyMoved = moveOneTile(eSprite, directions.down)      
+      }
     }
-  } else if (nextTile > currentTile) {
-    // moving r/d
-    if(nextTile - 1 === currentTile) {
-      enemyMoved = moveOneTile(sprite, directions.right)
-    } else {
-      enemyMoved = moveOneTile(sprite, directions.down)      
+  } else if(eSprite.movement.falling) {
+    enemyMoved = moveOneTile(eSprite, directions.down);
+    if(enemyMoved) {
+      eSprite.movement.falling = false;
+      eSprite.movement.stuck = true;
+      eSprite.movement.stuckAt = Date.now();
+    }
+  } else if(eSprite.movement.stuck) {
+    if(config.enemyUnstuckSpeed < Date.now() - eSprite.movement.stuckAt) {
+      eSprite.movement.stuck = false;
+      eSprite.movement.stuckAt = undefined;
+      
+      if(!nextTile) {
+        nextTile = Math.random() < 0.5 ? currentTile + 1 : currentTile - 1;
+      }
+      
+      enemyMoved = teleportTo(eSprite, nextTile);
+      enemy.needsPath = true;
     }
   }
+
   if(enemyMoved) {
-    sprite.pathData.path.shift();
+    eSprite.pathData.path.shift();
   }
   return enemyMoved;
 }
@@ -419,24 +467,26 @@ function play() {
   enemyTile = g.getSpriteIndex(enemy);
   // playerData = g.getAdjacentTiles(currentTile);
 
-  if (destroyedBlockQueue.length && Date.now() - destroyedBlockQueue[0].time > 500) {
+  if (destroyedBlockQueue.length && Date.now() - destroyedBlockQueue[0].time > config.blockRespawnSpeed) {
     respawnBlock(destroyedBlockQueue.shift());
   }
 
   // Enemy movement
-  if(enemy.needsPath) {
+  if(enemy.needsPath && !enemy.movement.falling) {
+    if(enemy.movement.stuck) {
+      enemyTile -= 32;
+    }
     enemy.pathData.path = dijkstra(enemyTile, currentTile).path;
     enemy.pathData.updated = Date.now();
     enemy.needsPath = false;
-  } else if(Date.now() - enemy.pathData.updated > 250) {
+  } else if(Date.now() - enemy.pathData.updated > config.pathUpdateFrequency) {
     enemy.needsPath = true;
   }
   if(!enemy.movement.moving) {
       enemyMoved = moveEnemy(enemy);
-      console.log(enemyMoved);
       if(enemyMoved) {
         enemy.movement.moving = true;
-        g.wait(250, function() {
+        g.wait(config.enemyMoveSpeed, function() {
           enemy.movement.moving = false;
         })
       }
@@ -474,7 +524,7 @@ function movePlayer(cT) {
 
     if(didMove) {
       player.movement.moving = true;
-      g.wait(150, moveAgain);
+      g.wait(config.playerMoveSpeed, moveAgain);
     }
   }
 
