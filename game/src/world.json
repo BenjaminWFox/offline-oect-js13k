@@ -12,7 +12,7 @@
          "x":0,
          "y":0
         }],
- "nextobjectid":8,
+ "nextobjectid":10,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.1.6",
@@ -20,8 +20,8 @@
  "tilesets":[
         {
          "columns":5,
-         "firstgid":1,
-         "image":"..\/assets\/tileset.png",
+         "firstgid":6,
+         "image":"..\/..\/assets\/tileset.png",
          "imageheight":32,
          "imagewidth":160,
          "margin":0,
@@ -33,22 +33,27 @@
             {
              "0":
                 {
+                 "isStable":false,
                  "name":"air"
                 },
              "1":
                 {
+                 "isStable":true,
                  "name":"floor"
                 },
              "2":
                 {
+                 "isStable":true,
                  "name":"ladder"
                 },
              "3":
                 {
+                 "isStable":false,
                  "name":"door"
                 },
              "4":
                 {
+                 "isStable":false,
                  "name":"player"
                 }
             },
@@ -56,22 +61,27 @@
             {
              "0":
                 {
+                 "isStable":"bool",
                  "name":"string"
                 },
              "1":
                 {
+                 "isStable":"bool",
                  "name":"string"
                 },
              "2":
                 {
+                 "isStable":"bool",
                  "name":"string"
                 },
              "3":
                 {
+                 "isStable":"bool",
                  "name":"string"
                 },
              "4":
                 {
+                 "isStable":"bool",
                  "name":"string"
                 }
             },
