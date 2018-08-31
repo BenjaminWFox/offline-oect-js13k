@@ -31,6 +31,8 @@ g.start();
 var dungeon, player, treasure, enemies, chimes, exit,
     healthBar, message, gameScene, gameOverScene;
 destroyedBlockQueue = [];
+holesWithEnemies = [];
+blockHash = {}
 enemies = [];
 
 //The `setup` function will run only once.
@@ -100,27 +102,37 @@ function setup() {
   }
   gameScene.addChild(player);
 
-  enemy = g.sprite({image: "tileset.png", x: 160, y: 0, width: 32, height: 32})
-  enemy.spawnX = 608;
-  enemy.spawnY = 704;
-  enemy.x = enemy.spawnX;
-  enemy.y = enemy.spawnY;
-  enemy.movement = {
-    falling: false,
-    moving: false,
-    stuck: false,
-    stuckAt: undefined,
-    direction: directions.still,
-  }
-  enemy.needsPath = true;
-  enemy.pathData = {
-    path: null,
-    updated: null,
+  function makeEnemy(sX, sY) {
+    let enemy = g.sprite({image: "tileset.png", x: 160, y: 0, width: 32, height: 32})
+    enemy.spawnX = sX;
+    enemy.spawnY = sY;
+    enemy.x = enemy.spawnX;
+    enemy.y = enemy.spawnY;
+    enemy.movement = {
+      falling: false,
+      moving: false,
+      stuck: false,
+      stuckAt: undefined,
+      direction: directions.still,
+    }
+    currentTile = undefined;
+    enemy.dead = false;
+    enemy.inHole = undefined;
+    enemy.needsPath = true;
+    enemy.pathData = {
+      path: null,
+      updated: null,
+    }
+    return enemy;
   }
 
-  gameScene.addChild(enemy);
+  enemies.push(makeEnemy(608, 704));
+  enemies.push(makeEnemy(576, 544));
+  enemies.push(makeEnemy(224, 608));
 
-  enemies.push(enemy);
+  enemies.forEach(enemy => {
+    gameScene.addChild(enemy);
+  })
 
 /******************* GRAPHING AND dijkstra ************************/
   levelGraph = makeLevelGraph();
@@ -319,16 +331,65 @@ function destroyBlock(dir) {
     // spriteToDestroy.visible = !spriteToDestroy.visible;
     world.children[0].data[tileToDestroy.index] = 1;
     g.fadeOut(spriteToDestroy, 15);
-    destroyedBlockQueue.push({'sprite': spriteToDestroy, 'tile': tileToDestroy, 'time': Date.now()});
+
+    let blockData = {'sprite': spriteToDestroy, 'tile': tileToDestroy, 'time': Date.now()};
+    blockHash[tileToDestroy.index] = blockData;
+    destroyedBlockQueue.push(tileToDestroy.index);
   }
 }
 
-function respawnBlock(blockObj) {
-  let tween = g.fadeIn(blockObj.sprite, 15)
-  world.children[0].data[blockObj.tile.index] = 2;
-  // tween.onComplete = function(obj) {
-  // };
+function fillBlock(indexInQueue) {
+  blockIndex = destroyedBlockQueue[indexInQueue];
+  holesWithEnemies.push(blockIndex);
+  world.children[0].data[blockIndex] = 2;
+  console.log('FB', holesWithEnemies);
+}
+
+function unfillBlock(blockIndex) {
+  console.log('UFB');
+  holesWithEnemies.splice(holesWithEnemies.indexOf(blockIndex), 1);
+  if(destroyedBlockQueue.indexOf(blockIndex) !== -1) {
+    world.children[0].data[blockIndex] = 1;    
+  }
+}
+
+function respawnNextBlock() {
+  let blockIndex = destroyedBlockQueue[0];
+  destroyedBlockQueue.shift();
+  console.log('respawn start', blockIndex);
+  blockObj = blockHash[blockIndex];
+  let tween = g.fadeIn(blockObj.sprite, 6)
+  tween.onComplete = function() {
+    console.log('respawn complete', holesWithEnemies)
+    if(holesWithEnemies.indexOf(blockIndex) !== -1) {
+      enemies.forEach(enemy => {
+        if(enemy.inHole === blockIndex) {
+          enemy.dead = true;
+          unfillBlock(blockIndex);
+          respawnEnemy(enemy);
+        }
+      })
+    }
+  };
   // blockObj.sprite.visible = true;
+  world.children[0].data[blockObj.tile.index] = 2;
+}
+
+function respawnEnemy(eSprite) {
+  eSprite.needsPath = true;
+  eSprite.x = eSprite.spawnX;
+  eSprite.y = eSprite.spawnY;
+  eSprite.inHole = undefined;
+  eSprite.movement = {
+    falling: false,
+    moving: false,
+    stuck: false,
+    stuckAt: undefined,
+    direction: directions.still,
+  }
+  setTimeout(function(){
+    eSprite.dead = false;
+  }, 1000);
 }
 
 function canMoveInDirection(sprite, adjacentTiles, dir) {
@@ -381,6 +442,7 @@ function moveOneTile(sprite, dir) {
 
   return true;
 }
+
 function teleportTo(sprite, tile) {
     nextCoords = g.getTile(tile, world.objects[0].data, world);
     nextX = nextCoords.x;
@@ -446,9 +508,11 @@ function moveEnemy(eSprite) {
       if(!nextTile) {
         nextTile = Math.random() < 0.5 ? currentTile + 1 : currentTile - 1;
       }
-      
+
       enemyMoved = teleportTo(eSprite, nextTile);
-      enemy.needsPath = true;
+      unfillBlock(currentTile);
+      eSprite.inHole = undefined;
+      eSprite.needsPath = true;
     }
   }
 
@@ -464,33 +528,46 @@ function moveEnemy(eSprite) {
 function play() {
   //Move the player
   currentTile = g.getSpriteIndex(player);
-  enemyTile = g.getSpriteIndex(enemy);
+  enemies.forEach(enemy => {
+    enemy.currentTile = g.getSpriteIndex(enemy);
+
+    let holeNeedsFilling = destroyedBlockQueue.indexOf(enemy.currentTile);
+    let holeNeedsEmptying = holesWithEnemies.indexOf(enemy.currentTile);
+
+    if(holeNeedsFilling !== -1 && holeNeedsEmptying === -1) {
+      enemy.inHole = enemy.currentTile;
+      fillBlock(holeNeedsFilling);
+    }
+
+    // Enemy movement
+    if(!enemy.dead) {
+      if(enemy.needsPath && !enemy.movement.falling) {
+        if(enemy.movement.stuck) {
+          enemy.currentTile -= 32;
+        }
+        enemy.pathData.path = dijkstra(enemy.currentTile, currentTile).path;
+        enemy.pathData.updated = Date.now();
+        enemy.needsPath = false;
+      } else if(Date.now() - enemy.pathData.updated > config.pathUpdateFrequency) {
+        enemy.needsPath = true;
+      }
+      if(!enemy.movement.moving) {
+          enemyMoved = moveEnemy(enemy);
+          if(enemyMoved) {
+            enemy.movement.moving = true;
+            g.wait(config.enemyMoveSpeed, function() {
+              enemy.movement.moving = false;
+            })
+          }
+      }
+    }
+  })
   // playerData = g.getAdjacentTiles(currentTile);
 
-  if (destroyedBlockQueue.length && Date.now() - destroyedBlockQueue[0].time > config.blockRespawnSpeed) {
-    respawnBlock(destroyedBlockQueue.shift());
+  if (destroyedBlockQueue.length && Date.now() - blockHash[destroyedBlockQueue[0]].time > config.blockRespawnSpeed) {
+    respawnNextBlock();
   }
 
-  // Enemy movement
-  if(enemy.needsPath && !enemy.movement.falling) {
-    if(enemy.movement.stuck) {
-      enemyTile -= 32;
-    }
-    enemy.pathData.path = dijkstra(enemyTile, currentTile).path;
-    enemy.pathData.updated = Date.now();
-    enemy.needsPath = false;
-  } else if(Date.now() - enemy.pathData.updated > config.pathUpdateFrequency) {
-    enemy.needsPath = true;
-  }
-  if(!enemy.movement.moving) {
-      enemyMoved = moveEnemy(enemy);
-      if(enemyMoved) {
-        enemy.movement.moving = true;
-        g.wait(config.enemyMoveSpeed, function() {
-          enemy.movement.moving = false;
-        })
-      }
-  }
 
   movePlayer(currentTile);
 
@@ -515,6 +592,8 @@ function play() {
 function movePlayer(cT) {
   let didMove;
     // Player movement
+  checkIfFalling(player);
+
   if(player.movement.direction !== directions.still && !player.movement.moving || player.movement.falling && !player.movement.moving) {
     if(player.movement.falling) {
       didMove = moveOneTile(player, directions.down);
