@@ -21,7 +21,8 @@ var config = {
   playerMoveSpeed: 150,
   enemyMoveSpeed: 250,
   blockRespawnSpeed: 2000,
-  pathUpdateFrequency: 250,
+  pathUpdateFrequency: 2000,
+  enemyUnstuckSpeed: undefined, //see below
 }
 config.enemyUnstuckSpeed = config.blockRespawnSpeed / 2;
 
@@ -49,17 +50,21 @@ function setup() {
 
   // Create reference to level tiles
   exit = world.getObject(g.tileTypes.door);
-  airs = world.getObjects(g.tileTypes.air);
+  // airs = world.getObjects(g.tileTypes.air);
   floors = world.getObjects(g.tileTypes.floor);
   ladders = world.getObjects(g.tileTypes.ladder);
+  batteries = world.getObjects(g.tileTypes.battery);
 
   // Render level tiles
   floors.forEach(floor => {
     gameScene.addChild(floor);
   })
-  airs.forEach(air => {
-    gameScene.addChild(air);
+  batteries.forEach(battery => {
+    gameScene.addChild(battery);
   })
+  // airs.forEach(air => {
+  //   gameScene.addChild(air);
+  // })
   ladders.forEach(ladder => {
     gameScene.addChild(ladder);
   })
@@ -102,12 +107,13 @@ function setup() {
   }
   gameScene.addChild(player);
 
-  function makeEnemy(sX, sY) {
+  function makeEnemy(sX, sY, id) {
     let enemy = g.sprite({image: "tileset.png", x: 160, y: 0, width: 32, height: 32})
     enemy.spawnX = sX;
     enemy.spawnY = sY;
     enemy.x = enemy.spawnX;
     enemy.y = enemy.spawnY;
+    enemy.id = id;
     enemy.movement = {
       falling: false,
       moving: false,
@@ -126,9 +132,9 @@ function setup() {
     return enemy;
   }
 
-  enemies.push(makeEnemy(608, 704));
-  enemies.push(makeEnemy(576, 544));
-  enemies.push(makeEnemy(224, 608));
+  enemies.push(makeEnemy(608, 704, 1));
+  enemies.push(makeEnemy(576, 544, 2));
+  // enemies.push(makeEnemy(224, 608));
 
   enemies.forEach(enemy => {
     gameScene.addChild(enemy);
@@ -267,10 +273,8 @@ function setup() {
   gameOverScene = g.group(message);
   //Make the `gameOverScene` invisible for now
   gameOverScene.visible = false;
-  //Assign the player's keyboard controllers
-  // g.fourKeyController(player, 2, 38, 39, 40, 37);
-  //You can also do it the long way, like this:
 
+  //You can also do it the long way, like this:
   g.key.rightArrow.press = function() {
     player.movement.direction = directions.right;
   };
@@ -284,11 +288,9 @@ function setup() {
     player.movement.direction = directions.down;
   };
   g.key.a.press = function() {
-    // moveOneTile(directions.down);
     destroyBlock('dl');
   };
   g.key.d.press = function() {
-    // moveOneTile(directions.down);
     destroyBlock('dr');
   };
 
@@ -342,11 +344,9 @@ function fillBlock(indexInQueue) {
   blockIndex = destroyedBlockQueue[indexInQueue];
   holesWithEnemies.push(blockIndex);
   world.children[0].data[blockIndex] = 2;
-  console.log('FB', holesWithEnemies);
 }
 
 function unfillBlock(blockIndex) {
-  console.log('UFB');
   holesWithEnemies.splice(holesWithEnemies.indexOf(blockIndex), 1);
   if(destroyedBlockQueue.indexOf(blockIndex) !== -1) {
     world.children[0].data[blockIndex] = 1;    
@@ -356,11 +356,9 @@ function unfillBlock(blockIndex) {
 function respawnNextBlock() {
   let blockIndex = destroyedBlockQueue[0];
   destroyedBlockQueue.shift();
-  console.log('respawn start', blockIndex);
   blockObj = blockHash[blockIndex];
   let tween = g.fadeIn(blockObj.sprite, 6)
   tween.onComplete = function() {
-    console.log('respawn complete', holesWithEnemies)
     if(holesWithEnemies.indexOf(blockIndex) !== -1) {
       enemies.forEach(enemy => {
         if(enemy.inHole === blockIndex) {
@@ -424,8 +422,8 @@ function canMoveInDirection(sprite, adjacentTiles, dir) {
   }
 }
 
-function moveOneTile(sprite, dir) {
-  currentTile = g.getSpriteIndex(sprite);
+function moveOneTile(sprite, currentTile, dir) {
+  // currentTile = g.getSpriteIndex(sprite);
   let adjacentTiles = g.getAdjacentTiles(currentTile);
   canMove = canMoveInDirection(sprite, adjacentTiles, dir);
   if(canMove) {
@@ -456,7 +454,7 @@ function checkIfFalling(sprite) {
   currentTile = g.getSpriteIndex(sprite);
   adjacentTiles = g.getAdjacentTiles(currentTile);
 
-  if(adjacentTiles.c.type !== g.tileTypes.ladder && adjacentTiles.d.type === g.tileTypes.air) {
+  if(adjacentTiles.c.type !== g.tileTypes.ladder && !adjacentTiles.d.isStable) {//adjacentTiles.d.type === g.tileTypes.air) {
     sprite.movement.falling = true;
   } else {
     sprite.movement.falling = false;
@@ -474,6 +472,9 @@ function moveEnemy(eSprite) {
   let nextTile = eSprite.pathData.path[1];
 
   if(!eSprite.movement.stuck) {
+    if(!nextTile) {
+      eSprite.needsPath = true;
+    }
     checkIfFalling(eSprite);
   }
 
@@ -481,20 +482,20 @@ function moveEnemy(eSprite) {
     if(nextTile < currentTile) {
       // moving l/u
       if(nextTile + 1 === currentTile) {
-        enemyMoved = moveOneTile(eSprite, directions.left);
+        enemyMoved = moveOneTile(eSprite, currentTile, directions.left);
       } else {
-        enemyMoved = moveOneTile(eSprite, directions.up)
+        enemyMoved = moveOneTile(eSprite, currentTile, directions.up)
       }
     } else if (nextTile > currentTile) {
       // moving r/d
       if(nextTile - 1 === currentTile) {
-        enemyMoved = moveOneTile(eSprite, directions.right)
+        enemyMoved = moveOneTile(eSprite, currentTile, directions.right)
       } else {
-        enemyMoved = moveOneTile(eSprite, directions.down)      
+        enemyMoved = moveOneTile(eSprite, currentTile, directions.down)      
       }
     }
   } else if(eSprite.movement.falling) {
-    enemyMoved = moveOneTile(eSprite, directions.down);
+    enemyMoved = moveOneTile(eSprite, currentTile, directions.down);
     if(enemyMoved) {
       eSprite.movement.falling = false;
       eSprite.movement.stuck = true;
@@ -528,6 +529,9 @@ function moveEnemy(eSprite) {
 function play() {
   //Move the player
   currentTile = g.getSpriteIndex(player);
+
+  movePlayer(currentTile);
+
   enemies.forEach(enemy => {
     enemy.currentTile = g.getSpriteIndex(enemy);
 
@@ -545,6 +549,8 @@ function play() {
         if(enemy.movement.stuck) {
           enemy.currentTile -= 32;
         }
+       
+        // console.log(`Enemy ${enemy.id} running dijkstra`);
         enemy.pathData.path = dijkstra(enemy.currentTile, currentTile).path;
         enemy.pathData.updated = Date.now();
         enemy.needsPath = false;
@@ -567,9 +573,6 @@ function play() {
   if (destroyedBlockQueue.length && Date.now() - blockHash[destroyedBlockQueue[0]].time > config.blockRespawnSpeed) {
     respawnNextBlock();
   }
-
-
-  movePlayer(currentTile);
 
   //Keep the player contained inside the stage's area
   g.contain(player, g.stage.localBounds);
@@ -596,9 +599,9 @@ function movePlayer(cT) {
 
   if(player.movement.direction !== directions.still && !player.movement.moving || player.movement.falling && !player.movement.moving) {
     if(player.movement.falling) {
-      didMove = moveOneTile(player, directions.down);
+      didMove = moveOneTile(player, cT, directions.down);
     } else {
-      didMove = moveOneTile(player, player.movement.direction);
+      didMove = moveOneTile(player, cT, player.movement.direction);
     }
 
     if(didMove) {
