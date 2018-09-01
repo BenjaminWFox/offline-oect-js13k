@@ -140,6 +140,7 @@ function setup() {
     enemy.pathData = {
       path: null,
       updated: null,
+      distance: null,
     }
     return enemy;
   }
@@ -230,7 +231,8 @@ function setup() {
     optimalPath[0] = start; // assign the numeric current tile
     const results = {
       distance: costs[finish],
-      path: optimalPath
+      path: optimalPath,
+      updated: Date.now(),
     };
 
     return results;
@@ -462,7 +464,7 @@ function moveOneTile(sprite, currentTile, dir) {
   }
   moveResult.didMove = true;
   moveResult.currentTile = adjacentTiles[dir].index;
-  console.log('Move success', moveResult);
+  
   return moveResult;
 }
 
@@ -499,7 +501,7 @@ function moveEnemy(eSprite) {
   let nextTile = eSprite.pathData.path[1];
 
   if(!eSprite.movement.stuck) {
-    if(!nextTile) {
+    if(!nextTile && eSprite.pathData.distance !== Infinity) {
       eSprite.needsPath = true;
     }
     checkIfFalling(eSprite);
@@ -599,8 +601,7 @@ function play() {
         }
        
         // console.log(`Enemy ${enemy.id} running dijkstra`);
-        enemy.pathData.path = dijkstra(enemy.currentTile, playerTile).path;
-        enemy.pathData.updated = Date.now();
+        enemy.pathData = dijkstra(enemy.currentTile, playerTile);
         enemy.needsPath = false;
       } else if(Date.now() - enemy.pathData.updated > config.pathUpdateFrequency) {
         enemy.needsPath = true;
