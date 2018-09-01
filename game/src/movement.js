@@ -158,13 +158,14 @@ function moveEnemy(enemy) {
   if(!enemy.movement.moving) {
 
     // Figure out if enemy needs path
-    if(enemy.needsPath && !enemy.movement.falling) {
+    if(!enemy.movement.falling && enemy.needsPath) {
       // if(enemy.movement.stuck) {
       //   enemy.currentTile -= 32;
       // }
       enemy.pathData = dijkstra(enemy.currentTile, player.currentTile);
       enemy.needsPath = false;
-    } else if(Date.now() - enemy.pathData.updated > config.pathUpdateFrequency) {
+    }
+    if(!enemy.movement.falling && Date.now() - enemy.pathData.updated > config.pathUpdateFrequency) {
       enemy.needsPath = true;
     }
 
