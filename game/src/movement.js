@@ -19,10 +19,13 @@ function destroyBlock(dir) {
         sprite: spriteToDestroy,
         tile: tileToDestroy,
         time: Date.now(),
+        occupied: false,
         occupy: function() {
+          this.occupied = true;
           world.children[0].data[this.tile.index] = 2;
         },
         vacate: function() {
+          this.occupied = false;
           world.children[0].data[this.tile.index] = 1;
         },
       };
