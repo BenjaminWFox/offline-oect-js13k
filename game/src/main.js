@@ -21,6 +21,7 @@ var config = {
   playerMoveSpeed: 150,
   enemyMoveSpeed: 250,
   blockRespawnSpeed: 2000,
+  introTextFadein: 2000,
   pathUpdateFrequency: 2000,
   enemyUnstuckSpeed: undefined, //see below
 }
@@ -40,12 +41,101 @@ totalBatteries = 0;
 collectedBatteries = 0;
 enemies = [];
 
+function lose() {
+  gameScene.visible = false;
+  gameOverScene.visible = true;
+  titleScreen.visible = false
+  endMessage.content = "Oh no! You're part of the building, now.";
+  endMessage.x = 180;
+  endMessage.y = g.canvas.height / 2 - 35;
+}
+
+function win() {
+  gameScene.visible = false;
+  titleScreen.visible = false
+  gameOverScene.visible = true;
+  endMessage.content = "You made it! Nice work!";
+  endMessage.x = 300;
+  endMessage.y = g.canvas.height / 2 - 35;
+}
+
+function title() {
+  titleScreen.visible = true;
+  gameScene.visible = false;
+  gameOverScene.visible = false;
+  introScene.visible = false;
+}
+
+function intro() {
+  gameScene.visible = false;
+  titleScreen.visible = false;
+  gameOverScene.visible = false;
+  introScene.visible = true;
+  g.wait(config.introTextFadein, () => { introMessage2.visible = true });
+  g.wait(config.introTextFadein * 2, () => { introMessage3.visible = true });
+  g.wait(config.introTextFadein * 3, () => { introMessage4.visible = true });
+}
+
 //The `setup` function will run only once.
 //Use it for initialization tasks
 function setup() {
   //Set the canvas border and background color
   g.canvas.style.border = "none";
   g.backgroundColor = "black";
+
+  //Add some text for the game over message
+  endMessage = g.text("Placeholder Text", "32px Consolas", "#15e815", 0, 0);
+  //Create a `gameOverScene` group and add the message sprite to it
+  gameOverScene = g.group(endMessage);
+  //Make the `gameOverScene` invisible for now
+  gameOverScene.visible = false;
+
+  //Add some text for the game over message
+  introMessage1 = g.text(
+    "I'm glad you're coming on shift sir! That earthquake really messed up the building!", 
+    "22px Consolas", "#15e815", 0, 0);
+  introMessage1.x = 15;
+  introMessage1.y = 150;
+  introMessage2 = g.text(
+    "Electronics are offline, batteries scattered, and the organic security is haywire!",
+    "22px Consolas", "#15e815", 0, 0);
+  introMessage2.x = 15;
+  introMessage2.y = 185;
+  introMessage2.visible = false;
+  introMessage3 = g.text(
+    "Barely enough juice to open the door. You'll need all the batteries to fix it up!",
+    "22px Consolas", "#15e815", 0, 0);
+  introMessage3.x = 15;
+  introMessage3.y = 220;
+  introMessage3.visible = false;
+  introMessage4 = g.text(
+    "You're the best Organic Electro-Chemical Technician we've got. You can do it! >>>",
+    "22px Consolas", "#15e815", 0, 0);
+  introMessage4.visible = false;
+  introMessage4.x = 15;
+  introMessage4.y = 255;
+  //Create a `gameOverScene` group and add the message sprite to it
+  introScene = g.group(introMessage1, introMessage2, introMessage3, introMessage4);
+  //Make the `gameOverScene` invisible for now
+  introScene.visible = false;
+
+  //Add some text for the game over message
+  titleMessageMain = g.text("---- OECT ----", "64px Consolas", "#15e815", 0, 0);
+  titleMessageSub1 = g.text("By Ben Fox.", "32px Consolas", "#15e815", 0, 0);
+  titleMessageSub2 = g.text("[ SPACE ] to page/pause.", "32px Consolas", "#15e815", 0, 0);
+  titleMessageSub3 = g.text("[ A/D ] to blast the floor. [ ARROWS ] to move.", "32px Consolas", "#15e815", 0, 0);
+  titleMessageMain.x = 250;
+  titleMessageMain.y = 250;
+  titleMessageSub1.x = 400;
+  titleMessageSub1.y = 350;
+  titleMessageSub2.x = 290;
+  titleMessageSub2.y = 400;
+  titleMessageSub3.x = 100;
+  titleMessageSub3.y = 450;
+  //Create a `gameOverScene` group and add the message sprite to it
+  titleScreen = g.group(titleMessageMain, titleMessageSub1, titleMessageSub2, titleMessageSub3);
+  //Make the `gameOverScene` invisible for now
+  titleScreen.visible = false;
 
   world = g.makeTiledWorld('world.json', 'tileset.png');
 
@@ -108,10 +198,11 @@ function setup() {
   player = g.sprite({image: "tileset.png", x: 128, y: 0, width: 32, height: 32})
   // player.x = 320;
   // player.y = 608;
-  player.spawnX = 224;
+  player.spawnX = 32;
   player.spawnY = 704;
   player.x = player.spawnX;
   player.y = player.spawnY;
+  player.dead = false;
   player.movement = {
     falling: false,
     moving: false,
@@ -279,16 +370,26 @@ function setup() {
 /******************* GRAPHING AND dijkstra ************************/
 
 /******************* MESSAGING AND KEYS ************************/
-  //Add some text for the game over message
-  message = g.text("Game Over!", "64px Futura", "black", 20, 20);
-  message.x = 120;
-  message.y = g.canvas.height / 2 - 64;
-  //Create a `gameOverScene` group and add the message sprite to it
-  gameOverScene = g.group(message);
-  //Make the `gameOverScene` invisible for now
-  gameOverScene.visible = false;
-
   //You can also do it the long way, like this:
+  g.key.space.press = function() {
+    if (g.state === title) {
+      console.log('switch from title');
+      g.state = intro;
+    } else if (g.state === intro) {
+      console.log('switch from into');
+      gameScene.visible = true;
+      introScene.visible = false;
+      g.state = play;
+    } else if(g.state === play) {
+      if(g.paused && !player.dead) {
+        g.resume();
+      } else {
+        g.pause();
+      }
+    } else if (g.state === win || g.state === lose) {
+      location.reload();
+    }
+  }
   g.key.rightArrow.press = function() {
     player.movement.direction = directions.right;
   };
@@ -331,7 +432,7 @@ function setup() {
 /******************* MESSAGING AND KEYS ************************/
 
   //set the game state to `play`
-  g.state = play;
+  g.state = title;
 }
 
 function doorsOpen() {
@@ -552,11 +653,6 @@ function moveEnemy(eSprite) {
   return enemyMovedResult.didMove;
 }
 
-function endGame() {
-  g.state = end;
-  message.content = "You won!";
-}
-
 //The `play` state
 function play() {
   //Move the player
@@ -573,7 +669,7 @@ function play() {
   }
 
   if(exitHash[currentTile] && exitHash[currentTile].canUse) {
-    endGame();
+    g.state = win;
   }
   const playerTile = movePlayer(currentTile);
 
@@ -582,7 +678,12 @@ function play() {
 
     if(enemy.currentTile === playerTile) {
       console.log('You are dead. Sorry.');
-      // endGame();
+      player.dead = true;
+        setTimeout(function() {
+          g.resume();
+          g.state = lose
+        }, 1500);
+        g.pause();
     }
 
     let holeNeedsFilling = destroyedBlockQueue.indexOf(enemy.currentTile);
@@ -664,8 +765,3 @@ function movePlayer(cT) {
   return playerMoveResult.currentTile;
 }
 
-function end() {
-  //Hide the `gameScene` and display the `gameOverScene`
-  gameScene.visible = false;
-  gameOverScene.visible = true;
-}
