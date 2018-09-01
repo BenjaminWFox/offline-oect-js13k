@@ -265,6 +265,11 @@ function setup() {
   enemies.push(makeEnemy(480, 352, 3));
   enemies.push(makeEnemy(928, 416, 4));
   enemies.push(makeEnemy(640, 288, 4));
+  enemies.push(makeEnemy(256, 480, 1));
+  enemies.push(makeEnemy(576, 544, 2));
+  enemies.push(makeEnemy(480, 352, 3));
+  enemies.push(makeEnemy(928, 416, 4));
+  enemies.push(makeEnemy(640, 288, 4));
 
   enemies.forEach(enemy => {
     gameScene.addChild(enemy);
@@ -272,98 +277,8 @@ function setup() {
 
 /******************* GRAPHING AND dijkstra ************************/
   levelGraph = makeLevelGraph();
-  console.log('graph', levelGraph);
-  const lowestCostNode = (costs, processed) => {
-    return Object.keys(costs).reduce((lowest, node) => {
-      if (lowest === null || costs[node] < costs[lowest]) {
-        if (!processed.includes(node)) {
-          lowest = node;
-        }
-      }
-      return lowest;
-    }, null);
-  };
-
-  // function that returns the minimum cost and path to reach Finish
-  dijkstra = (start, finish) => {
-    if(start === finish) {
-      return {
-        distance: 0,
-        path: [start, finish],
-        updated: Date.now(),
-      };
-    }
-    graph = levelGraph;
-
-    graph.start = graph[start];
-    // track lowest cost to reach each node
-    const costs = Object.assign({}, graph.start);
-    costs[finish] = Infinity;
-
-    try {
-      if(graph.start[finish]) {
-        costs[finish] = 1;
-      }
-    } catch (err) {
-      // console.log('Pathing error', err)
-      return {
-        path: null,
-        updated: null,
-        distance: null,
-      }
-    }
-
-    // track paths
-    const parents = {finish: null};
-    for (let child in graph.start) {
-      parents[child] = 'start';
-    } 
-
-    // track nodes that have already been processed
-    const processed = [];
-
-    let node = lowestCostNode(costs, processed);
-
-    while (node) {
-      let cost = costs[node];
-      let children = graph[node];
-      for (let n in children) {
-        let newCost = cost + children[n];
-        if (!costs[n]) {
-          costs[n] = newCost;
-          parents[n] = node;
-        }
-        if (costs[n] > newCost) {
-          costs[n] = newCost;
-          parents[n] = node;
-        }
-      }
-      processed.push(node);
-      node = lowestCostNode(costs, processed);
-    }
-
-    /* Log here */
-
-    let optimalPath = [finish];
-    let parent = parents[finish];
-
-    while (parent) {
-      if(parent !== 'start')
-        optimalPath.push(Number(parent));
-      else
-        optimalPath.push(parent);
-      parent = parents[parent];
-    }
-    optimalPath.reverse();
-    optimalPath[0] = start; // assign the numeric current tile
-    const results = {
-      distance: costs[finish],
-      path: optimalPath,
-      updated: Date.now(),
-    };
-
-    return results;
-  };
+  
+  dijkstra2 = new Graph(levelGraph);
 
   function makeLevelGraph() {
     const graph = {};

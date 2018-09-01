@@ -220,7 +220,8 @@ function moveEnemy(enemy) {
       if(enemy.movement.stuck) {
         enemy.currentTile -= 32;
       }
-      enemy.pathData = dijkstra(enemy.currentTile, player.currentTile);
+//      enemy.pathData = dijkstra(enemy.currentTile, player.currentTile);
+      enemy.pathData = dijkstra2.shortestPath(enemy.currentTile, player.currentTile);
       enemy.needsPath = false;
     }
     if(!enemy.movement.falling && Date.now() - enemy.pathData.updated > config.pathUpdateFrequency) {
