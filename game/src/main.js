@@ -33,7 +33,11 @@ var dungeon, player, treasure, enemies, chimes, exit,
     healthBar, message, gameScene, gameOverScene;
 destroyedBlockQueue = [];
 holesWithEnemies = [];
-blockHash = {}
+blockHash = {};
+batteryHash = {};
+exitHash = {};
+totalBatteries = 0;
+collectedBatteries = 0;
 enemies = [];
 
 //The `setup` function will run only once.
@@ -49,19 +53,27 @@ function setup() {
   gameScene = g.group();
 
   // Create reference to level tiles
-  exit = world.getObject(g.tileTypes.door);
+  exits = world.getObjects(g.tileTypes.door);
   // airs = world.getObjects(g.tileTypes.air);
   floors = world.getObjects(g.tileTypes.floor);
   ladders = world.getObjects(g.tileTypes.ladder);
   batteries = world.getObjects(g.tileTypes.battery);
 
   // Render level tiles
+  exits.forEach(exit => {
+    gameScene.addChild(exit);
+    exit.canUse = false;
+    exit.alpha = .25;
+    exitHash[exit.index] = exit;
+  })
   floors.forEach(floor => {
     gameScene.addChild(floor);
   })
   batteries.forEach(battery => {
     gameScene.addChild(battery);
+    batteryHash[battery.index] = battery;
   })
+  totalBatteries = Object.keys(batteryHash).length;
   // airs.forEach(air => {
   //   gameScene.addChild(air);
   // })
@@ -96,7 +108,7 @@ function setup() {
   player = g.sprite({image: "tileset.png", x: 128, y: 0, width: 32, height: 32})
   // player.x = 320;
   // player.y = 608;
-  player.spawnX = 576;
+  player.spawnX = 224;
   player.spawnY = 704;
   player.x = player.spawnX;
   player.y = player.spawnY;
@@ -320,6 +332,13 @@ function setup() {
   g.state = play;
 }
 
+function doorsOpen() {
+  exits.forEach(exit => {
+    exit.alpha = 1;
+    exit.canUse = true;
+  })
+}
+
 function destroyBlock(dir) {
   currentTile = g.getSpriteIndex(player);
   
@@ -425,6 +444,10 @@ function canMoveInDirection(sprite, adjacentTiles, dir) {
 function moveOneTile(sprite, currentTile, dir) {
   // currentTile = g.getSpriteIndex(sprite);
   let adjacentTiles = g.getAdjacentTiles(currentTile);
+  let moveResult = {
+    didMove: false,
+    currentTile: currentTile,
+  }
   canMove = canMoveInDirection(sprite, adjacentTiles, dir);
   if(canMove) {
     currentCoords = g.getTile(currentTile, world.objects[0].data, world);
@@ -435,10 +458,12 @@ function moveOneTile(sprite, currentTile, dir) {
     sprite.y = nextY;
     checkIfFalling(sprite);
   } else {
-    return false;
+    return moveResult;
   }
-
-  return true;
+  moveResult.didMove = true;
+  moveResult.currentTile = adjacentTiles[dir].index;
+  console.log('Move success', moveResult);
+  return moveResult;
 }
 
 function teleportTo(sprite, tile) {
@@ -466,7 +491,9 @@ function moveAgain() {
 }
 
 function moveEnemy(eSprite) {
-  enemyMoved = false;
+  enemyMovedResult = {
+    didMove: false,
+  };
 
   let currentTile = eSprite.pathData.path[0];
   let nextTile = eSprite.pathData.path[1];
@@ -482,21 +509,21 @@ function moveEnemy(eSprite) {
     if(nextTile < currentTile) {
       // moving l/u
       if(nextTile + 1 === currentTile) {
-        enemyMoved = moveOneTile(eSprite, currentTile, directions.left);
+        enemyMovedResult = moveOneTile(eSprite, currentTile, directions.left);
       } else {
-        enemyMoved = moveOneTile(eSprite, currentTile, directions.up)
+        enemyMovedResult = moveOneTile(eSprite, currentTile, directions.up)
       }
     } else if (nextTile > currentTile) {
       // moving r/d
       if(nextTile - 1 === currentTile) {
-        enemyMoved = moveOneTile(eSprite, currentTile, directions.right)
+        enemyMovedResult = moveOneTile(eSprite, currentTile, directions.right)
       } else {
-        enemyMoved = moveOneTile(eSprite, currentTile, directions.down)      
+        enemyMovedResult = moveOneTile(eSprite, currentTile, directions.down)      
       }
     }
   } else if(eSprite.movement.falling) {
-    enemyMoved = moveOneTile(eSprite, currentTile, directions.down);
-    if(enemyMoved) {
+    enemyMovedResult = moveOneTile(eSprite, currentTile, directions.down);
+    if(enemyMovedResult.didMove) {
       eSprite.movement.falling = false;
       eSprite.movement.stuck = true;
       eSprite.movement.stuckAt = Date.now();
@@ -510,30 +537,51 @@ function moveEnemy(eSprite) {
         nextTile = Math.random() < 0.5 ? currentTile + 1 : currentTile - 1;
       }
 
-      enemyMoved = teleportTo(eSprite, nextTile);
+      enemyMovedResult = teleportTo(eSprite, nextTile);
       unfillBlock(currentTile);
       eSprite.inHole = undefined;
       eSprite.needsPath = true;
     }
   }
 
-  if(enemyMoved) {
+  if(enemyMovedResult.didMove) {
     eSprite.pathData.path.shift();
   }
-  return enemyMoved;
+  return enemyMovedResult.didMove;
 }
 
-
+function endGame() {
+  g.state = end;
+  message.content = "You won!";
+}
 
 //The `play` state
 function play() {
   //Move the player
   currentTile = g.getSpriteIndex(player);
+  
+  if(batteryHash[currentTile] && batteryHash[currentTile].visible) {
+    batteryHash[currentTile].visible = false;
+    collectedBatteries++;
+    console.log('COLLECTED A BATTERY');
+    if(totalBatteries === collectedBatteries) {
+      doorsOpen();
+      console.log('ALL BATTERIES GOTTEN');
+    }
+  }
 
-  movePlayer(currentTile);
+  if(exitHash[currentTile] && exitHash[currentTile].canUse) {
+    endGame();
+  }
+  const playerTile = movePlayer(currentTile);
 
   enemies.forEach(enemy => {
     enemy.currentTile = g.getSpriteIndex(enemy);
+
+    if(enemy.currentTile === playerTile) {
+      console.log('You are dead. Sorry.');
+      // endGame();
+    }
 
     let holeNeedsFilling = destroyedBlockQueue.indexOf(enemy.currentTile);
     let holeNeedsEmptying = holesWithEnemies.indexOf(enemy.currentTile);
@@ -551,7 +599,7 @@ function play() {
         }
        
         // console.log(`Enemy ${enemy.id} running dijkstra`);
-        enemy.pathData.path = dijkstra(enemy.currentTile, currentTile).path;
+        enemy.pathData.path = dijkstra(enemy.currentTile, playerTile).path;
         enemy.pathData.updated = Date.now();
         enemy.needsPath = false;
       } else if(Date.now() - enemy.pathData.updated > config.pathUpdateFrequency) {
@@ -568,7 +616,6 @@ function play() {
       }
     }
   })
-  // playerData = g.getAdjacentTiles(currentTile);
 
   if (destroyedBlockQueue.length && Date.now() - blockHash[destroyedBlockQueue[0]].time > config.blockRespawnSpeed) {
     respawnNextBlock();
@@ -593,23 +640,27 @@ function play() {
 }
 
 function movePlayer(cT) {
-  let didMove;
+  let playerMoveResult = {
+    didMove: false,
+    currentTile: cT,
+  };
     // Player movement
   checkIfFalling(player);
 
   if(player.movement.direction !== directions.still && !player.movement.moving || player.movement.falling && !player.movement.moving) {
     if(player.movement.falling) {
-      didMove = moveOneTile(player, cT, directions.down);
+      playerMoveResult = moveOneTile(player, cT, directions.down);
     } else {
-      didMove = moveOneTile(player, cT, player.movement.direction);
+      playerMoveResult = moveOneTile(player, cT, player.movement.direction);
     }
 
-    if(didMove) {
+    if(playerMoveResult.didMove) {
       player.movement.moving = true;
       g.wait(config.playerMoveSpeed, moveAgain);
     }
   }
 
+  return playerMoveResult.currentTile;
 }
 
 function end() {
