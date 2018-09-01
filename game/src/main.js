@@ -22,7 +22,7 @@ var config = {
   enemyMoveSpeed: 250,
   blockRespawnSpeed: 2000,
   introTextFadein: 2000,
-  pathUpdateFrequency: 2000,
+  pathUpdateFrequency: 1000,
   enemyUnstuckSpeed: undefined, //see below
 }
 config.enemyUnstuckSpeed = config.blockRespawnSpeed / 2;
@@ -185,6 +185,7 @@ function setup() {
     down: 'd',
     left: 'l',
     right: 'r',
+    current: 'c',
     still: 'still',
   }
 
@@ -208,6 +209,8 @@ function setup() {
     moving: false,
     direction: directions.still,
   }
+  player.freshSpawn = true;
+  player.currentTile = g.getSpriteIndex(player);
   gameScene.addChild(player);
 
   function makeEnemy(sX, sY, id) {
@@ -224,8 +227,12 @@ function setup() {
       stuckAt: undefined,
       direction: directions.still,
     }
-    currentTile = undefined;
+    enemy.allowMoveAgain = function() {
+      enemy.movement.moving = false;
+    }
+    enemy.currentTile = g.getSpriteIndex(enemy);
     enemy.dead = false;
+    enemy.freshSpawn = true;
     enemy.inHole = undefined;
     enemy.needsPath = true;
     enemy.pathData = {
@@ -236,7 +243,7 @@ function setup() {
     return enemy;
   }
 
-  enemies.push(makeEnemy(608, 704, 1));
+  enemies.push(makeEnemy(0, 0, 1));
   enemies.push(makeEnemy(576, 544, 2));
   // enemies.push(makeEnemy(224, 608));
 
@@ -246,7 +253,7 @@ function setup() {
 
 /******************* GRAPHING AND dijkstra ************************/
   levelGraph = makeLevelGraph();
-
+  console.log('graph', levelGraph);
   const lowestCostNode = (costs, processed) => {
     return Object.keys(costs).reduce((lowest, node) => {
       if (lowest === null || costs[node] < costs[lowest]) {
@@ -264,6 +271,7 @@ function setup() {
       return {
         distance: 0,
         path: [start, finish],
+        updated: Date.now(),
       };
     }
     graph = levelGraph;
@@ -341,24 +349,24 @@ function setup() {
       if(co.name !== g.tileTypes.floor) {
         // Can re-enable this to omit some tiles from the graph.
         // But currently causes some undefined issues.
-        // ruleOut = {current: g.getAdjacentTile(co.index, 'c'), below: g.getAdjacentTile(co.index, 'd')}
+        ruleOut = {current: g.getAdjacentTile(co.index, 'c'), below: g.getAdjacentTile(co.index, 'd')}
 
-        if(1 === 2) {// ruleOut.current.type !== g.tileTypes.ladder && !ruleOut.below.isStable) {
+        if(ruleOut.current.type !== g.tileTypes.ladder && !ruleOut.below.isStable) {
           // skip
         } else {
           graph[co.index] = {};
           // These should all be tiles which are walkable.
           adjTiles = g.getAdjacentTiles(co.index);
-          if(canMoveInDirection(player, adjTiles, directions.up)) {
+          if(canMoveFromTo(player, adjTiles.c, adjTiles.u)) {
             graph[co.index][adjTiles.u.index] = 1;
           }
-          if(canMoveInDirection(player, adjTiles, directions.down)) {
+          if(canMoveFromTo(player, adjTiles.c, adjTiles.d)) {
             graph[co.index][adjTiles.d.index] = 1;
           }
-          if(canMoveInDirection(player, adjTiles, directions.left)) {
+          if(canMoveFromTo(player, adjTiles.c, adjTiles.l)) {
             graph[co.index][adjTiles.l.index] = 1;
           }
-          if(canMoveInDirection(player, adjTiles, directions.right)) {
+          if(canMoveFromTo(player, adjTiles.c, adjTiles.r)) {
             graph[co.index][adjTiles.r.index] = 1;
           }
         }
@@ -432,7 +440,9 @@ function setup() {
 /******************* MESSAGING AND KEYS ************************/
 
   //set the game state to `play`
-  g.state = title;
+  // g.state = title;
+  // for dev:
+  g.state = play;
 }
 
 function doorsOpen() {
@@ -440,328 +450,5 @@ function doorsOpen() {
     exit.alpha = 1;
     exit.canUse = true;
   })
-}
-
-function destroyBlock(dir) {
-  currentTile = g.getSpriteIndex(player);
-  
-  tileToDestroy = g.getAdjacentTile(currentTile, dir);
-
-  spriteToDestroy = floors.find(el => {
-    return el.index === tileToDestroy.index;
-  })
-
-  if(spriteToDestroy && spriteToDestroy.visible) {
-    // spriteToDestroy.visible = !spriteToDestroy.visible;
-    world.children[0].data[tileToDestroy.index] = 1;
-    g.fadeOut(spriteToDestroy, 15);
-
-    let blockData = {'sprite': spriteToDestroy, 'tile': tileToDestroy, 'time': Date.now()};
-    blockHash[tileToDestroy.index] = blockData;
-    destroyedBlockQueue.push(tileToDestroy.index);
-  }
-}
-
-function fillBlock(indexInQueue) {
-  blockIndex = destroyedBlockQueue[indexInQueue];
-  holesWithEnemies.push(blockIndex);
-  world.children[0].data[blockIndex] = 2;
-}
-
-function unfillBlock(blockIndex) {
-  holesWithEnemies.splice(holesWithEnemies.indexOf(blockIndex), 1);
-  if(destroyedBlockQueue.indexOf(blockIndex) !== -1) {
-    world.children[0].data[blockIndex] = 1;    
-  }
-}
-
-function respawnNextBlock() {
-  let blockIndex = destroyedBlockQueue[0];
-  destroyedBlockQueue.shift();
-  blockObj = blockHash[blockIndex];
-  let tween = g.fadeIn(blockObj.sprite, 6)
-  tween.onComplete = function() {
-    if(holesWithEnemies.indexOf(blockIndex) !== -1) {
-      enemies.forEach(enemy => {
-        if(enemy.inHole === blockIndex) {
-          enemy.dead = true;
-          unfillBlock(blockIndex);
-          respawnEnemy(enemy);
-        }
-      })
-    }
-  };
-  // blockObj.sprite.visible = true;
-  world.children[0].data[blockObj.tile.index] = 2;
-}
-
-function respawnEnemy(eSprite) {
-  eSprite.needsPath = true;
-  eSprite.x = eSprite.spawnX;
-  eSprite.y = eSprite.spawnY;
-  eSprite.inHole = undefined;
-  eSprite.movement = {
-    falling: false,
-    moving: false,
-    stuck: false,
-    stuckAt: undefined,
-    direction: directions.still,
-  }
-  setTimeout(function(){
-    eSprite.dead = false;
-  }, 1000);
-}
-
-function canMoveInDirection(sprite, adjacentTiles, dir) {
-  switch(dir) {
-    case directions.up:
-      if(adjacentTiles.u.type && 
-        adjacentTiles.c.type === g.tileTypes.ladder && 
-        adjacentTiles.u.type !== g.tileTypes.floor) {
-        return true;
-      }
-    break;
-    case directions.down:
-      if(adjacentTiles.d.type && adjacentTiles.c.type === g.tileTypes.ladder && adjacentTiles.d.type !== g.tileTypes.floor || 
-        adjacentTiles.d.type && adjacentTiles.d.type === g.tileTypes.ladder ||
-        adjacentTiles.d.type && sprite.movement.falling) {
-        return true;
-      }
-    break;
-    case directions.right:
-      if(adjacentTiles.r.type && adjacentTiles.r.type !== g.tileTypes.floor) {
-        return true;
-      }
-    break;
-    case directions.left:
-      if(adjacentTiles.l.type && adjacentTiles.l.type !== g.tileTypes.floor) {
-        return true;
-      }
-    break;
-    default:
-      return false;
-    break;
-  }
-}
-
-function moveOneTile(sprite, currentTile, dir) {
-  // currentTile = g.getSpriteIndex(sprite);
-  let adjacentTiles = g.getAdjacentTiles(currentTile);
-  let moveResult = {
-    didMove: false,
-    currentTile: currentTile,
-  }
-  canMove = canMoveInDirection(sprite, adjacentTiles, dir);
-  if(canMove) {
-    currentCoords = g.getTile(currentTile, world.objects[0].data, world);
-    nextCoords = g.getTile(adjacentTiles[dir].index, world.objects[0].data, world);
-    nextX = nextCoords.x;
-    nextY = nextCoords.y;
-    sprite.x = nextX;
-    sprite.y = nextY;
-    checkIfFalling(sprite);
-  } else {
-    return moveResult;
-  }
-  moveResult.didMove = true;
-  moveResult.currentTile = adjacentTiles[dir].index;
-  
-  return moveResult;
-}
-
-function teleportTo(sprite, tile) {
-    nextCoords = g.getTile(tile, world.objects[0].data, world);
-    nextX = nextCoords.x;
-    nextY = nextCoords.y;
-    sprite.x = nextX;
-    sprite.y = nextY;
-    return true;
-}
-
-function checkIfFalling(sprite) {
-  currentTile = g.getSpriteIndex(sprite);
-  adjacentTiles = g.getAdjacentTiles(currentTile);
-
-  if(adjacentTiles.c.type !== g.tileTypes.ladder && !adjacentTiles.d.isStable) {//adjacentTiles.d.type === g.tileTypes.air) {
-    sprite.movement.falling = true;
-  } else {
-    sprite.movement.falling = false;
-  }
-}
-
-function moveAgain() {
-  player.movement.moving = false;
-}
-
-function moveEnemy(eSprite) {
-  enemyMovedResult = {
-    didMove: false,
-  };
-
-  let currentTile = eSprite.pathData.path[0];
-  let nextTile = eSprite.pathData.path[1];
-
-  if(!eSprite.movement.stuck) {
-    if(!nextTile && eSprite.pathData.distance !== Infinity) {
-      eSprite.needsPath = true;
-    }
-    checkIfFalling(eSprite);
-  }
-
-  if(!eSprite.movement.falling && !eSprite.movement.stuck) {
-    if(nextTile < currentTile) {
-      // moving l/u
-      if(nextTile + 1 === currentTile) {
-        enemyMovedResult = moveOneTile(eSprite, currentTile, directions.left);
-      } else {
-        enemyMovedResult = moveOneTile(eSprite, currentTile, directions.up)
-      }
-    } else if (nextTile > currentTile) {
-      // moving r/d
-      if(nextTile - 1 === currentTile) {
-        enemyMovedResult = moveOneTile(eSprite, currentTile, directions.right)
-      } else {
-        enemyMovedResult = moveOneTile(eSprite, currentTile, directions.down)      
-      }
-    }
-  } else if(eSprite.movement.falling) {
-    enemyMovedResult = moveOneTile(eSprite, currentTile, directions.down);
-    if(enemyMovedResult.didMove) {
-      eSprite.movement.falling = false;
-      eSprite.movement.stuck = true;
-      eSprite.movement.stuckAt = Date.now();
-    }
-  } else if(eSprite.movement.stuck) {
-    if(config.enemyUnstuckSpeed < Date.now() - eSprite.movement.stuckAt) {
-      eSprite.movement.stuck = false;
-      eSprite.movement.stuckAt = undefined;
-      
-      if(!nextTile) {
-        nextTile = Math.random() < 0.5 ? currentTile + 1 : currentTile - 1;
-      }
-
-      enemyMovedResult = teleportTo(eSprite, nextTile);
-      unfillBlock(currentTile);
-      eSprite.inHole = undefined;
-      eSprite.needsPath = true;
-    }
-  }
-
-  if(enemyMovedResult.didMove) {
-    eSprite.pathData.path.shift();
-  }
-  return enemyMovedResult.didMove;
-}
-
-//The `play` state
-function play() {
-  //Move the player
-  currentTile = g.getSpriteIndex(player);
-  
-  if(batteryHash[currentTile] && batteryHash[currentTile].visible) {
-    batteryHash[currentTile].visible = false;
-    collectedBatteries++;
-    console.log('COLLECTED A BATTERY');
-    if(totalBatteries === collectedBatteries) {
-      doorsOpen();
-      console.log('ALL BATTERIES GOTTEN');
-    }
-  }
-
-  if(exitHash[currentTile] && exitHash[currentTile].canUse) {
-    g.state = win;
-  }
-  const playerTile = movePlayer(currentTile);
-
-  enemies.forEach(enemy => {
-    enemy.currentTile = g.getSpriteIndex(enemy);
-
-    if(enemy.currentTile === playerTile) {
-      console.log('You are dead. Sorry.');
-      player.dead = true;
-        setTimeout(function() {
-          g.resume();
-          g.state = lose
-        }, 1500);
-        g.pause();
-    }
-
-    let holeNeedsFilling = destroyedBlockQueue.indexOf(enemy.currentTile);
-    let holeNeedsEmptying = holesWithEnemies.indexOf(enemy.currentTile);
-
-    if(holeNeedsFilling !== -1 && holeNeedsEmptying === -1) {
-      enemy.inHole = enemy.currentTile;
-      fillBlock(holeNeedsFilling);
-    }
-
-    // Enemy movement
-    if(!enemy.dead) {
-      if(enemy.needsPath && !enemy.movement.falling) {
-        if(enemy.movement.stuck) {
-          enemy.currentTile -= 32;
-        }
-       
-        // console.log(`Enemy ${enemy.id} running dijkstra`);
-        enemy.pathData = dijkstra(enemy.currentTile, playerTile);
-        enemy.needsPath = false;
-      } else if(Date.now() - enemy.pathData.updated > config.pathUpdateFrequency) {
-        enemy.needsPath = true;
-      }
-      if(!enemy.movement.moving) {
-          enemyMoved = moveEnemy(enemy);
-          if(enemyMoved) {
-            enemy.movement.moving = true;
-            g.wait(config.enemyMoveSpeed, function() {
-              enemy.movement.moving = false;
-            })
-          }
-      }
-    }
-  })
-
-  if (destroyedBlockQueue.length && Date.now() - blockHash[destroyedBlockQueue[0]].time > config.blockRespawnSpeed) {
-    respawnNextBlock();
-  }
-
-  //Keep the player contained inside the stage's area
-  g.contain(player, g.stage.localBounds);
-
-  //Check for the end of the game
-  //Does the player have enough health? If the width of the `innerBar`
-  //is less than zero, end the game and display "You lost!"
-  if (1 < 0) {
-    g.state = end;
-    message.content = "You lost!";
-  }
-  //If the player has brought the treasure to the exit,
-  //end the game and display "You won!"
-  // if (g.hitTestRectangle(player, exit)) {
-  //   g.state = end;
-  //   message.content = "You won!";
-  // }
-}
-
-function movePlayer(cT) {
-  let playerMoveResult = {
-    didMove: false,
-    currentTile: cT,
-  };
-    // Player movement
-  checkIfFalling(player);
-
-  if(player.movement.direction !== directions.still && !player.movement.moving || player.movement.falling && !player.movement.moving) {
-    if(player.movement.falling) {
-      playerMoveResult = moveOneTile(player, cT, directions.down);
-    } else {
-      playerMoveResult = moveOneTile(player, cT, player.movement.direction);
-    }
-
-    if(playerMoveResult.didMove) {
-      player.movement.moving = true;
-      g.wait(config.playerMoveSpeed, moveAgain);
-    }
-  }
-
-  return playerMoveResult.currentTile;
 }
 

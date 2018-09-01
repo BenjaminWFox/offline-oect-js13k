@@ -2763,6 +2763,7 @@ GA.create = function(width, height, setup, assetsToLoad, load) {
   }
 
   ga.getAdjacentTiles = function(index) {
+    console.log('getting all tiles');
     return {
       c: ga.getAdjacentTile(index, 'c'),
       u: ga.getAdjacentTile(index, 'u'),
@@ -2857,64 +2858,65 @@ GA.create = function(width, height, setup, assetsToLoad, load) {
   }
 
   //#### contain
-  ga.contain = function(s, bounds, bounce, extra){
+  // ga.contain = function(s, bounds, bounce, extra){
+  //   console.log('using @ line...')
 
-    var x = bounds.x,
-        y = bounds.y,
-        width = bounds.width,
-        height = bounds.height;
+  //   var x = bounds.x,
+  //       y = bounds.y,
+  //       width = bounds.width,
+  //       height = bounds.height;
 
-    //Set `bounce` to `false` by default
-    bounce = bounce || false;
+  //   //Set `bounce` to `false` by default
+  //   bounce = bounce || false;
 
-    //The `collision` object is used to store which
-    //side of the containing rectangle the sprite hits
-    var collision;
+  //   //The `collision` object is used to store which
+  //   //side of the containing rectangle the sprite hits
+  //   var collision;
 
-    //Left
-    if (s.x < x) {
+  //   //Left
+  //   if (s.x < x) {
 
-      //Bounce the sprite if `bounce` is true
-      if (bounce) s.vx *= -1;
+  //     //Bounce the sprite if `bounce` is true
+  //     if (bounce) s.vx *= -1;
 
-      //If the sprite has `mass`, let the mass
-      //affect the sprite's velocity
-      if(s.mass) s.vx /= s.mass;
-      s.x = x;
-      collision = "left";
-    }
+  //     //If the sprite has `mass`, let the mass
+  //     //affect the sprite's velocity
+  //     if(s.mass) s.vx /= s.mass;
+  //     s.x = x;
+  //     collision = "left";
+  //   }
 
-    //Top
-    if (s.y < y) {
-      if (bounce) s.vy *= -1;
-      if(s.mass) s.vy /= s.mass;
-      s.y = y;
-      collision = "top";
-    }
+  //   //Top
+  //   if (s.y < y) {
+  //     if (bounce) s.vy *= -1;
+  //     if(s.mass) s.vy /= s.mass;
+  //     s.y = y;
+  //     collision = "top";
+  //   }
 
-    //Right
-    if (s.x + s.width > width) {
-      if (bounce) s.vx *= -1;
-      if(s.mass) s.vx /= s.mass;
-      s.x = width - s.width;
-      collision = "right";
-    }
+  //   //Right
+  //   if (s.x + s.width > width) {
+  //     if (bounce) s.vx *= -1;
+  //     if(s.mass) s.vx /= s.mass;
+  //     s.x = width - s.width;
+  //     collision = "right";
+  //   }
 
-    //Bottom
-    if (s.y + s.height > height) {
-      if (bounce) s.vy *= -1;
-      if(s.mass) s.vy /= s.mass;
-      s.y = height - s.height;
-      collision = "bottom";
-    }
+  //   //Bottom
+  //   if (s.y + s.height > height) {
+  //     if (bounce) s.vy *= -1;
+  //     if(s.mass) s.vy /= s.mass;
+  //     s.y = height - s.height;
+  //     collision = "bottom";
+  //   }
 
-    //The `extra` function runs if there was a collision
-    //and `extra` has been defined
-    if (collision && extra) extra(collision);
+  //   //The `extra` function runs if there was a collision
+  //   //and `extra` has been defined
+  //   if (collision && extra) extra(collision);
 
-    //Return the `collision` object
-    return collision;
-  };
+  //   //Return the `collision` object
+  //   return collision;
+  // };
 
   /*
   #### getTile
