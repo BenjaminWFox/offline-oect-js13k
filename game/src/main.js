@@ -32,9 +32,12 @@ g.start();
 //Declare your global variables (global to this game)
 var dungeon, player, treasure, enemies, chimes, exit,
     healthBar, message, gameScene, gameOverScene;
-destroyedBlockQueue = [];
+destroyedBlocks = {
+  queue: [],
+  hash: {},
+}
+
 holesWithEnemies = [];
-blockHash = {};
 batteryHash = {};
 exitHash = {};
 totalBatteries = 0;
