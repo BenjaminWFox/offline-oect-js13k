@@ -39,6 +39,7 @@ function respawnNextBlock() {
   let blockData = destroyedBlocks.hash[blockIndex];
   if(blockIndex === player.currentTile) {
     player.dead = true;
+    player.visible = false;
     setTimeout(function() {
       g.resume();
       g.state = lose
@@ -138,11 +139,9 @@ function moveOneTile(sprite, currentTileIndex, dir) {
     sprite.x = nextX;
     sprite.y = nextY;
     sprite.currentTile = nextTileIndex;
-    checkIfFalling(sprite);
     return true;
   }
   // Prevent bug at bottom of map w/ infinite loop
-  sprite.movement.falling = false;
   return false;
 }
 
@@ -155,15 +154,15 @@ function teleportTo(sprite, tile) {
     return true;
 }
 
-function checkIfFalling(sprite) {
+function isFalling(sprite) {
   thisTile = g.getAdjacentTile(sprite.currentTile, directions.current);
   belowTile = g.getAdjacentTile(sprite.currentTile, directions.down);
 
   if(thisTile.type !== g.tileTypes.ladder && !belowTile.isStable) {//adjacentTiles.d.type === g.tileTypes.air) {
-    sprite.movement.falling = true;
+    // sprite.movement.falling = true;
     return true;
   } else {
-    sprite.movement.falling = false;
+    // sprite.movement.falling = false;
     return false;
   }
 }
@@ -174,13 +173,13 @@ function allowPlayerMoveAgain() {
 
 function checkForPlayerKill(enemy){
   if(enemy.currentTile === player.currentTile) {
-  // console.log('DEV ONLY: You Died!');
-  // player.dead = true;
-  // setTimeout(function() {
-  //   g.resume();
-  //   g.state = lose
-  // }, 1500);
-  // g.pause();
+    console.log('DEV ONLY: You Died!');
+    // player.dead = true;
+    // setTimeout(function() {
+    //   g.resume();
+    //   g.state = lose
+    // }, 1500);
+    // g.pause();
   }
 }
 
@@ -194,13 +193,10 @@ function checkForFallenIntoBlock(enemy) {
 }
 
 function getOutOfHole(enemy) {
-  console.log(`Enemy ${enemy.id} trying to get out of hole.`);
-  if(destroyedBlocks.hash[enemy.inHoleRef.tile.index]) {
-    console.log(`Enemy ${enemy.id} out of hole.`);
+  if(!enemy.dead && destroyedBlocks.hash[enemy.inHoleRef.tile.index]) {
     enemy.inHoleRef.vacate();
     enemy.unStick();
   } else {
-    console.log(`Enemy ${enemy.id} has died.`);
     enemy.dead = true;
     enemy.visible = false;
     respawnEnemy(enemy);
@@ -209,17 +205,16 @@ function getOutOfHole(enemy) {
 
 function moveEnemy(enemy) {
   if(enemy.freshSpawn) {
-    checkIfFalling(enemy);
+    enemy.movement.falling = isFalling(enemy);
     enemy.freshSpawn = false;
   }
-  // Enemy could be:
-  // moving
-  // stuck
-  // falling
-  // not moving
   // Everything happens in !moving, to save resources
   if(!enemy.movement.moving) {
     // Make sure we're not falling now...
+    if(!enemy.movement.stuck) {
+      enemy.movement.falling = isFalling(enemy);
+    }
+
     // Figure out if enemy needs path
     if(!enemy.movement.falling && enemy.needsPath) {
       if(enemy.movement.stuck) {
@@ -247,8 +242,16 @@ function moveEnemy(enemy) {
 
     if(!enemy.movement.stuck) {
       if(enemy.movement.falling) {
-        enemyDidMove = moveOneTile(enemy, enemy.currentTile, directions.down);
+        // Prevent enemies falling into the same hole.
+        if(destroyedBlocks.hash[enemy.currentTile + 32] && !destroyedBlocks.hash[enemy.currentTile + 32].occupied
+          || !destroyedBlocks.hash[enemy.currentTile + 32]) {
+          enemyDidMove = moveOneTile(enemy, enemy.currentTile, directions.down);
+        }
       } else if (nextTile) {
+        // Prevent enemies from climbing straight up and falling back into the hole
+        if(enemy.climbingOut && (enemy.currentTile === nextTile || enemy.currentTile - 32 === nextTile)) {
+          nextTile += Math.random() < 0.5 ? -1 : 1;
+        }
         enemy.movement.direction = getEnemyMoveDir(enemy.currentTile, nextTile);
         enemyDidMove = moveOneTile(enemy, enemy.currentTile, enemy.movement.direction);
       }
@@ -261,7 +264,7 @@ function moveEnemy(enemy) {
       }
     }
     if(!enemy.movement.stuck) {
-      checkIfFalling(enemy);
+      enemy.movement.falling = isFalling(enemy);
     }
   }
 
@@ -278,7 +281,7 @@ function moveEnemy(enemy) {
       if(nT - 1 === cT) {
         return directions.right;
       } else {
-        return directions.down;      
+        return directions.down;
       }
     }
   }
@@ -287,7 +290,7 @@ function moveEnemy(enemy) {
 
 function movePlayer() {
   if(player.freshSpawn) {
-    checkIfFalling(player);
+    player.movement.falling = isFalling(player);
     player.freshSpawn = false;
   }
   if(!player.movement.moving) {
@@ -304,6 +307,8 @@ function movePlayer() {
       player.movement.moving = true;
       g.wait(config.playerMoveSpeed, allowPlayerMoveAgain);
     }
+
+    player.movement.falling = isFalling(player);
   }
 }
 
@@ -320,8 +325,8 @@ function play() {
     if(!enemy.dead) {
       // console.log(`Cycling for enemy ${enemy.id}`)
       moveEnemy(enemy);
-      checkForPlayerKill(enemy);
       if(!enemy.movement.stuck) {
+        checkForPlayerKill(enemy);
         checkForFallenIntoBlock(enemy);
       }
     }

@@ -244,7 +244,9 @@ function setup() {
       this.movement.stuck = false;
       this.inHoleRef = undefined;
       this.movement.stuckAt = undefined;
+      this.climbingOut = true;
     }
+    enemy.climbingOut = false;
     enemy.currentTile = g.getSpriteIndex(enemy);
     enemy.dead = false;
     enemy.freshSpawn = true;
@@ -258,9 +260,11 @@ function setup() {
     return enemy;
   }
 
-  enemies.push(makeEnemy(576, 512, 1));
+  enemies.push(makeEnemy(256, 480, 1));
   enemies.push(makeEnemy(576, 544, 2));
-  // enemies.push(makeEnemy(224, 608));
+  enemies.push(makeEnemy(480, 352, 3));
+  enemies.push(makeEnemy(928, 416, 4));
+  enemies.push(makeEnemy(640, 288, 4));
 
   enemies.forEach(enemy => {
     gameScene.addChild(enemy);
