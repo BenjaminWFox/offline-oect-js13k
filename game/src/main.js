@@ -25,7 +25,7 @@ var config = {
   pathUpdateFrequency: 1000,
   enemyUnstuckSpeed: undefined, //see below
 }
-config.enemyUnstuckSpeed = config.blockRespawnSpeed / 2;
+config.enemyUnstuckSpeed = config.blockRespawnSpeed / 3;
 
 //Start the Ga engine
 g.start();
@@ -233,10 +233,22 @@ function setup() {
     enemy.allowMoveAgain = function() {
       enemy.movement.moving = false;
     }
+    enemy.makeStuck = function(blockRef) {
+      this.movement.moving = false;
+      this.movement.falling = false;
+      this.movement.stuck = true;
+      this.inHoleRef = blockRef;
+      this.movement.stuckAt = Date.now();
+    }
+    enemy.unStick = function() {
+      this.movement.stuck = false;
+      this.inHoleRef = undefined;
+      this.movement.stuckAt = undefined;
+    }
     enemy.currentTile = g.getSpriteIndex(enemy);
     enemy.dead = false;
     enemy.freshSpawn = true;
-    enemy.inHole = undefined;
+    enemy.inHoleRef = undefined;
     enemy.needsPath = true;
     enemy.pathData = {
       path: null,
@@ -246,7 +258,7 @@ function setup() {
     return enemy;
   }
 
-  enemies.push(makeEnemy(0, 0, 1));
+  enemies.push(makeEnemy(576, 512, 1));
   enemies.push(makeEnemy(576, 544, 2));
   // enemies.push(makeEnemy(224, 608));
 
@@ -284,8 +296,17 @@ function setup() {
     const costs = Object.assign({}, graph.start);
     costs[finish] = Infinity;
 
-    if(graph.start[finish]) {
-      costs[finish] = 1;
+    try {
+      if(graph.start[finish]) {
+        costs[finish] = 1;
+      }
+    } catch (err) {
+      // console.log('Pathing error', err)
+      return {
+        path: null,
+        updated: null,
+        distance: null,
+      }
     }
 
     // track paths

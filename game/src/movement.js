@@ -3,42 +3,48 @@ function destroyBlock(dir) {
   currentTile = g.getSpriteIndex(player);
   
   tileToDestroy = g.getAdjacentTile(currentTile, dir);
+  // don't allow destroying the same block if it's already destroyed
+  if(!destroyedBlocks.hash[tileToDestroy.index]) {
+    spriteToDestroy = floors.find(el => {
+      return el.index === tileToDestroy.index;
+    })
 
-  spriteToDestroy = floors.find(el => {
-    return el.index === tileToDestroy.index;
-  })
-
-  if(spriteToDestroy && spriteToDestroy.visible) {
-    // Change the block type to air:
-    world.children[0].data[tileToDestroy.index] = 1;
-    // fade out the block:
-    g.fadeOut(spriteToDestroy, 15);
-    // store relevant data for the destroyed block:
-    let blockData = {'sprite': spriteToDestroy, 'tile': tileToDestroy, 'time': Date.now()};
-    addDestroyedBlock(blockData);
+    if(spriteToDestroy && spriteToDestroy.visible) {
+      // Change the block type to air:
+      world.children[0].data[tileToDestroy.index] = 1;
+      // fade out the block:
+      g.fadeOut(spriteToDestroy, 15);
+      // store relevant data for the destroyed block:
+      let blockData = {
+        sprite: spriteToDestroy,
+        tile: tileToDestroy,
+        time: Date.now(),
+        occupy: function() {
+          world.children[0].data[this.tile.index] = 2;
+        },
+        vacate: function() {
+          world.children[0].data[this.tile.index] = 1;
+        },
+      };
+      addDestroyedBlock(blockData);
+    }
   }
 }
 
 function respawnNextBlock() {
   let blockIndex = destroyedBlocks.queue[0];
   let blockData = destroyedBlocks.hash[blockIndex];
+  if(blockIndex === player.currentTile) {
+    player.dead = true;
+    setTimeout(function() {
+      g.resume();
+      g.state = lose
+    }, 1500);
+    g.pause();
+  }
   removeDestroyBlock(blockData);
-  console.log(blockData);
   world.children[0].data[blockData.tile.index] = 2;
-
   let tween = g.fadeIn(blockData.sprite, 6)
-  tween.onComplete = function() {
-    // if(holesWithEnemies.indexOf(blockIndex) !== -1) {
-    //   enemies.forEach(enemy => {
-    //     if(enemy.inHole === blockIndex) {
-    //       enemy.dead = true;
-    //       unfillBlock(blockIndex);
-    //       respawnEnemy(enemy);
-    //     }
-    //   })
-    // }
-  };
-  // blockObj.sprite.visible = true;
 }
 
 function addDestroyedBlock(bData) {
@@ -53,24 +59,13 @@ function removeDestroyBlock(bData) {
   delete destroyedBlocks.hash[destroyedBlocks.queue.shift()];
 }
 
-// function fillBlock(indexInQueue) {
-//   blockIndex = destroyedBlockQueue[indexInQueue];
-//   holesWithEnemies.push(blockIndex);
-//   world.children[0].data[blockIndex] = 2;
-// }
-
-// function unfillBlock(blockIndex) {
-//   holesWithEnemies.splice(holesWithEnemies.indexOf(blockIndex), 1);
-//   if(destroyedBlockQueue.indexOf(blockIndex) !== -1) {
-//     world.children[0].data[blockIndex] = 1;    
-//   }
-// }
-
 function respawnEnemy(eSprite) {
   eSprite.needsPath = true;
   eSprite.x = eSprite.spawnX;
   eSprite.y = eSprite.spawnY;
-  eSprite.inHole = undefined;
+  eSprite.currentTile = g.getSpriteIndex(eSprite);
+  eSprite.inHoleRef = undefined;
+  eSprite.freshSpawn = true;
   eSprite.movement = {
     falling: false,
     moving: false,
@@ -78,6 +73,14 @@ function respawnEnemy(eSprite) {
     stuckAt: undefined,
     direction: directions.still,
   }
+  eSprite.pathData = {
+    path: null,
+    updated: null,
+    distance: null,
+  }
+  setTimeout(function(){
+    eSprite.visible = true;
+  }, 250);
   setTimeout(function(){
     eSprite.dead = false;
   }, 1000);
@@ -155,8 +158,10 @@ function checkIfFalling(sprite) {
 
   if(thisTile.type !== g.tileTypes.ladder && !belowTile.isStable) {//adjacentTiles.d.type === g.tileTypes.air) {
     sprite.movement.falling = true;
+    return true;
   } else {
     sprite.movement.falling = false;
+    return false;
   }
 }
 
@@ -166,7 +171,7 @@ function allowPlayerMoveAgain() {
 
 function checkForPlayerKill(enemy){
   if(enemy.currentTile === player.currentTile) {
-  console.log('DEV ONLY: You Died!');
+  // console.log('DEV ONLY: You Died!');
   // player.dead = true;
   // setTimeout(function() {
   //   g.resume();
@@ -176,23 +181,58 @@ function checkForPlayerKill(enemy){
   }
 }
 
+function checkForFallenIntoBlock(enemy) {
+  let occupiedBlock = destroyedBlocks.hash[enemy.currentTile];
+  if(occupiedBlock) {
+    // console.log('Stuck and occupied');
+    enemy.makeStuck(occupiedBlock);
+    occupiedBlock.occupy();
+  }
+}
+
+function getOutOfHole(enemy) {
+  console.log(`Enemy ${enemy.id} trying to get out of hole.`);
+  if(destroyedBlocks.hash[enemy.inHoleRef.tile.index]) {
+    console.log(`Enemy ${enemy.id} out of hole.`);
+    enemy.inHoleRef.vacate();
+    enemy.unStick();
+  } else {
+    console.log(`Enemy ${enemy.id} has died.`);
+    enemy.dead = true;
+    enemy.visible = false;
+    respawnEnemy(enemy);
+  }
+}
+
 function moveEnemy(enemy) {
   if(enemy.freshSpawn) {
     checkIfFalling(enemy);
     enemy.freshSpawn = false;
   }
+  // Enemy could be:
+  // moving
+  // stuck
+  // falling
+  // not moving
+  // Everything happens in !moving, to save resources
   if(!enemy.movement.moving) {
-
+    // Make sure we're not falling now...
     // Figure out if enemy needs path
     if(!enemy.movement.falling && enemy.needsPath) {
-      // if(enemy.movement.stuck) {
-      //   enemy.currentTile -= 32;
-      // }
+      if(enemy.movement.stuck) {
+        enemy.currentTile -= 32;
+      }
       enemy.pathData = dijkstra(enemy.currentTile, player.currentTile);
       enemy.needsPath = false;
     }
     if(!enemy.movement.falling && Date.now() - enemy.pathData.updated > config.pathUpdateFrequency) {
       enemy.needsPath = true;
+    }
+
+    if (enemy.movement.stuck) {
+      if(Date.now() - enemy.movement.stuckAt > config.enemyUnstuckSpeed) {
+        getOutOfHole(enemy);
+      }
     }
 
     // if(!nextTile && eSprite.pathData.distance !== Infinity) {
@@ -202,18 +242,23 @@ function moveEnemy(enemy) {
     let enemyDidMove = false;
     let nextTile = enemy.pathData.path ? enemy.pathData.path[1] : undefined;
 
-    if(enemy.movement.falling) {
-      enemyDidMove = moveOneTile(enemy, enemy.currentTile, directions.down);
-    } else if (nextTile) {
-      enemy.movement.direction = getEnemyMoveDir(enemy.currentTile, nextTile);
-      enemyDidMove = moveOneTile(enemy, enemy.currentTile, enemy.movement.direction);
-    }
+    if(!enemy.movement.stuck) {
+      if(enemy.movement.falling) {
+        enemyDidMove = moveOneTile(enemy, enemy.currentTile, directions.down);
+      } else if (nextTile) {
+        enemy.movement.direction = getEnemyMoveDir(enemy.currentTile, nextTile);
+        enemyDidMove = moveOneTile(enemy, enemy.currentTile, enemy.movement.direction);
+      }
 
-    if(enemyDidMove) {
-      !enemy.movement.falling && enemy.pathData.path ? enemy.pathData.path.shift() : '';
-      
-      enemy.movement.moving = true;
-      g.wait(config.enemyMoveSpeed, enemy.allowMoveAgain);
+      if(enemyDidMove) {
+        !enemy.movement.falling && enemy.pathData.path ? enemy.pathData.path.shift() : '';
+        
+        enemy.movement.moving = true;
+        g.wait(config.enemyMoveSpeed, enemy.allowMoveAgain);
+      }
+    }
+    if(!enemy.movement.stuck) {
+      checkIfFalling(enemy);
     }
   }
 
@@ -235,70 +280,6 @@ function moveEnemy(enemy) {
     }
   }
 
-  // if(!eSprite.movement.stuck) {
-  //   if(!nextTile && eSprite.pathData.distance !== Infinity) {
-  //     eSprite.needsPath = true;
-  //   }
-  //   checkIfFalling(eSprite);
-  // }
-
-  // if(!eSprite.movement.falling && !eSprite.movement.stuck) {
-  // } else if(eSprite.movement.falling) {
-  //   enemyMovedResult = moveOneTile(eSprite, currentTile, directions.down);
-  //   if(enemyMovedResult.didMove) {
-  //     eSprite.movement.falling = false;
-  //     eSprite.movement.stuck = true;
-  //     eSprite.movement.stuckAt = Date.now();
-  //   }
-  // } else if(eSprite.movement.stuck) {
-  //   if(config.enemyUnstuckSpeed < Date.now() - eSprite.movement.stuckAt) {
-  //     eSprite.movement.stuck = false;
-  //     eSprite.movement.stuckAt = undefined;
-      
-  //     if(!nextTile) {
-  //       nextTile = Math.random() < 0.5 ? currentTile + 1 : currentTile - 1;
-  //     }
-
-  //     enemyMovedResult = teleportTo(eSprite, nextTile);
-  //     unfillBlock(currentTile);
-  //     eSprite.inHole = undefined;
-  //     eSprite.needsPath = true;
-  //   }
-  // }
-
-// enemy.currentTile = g.getSpriteIndex(enemy);
-
-    // let holeNeedsFilling = destroyedBlockQueue.indexOf(enemy.currentTile);
-    // let holeNeedsEmptying = holesWithEnemies.indexOf(enemy.currentTile);
-
-    // if(holeNeedsFilling !== -1 && holeNeedsEmptying === -1) {
-    //   enemy.inHole = enemy.currentTile;
-    //   fillBlock(holeNeedsFilling);
-    // }
-
-    // // Enemy movement
-    // if(!enemy.dead) {
-    //   if(enemy.needsPath && !enemy.movement.falling) {
-    //     if(enemy.movement.stuck) {
-    //       enemy.currentTile -= 32;
-    //     }
-       
-    //     // console.log(`Enemy ${enemy.id} running dijkstra`);
-    //     enemy.pathData = dijkstra(enemy.currentTile, player.currentTile);
-    //     enemy.needsPath = false;
-    //   } else if(Date.now() - enemy.pathData.updated > config.pathUpdateFrequency) {
-    //     enemy.needsPath = true;
-    //   }
-    //   if(!enemy.movement.moving) {
-    //       enemyMoved = moveEnemy(enemy);
-    //       if(enemyMoved) {
-    //         enemy.movement.moving = true;
-    //         g.wait(config.enemyMoveSpeed, function() {
-    //           enemy.movement.moving = false;
-    //         })
-    //       }
-    //   }
-    // }
 }
 
 function movePlayer() {
@@ -333,16 +314,29 @@ function play() {
 
 
   enemies.forEach(enemy => {
-    moveEnemy(enemy);
-    checkForPlayerKill(enemy);
+    if(!enemy.dead) {
+      // console.log(`Cycling for enemy ${enemy.id}`)
+      moveEnemy(enemy);
+      checkForPlayerKill(enemy);
+      if(!enemy.movement.stuck) {
+        checkForFallenIntoBlock(enemy);
+      }
+    }
   })
 
   checkForBlockRespawn();
 }
 
 function checkForBlockRespawn() {
-  if (destroyedBlocks.queue.length && Date.now() - destroyedBlocks.hash[destroyedBlocks.queue[0]].time > config.blockRespawnSpeed) {
-    respawnNextBlock();
+  try {
+    if (destroyedBlocks.queue.length && Date.now() - destroyedBlocks.hash[destroyedBlocks.queue[0]].time > config.blockRespawnSpeed) {
+      respawnNextBlock();
+    }
+  } catch (err) {
+    console.log('Block respawn error', err)
+    console.log('Queue length', destroyedBlocks.queue.length);
+    console.log('Queue', destroyedBlocks.queue);
+    console.log('Hash', destroyedBlocks.hash);
   }
 }
 
