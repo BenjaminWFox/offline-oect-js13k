@@ -990,65 +990,65 @@ GA.create = function(width, height, setup, assetsToLoad, load) {
   //### remove
   //`remove` is a global convenience method that will
   //remove any sprite, or an argument list of sprites, from its parent.
-  ga.remove = function(spritesToRemove) {
-    console.log('using ga.remove()');
-    var sprites = Array.prototype.slice.call(arguments);
+  // ga.remove = function(spritesToRemove) {
+  //   console.log('using @ line...')
+  //   var sprites = Array.prototype.slice.call(arguments);
 
-    //Remove sprites that's aren't in an array
-    if (!(sprites[0] instanceof Array)) {
-      if (sprites.length > 1) {
-        sprites.forEach(function(sprite) {
-          sprite.parent.removeChild(sprite);
-        });
-      } else {
-        sprites[0].parent.removeChild(sprites[0]);
-      }
-    }
+  //   //Remove sprites that's aren't in an array
+  //   if (!(sprites[0] instanceof Array)) {
+  //     if (sprites.length > 1) {
+  //       sprites.forEach(function(sprite) {
+  //         sprite.parent.removeChild(sprite);
+  //       });
+  //     } else {
+  //       sprites[0].parent.removeChild(sprites[0]);
+  //     }
+  //   }
 
-    //Remove sprites in an array of sprites
-    else {
-      var spritesArray = sprites[0];
-      if (spritesArray.length > 0) {
-        for (var i = spritesArray.length - 1; i >= 0; i--) {
-          var sprite = spritesArray[i];
-          sprite.parent.removeChild(sprite);
-          spritesArray.splice(spritesArray.indexOf(sprite), 1);
-        }
-      }
-    }
-  };
+  //   //Remove sprites in an array of sprites
+  //   else {
+  //     var spritesArray = sprites[0];
+  //     if (spritesArray.length > 0) {
+  //       for (var i = spritesArray.length - 1; i >= 0; i--) {
+  //         var sprite = spritesArray[i];
+  //         sprite.parent.removeChild(sprite);
+  //         spritesArray.splice(spritesArray.indexOf(sprite), 1);
+  //       }
+  //     }
+  //   }
+  // };
 
   //### makeCircular
   //The `makeCircular` function is run whenever a sprite's `circular`
   //property is set to `true`.
   //Add `diameter` and `radius` properties to circular sprites.
-  function makeCircular(o) {
-    console.log('using makeCircular(o)');
-    Object.defineProperties(o, {
-      diameter: {
-        get: function() {
-          return o.width;
-        },
-        set: function(value) {
-          o.width = value;
-          o.height = value;
-        },
-        enumerable: true,
-        configurable: true
-      },
-      radius: {
-        get: function() {
-          return o.width / 2;
-        },
-        set: function(value) {
-          o.width = value * 2;
-          o.height = value * 2;
-        },
-        enumerable: true,
-        configurable: true
-      }
-    });
-  }
+  // function makeCircular(o) {
+  //   console.log('using @ line...')
+  //   Object.defineProperties(o, {
+  //     diameter: {
+  //       get: function() {
+  //         return o.width;
+  //       },
+  //       set: function(value) {
+  //         o.width = value;
+  //         o.height = value;
+  //       },
+  //       enumerable: true,
+  //       configurable: true
+  //     },
+  //     radius: {
+  //       get: function() {
+  //         return o.width / 2;
+  //       },
+  //       set: function(value) {
+  //         o.width = value * 2;
+  //         o.height = value * 2;
+  //       },
+  //       enumerable: true,
+  //       configurable: true
+  //     }
+  //   });
+  // }
 
   //### makeStage
   //`makeStage` is called when Ga initializes. It creates a group
@@ -1182,153 +1182,153 @@ GA.create = function(width, height, setup, assetsToLoad, load) {
   //`rectangle` creates and returns a basic rectangular shape.
   //arguments: width, height, fillColor, borderColor, widthOfBorder,
   //xPosition, yPosition.
-  ga.rectangle = function(width, height, fillStyle, strokeStyle, lineWidth, x, y) {
-    console.log('using ga.rectangle()');
-    var o = {};
+  // ga.rectangle = function(width, height, fillStyle, strokeStyle, lineWidth, x, y) {
+  //   console.log('using @ line...')
+  //   var o = {};
 
-    //Make this a display object.
-    makeDisplayObject(o);
+  //   //Make this a display object.
+  //   makeDisplayObject(o);
 
-    //Add a mask property.
-    o.mask = false;
+  //   //Add a mask property.
+  //   o.mask = false;
 
-    //Set the defaults.
-    o.width = width || 32;
-    o.height = height || 32;
-    o.fillStyle = fillStyle || "red";
-    o.strokeStyle = strokeStyle || "none";
-    o.lineWidth = lineWidth || 0;
-    o.x = x || 0;
-    o.y = y || 0;
+  //   //Set the defaults.
+  //   o.width = width || 32;
+  //   o.height = height || 32;
+  //   o.fillStyle = fillStyle || "red";
+  //   o.strokeStyle = strokeStyle || "none";
+  //   o.lineWidth = lineWidth || 0;
+  //   o.x = x || 0;
+  //   o.y = y || 0;
 
-    //Add the sprite to the stage.
-    ga.stage.addChild(o);
+  //   //Add the sprite to the stage.
+  //   ga.stage.addChild(o);
 
-    //Add a `render` method that explains to the canvas how to draw
-    //a rectangle.
-    o.render = function(ctx) {
-      ctx.strokeStyle = o.strokeStyle;
-      ctx.lineWidth = o.lineWidth;
-      ctx.fillStyle = o.fillStyle;
-      ctx.beginPath();
+  //   //Add a `render` method that explains to the canvas how to draw
+  //   //a rectangle.
+  //   o.render = function(ctx) {
+  //     ctx.strokeStyle = o.strokeStyle;
+  //     ctx.lineWidth = o.lineWidth;
+  //     ctx.fillStyle = o.fillStyle;
+  //     ctx.beginPath();
 
-      //Draw the rectangle around the context's center `0` point.
-      ctx.rect(-o.width * o.pivotX, -o.height * o.pivotY,
-        o.width,
-        o.height
-      );
-      if (o.mask === true) {
-        ctx.clip();
-      } else {
-        if (o.strokeStyle !== "none") ctx.stroke();
-        if (o.fillStyle !== "none") ctx.fill();
-      }
-    };
+  //     //Draw the rectangle around the context's center `0` point.
+  //     ctx.rect(-o.width * o.pivotX, -o.height * o.pivotY,
+  //       o.width,
+  //       o.height
+  //     );
+  //     if (o.mask === true) {
+  //       ctx.clip();
+  //     } else {
+  //       if (o.strokeStyle !== "none") ctx.stroke();
+  //       if (o.fillStyle !== "none") ctx.fill();
+  //     }
+  //   };
 
-    //Return the rectangle.
-    return o;
-  };
+  //   //Return the rectangle.
+  //   return o;
+  // };
 
   //### circle
   //`circle` returns a basic colored circle.
   //arguments: diameter, fillColor, outlineColor, borderColor,
   //xPosition, yPosition
-  ga.circle = function(diameter, fillStyle, strokeStyle, lineWidth, x, y) {
-    console.log('using ga.circle');
-    var o = {};
+  // ga.circle = function(diameter, fillStyle, strokeStyle, lineWidth, x, y) {
+  //   console.log('using @ line...')
+  //   var o = {};
 
-    //Make this a display object.
-    makeDisplayObject(o);
+  //   //Make this a display object.
+  //   makeDisplayObject(o);
 
-    //Add a mask property.
-    o.mask = false;
+  //   //Add a mask property.
+  //   o.mask = false;
 
-    //Set the defaults.
-    o.width = diameter || 32;
-    o.height = diameter || 32;
-    o.fillStyle = fillStyle || "red";
-    o.strokeStyle = strokeStyle || "none";
-    o.lineWidth = lineWidth || "none";
-    o.x = x || 0;
-    o.y = y || 0;
+  //   //Set the defaults.
+  //   o.width = diameter || 32;
+  //   o.height = diameter || 32;
+  //   o.fillStyle = fillStyle || "red";
+  //   o.strokeStyle = strokeStyle || "none";
+  //   o.lineWidth = lineWidth || "none";
+  //   o.x = x || 0;
+  //   o.y = y || 0;
 
-    //Add the sprite to the stage.
-    ga.stage.addChild(o);
+  //   //Add the sprite to the stage.
+  //   ga.stage.addChild(o);
 
-    //Add `diameter` and `radius` getters and setters.
-    makeCircular(o);
+  //   //Add `diameter` and `radius` getters and setters.
+  //   makeCircular(o);
 
-    //Add a `render` method that explains to the canvas how to draw
-    //a circle.
-    o.render = function(ctx) {
-      ctx.strokeStyle = o.strokeStyle;
-      ctx.lineWidth = o.lineWidth;
-      ctx.fillStyle = o.fillStyle;
-      ctx.beginPath();
-      ctx.arc(
-        o.radius + (-o.diameter * o.pivotX),
-        o.radius + (-o.diameter * o.pivotY),
-        o.radius,
-        0, 2 * Math.PI, false
-      );
-      if (o.mask === true) {
-        ctx.clip();
-      } else {
-        if (o.strokeStyle !== "none") ctx.stroke();
-        if (o.fillStyle !== "none") ctx.fill();
-      }
-    };
+  //   //Add a `render` method that explains to the canvas how to draw
+  //   //a circle.
+  //   o.render = function(ctx) {
+  //     ctx.strokeStyle = o.strokeStyle;
+  //     ctx.lineWidth = o.lineWidth;
+  //     ctx.fillStyle = o.fillStyle;
+  //     ctx.beginPath();
+  //     ctx.arc(
+  //       o.radius + (-o.diameter * o.pivotX),
+  //       o.radius + (-o.diameter * o.pivotY),
+  //       o.radius,
+  //       0, 2 * Math.PI, false
+  //     );
+  //     if (o.mask === true) {
+  //       ctx.clip();
+  //     } else {
+  //       if (o.strokeStyle !== "none") ctx.stroke();
+  //       if (o.fillStyle !== "none") ctx.fill();
+  //     }
+  //   };
 
-    //Return the circle sprite.
-    return o;
-  };
+  //   //Return the circle sprite.
+  //   return o;
+  // };
 
   //### line
   //`line` creates and returns a line with a start and end points.
   //arguments: lineColor, lineWidth, startX, startY, endX, endY.
-  ga.line = function(strokeStyle, lineWidth, ax, ay, bx, by) {
-    console.log('using ga.line');
-    var o = {};
+  // ga.line = function(strokeStyle, lineWidth, ax, ay, bx, by) {
+  //   console.log('using @ line...')
+  //   var o = {};
 
-    //Add basic properties to the sprite.
-    makeDisplayObject(o);
+  //   //Add basic properties to the sprite.
+  //   makeDisplayObject(o);
 
-    //Set the defaults.
-    if (!ax && ax !== 0) ax = 0;
-    if (!ay && ay !== 0) ay = 0;
-    if (!bx && bx !== 0) bx = 32;
-    if (!by && by !== 0) by = 32;
-    o.ax = ax;
-    o.ay = ay;
-    o.bx = bx;
-    o.by = by;
-    o.strokeStyle = strokeStyle || "red";
-    o.lineWidth = lineWidth || 1;
+  //   //Set the defaults.
+  //   if (!ax && ax !== 0) ax = 0;
+  //   if (!ay && ay !== 0) ay = 0;
+  //   if (!bx && bx !== 0) bx = 32;
+  //   if (!by && by !== 0) by = 32;
+  //   o.ax = ax;
+  //   o.ay = ay;
+  //   o.bx = bx;
+  //   o.by = by;
+  //   o.strokeStyle = strokeStyle || "red";
+  //   o.lineWidth = lineWidth || 1;
 
-    //The `lineJoin` style.
-    //Options are "round", "mitre" and "bevel".
-    o.lineJoin = "round";
+  //   //The `lineJoin` style.
+  //   //Options are "round", "mitre" and "bevel".
+  //   o.lineJoin = "round";
 
-    //Add the sprite to the stage.
-    ga.stage.addChild(o);
+  //   //Add the sprite to the stage.
+  //   ga.stage.addChild(o);
 
-    //Add a `render` method that explains to the canvas how to draw
-    //a line.
-    o.render = function(ctx) {
-      ctx.strokeStyle = o.strokeStyle;
-      ctx.lineWidth = o.lineWidth;
-      ctx.lineJoin = o.lineJoin;
-      ctx.beginPath();
-      ctx.moveTo(o.ax, o.ay);
-      ctx.lineTo(o.bx, o.by);
-      //ctx.closePath();
-      if (o.strokeStyle !== "none") ctx.stroke();
-      if (o.fillStyle !== "none") ctx.fill();
-    };
+  //   //Add a `render` method that explains to the canvas how to draw
+  //   //a line.
+  //   o.render = function(ctx) {
+  //     ctx.strokeStyle = o.strokeStyle;
+  //     ctx.lineWidth = o.lineWidth;
+  //     ctx.lineJoin = o.lineJoin;
+  //     ctx.beginPath();
+  //     ctx.moveTo(o.ax, o.ay);
+  //     ctx.lineTo(o.bx, o.by);
+  //     //ctx.closePath();
+  //     if (o.strokeStyle !== "none") ctx.stroke();
+  //     if (o.fillStyle !== "none") ctx.fill();
+  //   };
 
-    //Return the line.
-    return o;
-  };
+  //   //Return the line.
+  //   return o;
+  // };
 
   //### text
   //`text` creates and returns a single line of dynamic text.
@@ -1416,15 +1416,15 @@ GA.create = function(width, height, setup, assetsToLoad, load) {
   //the position and size of many sub-images in a single tileset image.
   //arguments: sourceString, 2DArrayOfXandYPositions, widthOfSubImage,
   //heightOfSubImage.
-  ga.frames = function(source, arrayOfPositions, width, height) {
-    console.log('using @ line...')
-    var o = {};
-    o.image = source;
-    o.data = arrayOfPositions;
-    o.width = width;
-    o.height = height;
-    return o;
-  };
+  // ga.frames = function(source, arrayOfPositions, width, height) {
+  //   console.log('using @ line...')
+  //   var o = {};
+  //   o.image = source;
+  //   o.data = arrayOfPositions;
+  //   o.width = width;
+  //   o.height = height;
+  //   return o;
+  // };
 
   //### filmstrip
   //If you have a complex animation in a single image, you can use the
@@ -1434,41 +1434,41 @@ GA.create = function(width, height, setup, assetsToLoad, load) {
   //imageName, frameWidth, frameHeight, spacing
   //(The last `spacing` argument should be included if there's any
   //default spacing (padding) around tileset images.)
-  ga.filmstrip = function(imageName, frameWidth, frameHeight, spacing) {
-    console.log('using @ line...')
-    var image = ga.assets[imageName].source,
-      positions = [],
+  // ga.filmstrip = function(imageName, frameWidth, frameHeight, spacing) {
+  //   console.log('using @ line...')
+  //   var image = ga.assets[imageName].source,
+  //     positions = [],
 
-      //Find out how many columns and rows there are in the image.
-      columns = image.width / frameWidth,
-      rows = image.height / frameHeight,
+  //     //Find out how many columns and rows there are in the image.
+  //     columns = image.width / frameWidth,
+  //     rows = image.height / frameHeight,
 
-      //Find the total number of frames.
-      numberOfFrames = columns * rows;
+  //     //Find the total number of frames.
+  //     numberOfFrames = columns * rows;
 
-    for (var i = 0; i < numberOfFrames; i++) {
+  //   for (var i = 0; i < numberOfFrames; i++) {
 
-      //Find the correct row and column for each frame
-      //and figure out its x and y position.
-      var x, y;
-      x = (i % columns) * frameWidth;
-      y = Math.floor(i / columns) * frameHeight;
+  //     //Find the correct row and column for each frame
+  //     //and figure out its x and y position.
+  //     var x, y;
+  //     x = (i % columns) * frameWidth;
+  //     y = Math.floor(i / columns) * frameHeight;
 
-      //Compensate for any optional spacing (padding) around the tiles if
-      //there is any. This bit of code accumulates the spacing offsets from the
-      //left side of the tileset and adds them to the current tile's position.
-      if (spacing && spacing > 0) {
-        x += spacing + (spacing * i % columns);
-        y += spacing + (spacing * Math.floor(i / columns));
-      }
+  //     //Compensate for any optional spacing (padding) around the tiles if
+  //     //there is any. This bit of code accumulates the spacing offsets from the
+  //     //left side of the tileset and adds them to the current tile's position.
+  //     if (spacing && spacing > 0) {
+  //       x += spacing + (spacing * i % columns);
+  //       y += spacing + (spacing * Math.floor(i / columns));
+  //     }
 
-      //Add the x and y value of each frame to the `positions` array.
-      positions.push([x, y]);
-    }
+  //     //Add the x and y value of each frame to the `positions` array.
+  //     positions.push([x, y]);
+  //   }
 
-    //Create and return the animation frames using the `frames` method.
-    return ga.frames(imageName, positions, frameWidth, frameHeight);
-  };
+  //   //Create and return the animation frames using the `frames` method.
+  //   return ga.frames(imageName, positions, frameWidth, frameHeight);
+  // };
 
   //### sprite
   //`sprite` creates and returns a sprite using a JavaScript Image object, a tileset
@@ -1637,20 +1637,20 @@ GA.create = function(width, height, setup, assetsToLoad, load) {
   //`button` creates and returns a button with `up`, `over` and `down`
   //states. You can also assign custom `press` and `release` methods.
   //arguments: sourceString (The same as an ordinary sprite.)
-  ga.button = function(source) {
-    console.log('using @ line...')
-    //First, make an ordinary sprite.
-    var o = ga.sprite(source);
+  // ga.button = function(source) {
+  //   console.log('using @ line...')
+  //   //First, make an ordinary sprite.
+  //   var o = ga.sprite(source);
 
-    //Assign this as a "button" subtype.
-    o.subtype = "button";
+  //   //Assign this as a "button" subtype.
+  //   o.subtype = "button";
 
-    //Make it interactive (see ahead).
-    makeInteractive(o);
+  //   //Make it interactive (see ahead).
+  //   makeInteractive(o);
 
-    //Return it.
-    return o;
-  };
+  //   //Return it.
+  //   return o;
+  // };
 
   //### makeInteractive
   //The `makeInteractive` function lets you assign `press`, `release`, `over`, `tap`
@@ -1658,139 +1658,139 @@ GA.create = function(width, height, setup, assetsToLoad, load) {
   //Also tells you the pointer's state of interaction with the sprite.
   //`makeInteractive` is called on a sprite when a sprite's
   //`interactive` property is set to `true`.
-  function makeInteractive(o) {
-    console.log('using @ line...')
-    //The `press` and `release` methods. They're `undefined`
-    //for now, but they'll be defined in the game program.
-    o.press = o.press || undefined;
-    o.release = o.release || undefined;
-    o.over = o.over || undefined;
-    o.out = o.out || undefined;
-    o.tap = o.tap || undefined;
+  // function makeInteractive(o) {
+  //   console.log('using @ line...')
+  //   //The `press` and `release` methods. They're `undefined`
+  //   //for now, but they'll be defined in the game program.
+  //   o.press = o.press || undefined;
+  //   o.release = o.release || undefined;
+  //   o.over = o.over || undefined;
+  //   o.out = o.out || undefined;
+  //   o.tap = o.tap || undefined;
 
-    //The `state` property tells you button's
-    //current state. Set its initial state to "up".
-    o.state = "up";
+  //   //The `state` property tells you button's
+  //   //current state. Set its initial state to "up".
+  //   o.state = "up";
 
-    //The `action` property tells you whether its being pressed or
-    //released.
-    o.action = "";
+  //   //The `action` property tells you whether its being pressed or
+  //   //released.
+  //   o.action = "";
 
-    //`pressed` is a Boolean that helps track whether or not
-    //the button has been pressed down.
-    o.pressed = false;
+  //   //`pressed` is a Boolean that helps track whether or not
+  //   //the button has been pressed down.
+  //   o.pressed = false;
 
-    //`enabled` is a Boolean which, if false, deactivates the button.
-    o.enabled = true;
+  //   //`enabled` is a Boolean which, if false, deactivates the button.
+  //   o.enabled = true;
 
-    //`hoverOver` is a Boolean which checkes whether the pointer
-    //has hovered over the button.
-    o.hoverOver = false;
+  //   //`hoverOver` is a Boolean which checkes whether the pointer
+  //   //has hovered over the button.
+  //   o.hoverOver = false;
 
-    //Add the button into the global `buttons` array so that it
-    //can be updated by the game engine.
-    ga.buttons.push(o);
+  //   //Add the button into the global `buttons` array so that it
+  //   //can be updated by the game engine.
+  //   ga.buttons.push(o);
 
-    //The `update` method will be called each frame inside
-    //Ga's game loop.
-    o.update = function(pointer, canvas) {
+  //   //The `update` method will be called each frame inside
+  //   //Ga's game loop.
+  //   o.update = function(pointer, canvas) {
 
-      //Only update the button if it's enabled.
-      if (o.enabled) {
+  //     //Only update the button if it's enabled.
+  //     if (o.enabled) {
 
-        //Figure out if the pointer is touching the button.
-        var hit = ga.pointer.hitTestSprite(o);
+  //       //Figure out if the pointer is touching the button.
+  //       var hit = ga.pointer.hitTestSprite(o);
 
-        //1. Figure out the current state.
-        if (pointer.isUp) {
+  //       //1. Figure out the current state.
+  //       if (pointer.isUp) {
 
-          //Up state.
-          o.state = "up";
+  //         //Up state.
+  //         o.state = "up";
 
-          //Show the first frame, if this is a button.
-          if (o.subtype === "button") o.show(0);
-        }
+  //         //Show the first frame, if this is a button.
+  //         if (o.subtype === "button") o.show(0);
+  //       }
 
-        //If the pointer is touching the button, figure out
-        //if the over or down state should be displayed.
-        if (hit) {
+  //       //If the pointer is touching the button, figure out
+  //       //if the over or down state should be displayed.
+  //       if (hit) {
 
-          //Over state.
-          o.state = "over";
+  //         //Over state.
+  //         o.state = "over";
 
-          //Show the second frame if this sprite has
-          //3 frames and it's button.
-          if (o.frames && o.frames.length === 3 && o.subtype === "button") {
-            o.show(1);
-          }
+  //         //Show the second frame if this sprite has
+  //         //3 frames and it's button.
+  //         if (o.frames && o.frames.length === 3 && o.subtype === "button") {
+  //           o.show(1);
+  //         }
 
-          //Down state.
-          if (pointer.isDown) {
-            o.state = "down";
+  //         //Down state.
+  //         if (pointer.isDown) {
+  //           o.state = "down";
 
-            //Show the third frame if this sprite is a button and it
-            //has only three frames, or show the second frame if it
-            //only has two frames.
-            if (o.subtype === "button") {
-              if (o.frames.length === 3) {
-                o.show(2);
-              } else {
-                o.show(1);
-              }
-            }
-          }
-        }
+  //           //Show the third frame if this sprite is a button and it
+  //           //has only three frames, or show the second frame if it
+  //           //only has two frames.
+  //           if (o.subtype === "button") {
+  //             if (o.frames.length === 3) {
+  //               o.show(2);
+  //             } else {
+  //               o.show(1);
+  //             }
+  //           }
+  //         }
+  //       }
 
-        //Run the correct button action.
-        //a. Run the `press` method if the button state is "down" and
-        //the button hasn't already been pressed.
-        if (o.state === "down") {
-          if (!o.pressed) {
-            if (o.press) o.press();
-            o.pressed = true;
-            o.action = "pressed";
-          }
-        }
+  //       //Run the correct button action.
+  //       //a. Run the `press` method if the button state is "down" and
+  //       //the button hasn't already been pressed.
+  //       if (o.state === "down") {
+  //         if (!o.pressed) {
+  //           if (o.press) o.press();
+  //           o.pressed = true;
+  //           o.action = "pressed";
+  //         }
+  //       }
 
-        //b. Run the `release` method if the button state is "over" and
-        //the button has been pressed.
-        if (o.state === "over") {
-          if (o.pressed) {
-            if (o.release) o.release();
-            o.pressed = false;
-            o.action = "released";
+  //       //b. Run the `release` method if the button state is "over" and
+  //       //the button has been pressed.
+  //       if (o.state === "over") {
+  //         if (o.pressed) {
+  //           if (o.release) o.release();
+  //           o.pressed = false;
+  //           o.action = "released";
 
-            //If the pointer was tapped and the user assigned a `tap`
-            //method, call the `tap` method
-            if (ga.pointer.tapped && o.tap) o.tap();
-          }
+  //           //If the pointer was tapped and the user assigned a `tap`
+  //           //method, call the `tap` method
+  //           if (ga.pointer.tapped && o.tap) o.tap();
+  //         }
 
-          //Run the `over` method if it has been assigned
-          if (!o.hoverOver) {
-            if (o.over) o.over();
-            o.hoverOver = true;
-          }
-        }
+  //         //Run the `over` method if it has been assigned
+  //         if (!o.hoverOver) {
+  //           if (o.over) o.over();
+  //           o.hoverOver = true;
+  //         }
+  //       }
 
-        //c. Check whether the pointer has been released outside
-        //the button's area. If the button state is "up" and it's
-        //already been pressed, then run the `release` method.
-        if (o.state === "up") {
-          if (o.pressed) {
-            if (o.release) o.release();
-            o.pressed = false;
-            o.action = "released";
-          }
+  //       //c. Check whether the pointer has been released outside
+  //       //the button's area. If the button state is "up" and it's
+  //       //already been pressed, then run the `release` method.
+  //       if (o.state === "up") {
+  //         if (o.pressed) {
+  //           if (o.release) o.release();
+  //           o.pressed = false;
+  //           o.action = "released";
+  //         }
 
-          //Run the `out` method if it has been assigned
-          if (o.hoverOver) {
-            if (o.out) o.out();
-            o.hoverOver = false;
-          }
-        }
-      }
-    };
-  }
+  //         //Run the `out` method if it has been assigned
+  //         if (o.hoverOver) {
+  //           if (o.out) o.out();
+  //           o.hoverOver = false;
+  //         }
+  //       }
+  //     }
+  //   };
+  // }
 
   //A convenience method that lets you access Images by their file names.
   ga.image = function(imageFileName) {
@@ -1806,130 +1806,130 @@ GA.create = function(width, height, setup, assetsToLoad, load) {
   //`addStatePlayer` adds a state manager and keyframe animation player for
   //sprites with more than one frame. Its called automatically when
   //`sprite`s are created.
-  ga.addStatePlayer = function(sprite) {
-    console.log('using @ line...')
-    var frameCounter = 0,
-      numberOfFrames = 0,
-      startFrame = 0,
-      endFrame = 0,
-      timerInterval = undefined,
-      playing = false;
+  // ga.addStatePlayer = function(sprite) {
+  //   console.log('using @ line...')
+  //   var frameCounter = 0,
+  //     numberOfFrames = 0,
+  //     startFrame = 0,
+  //     endFrame = 0,
+  //     timerInterval = undefined,
+  //     playing = false;
 
-    //The `show` function (to display static states.)
-    function show(frameNumber) {
+  //   //The `show` function (to display static states.)
+  //   function show(frameNumber) {
 
-      //Reset any possible previous animations.
-      reset();
+  //     //Reset any possible previous animations.
+  //     reset();
 
-      //Find the new state on the sprite.
-      //If `frameNumber` is a number, use that number to go to the
-      //correct frame.
-      if (typeof frameNumber !== "string") {
-        sprite.gotoAndStop(frameNumber);
-      }
+  //     //Find the new state on the sprite.
+  //     //If `frameNumber` is a number, use that number to go to the
+  //     //correct frame.
+  //     if (typeof frameNumber !== "string") {
+  //       sprite.gotoAndStop(frameNumber);
+  //     }
 
-      //If `frameNumber` is string that describes a sprite's frame id,
-      //then go to the index number that matches that id name.
-      else {
-        sprite.gotoAndStop(sprite.frames.indexOf(frameNumber));
-      }
-    }
+  //     //If `frameNumber` is string that describes a sprite's frame id,
+  //     //then go to the index number that matches that id name.
+  //     else {
+  //       sprite.gotoAndStop(sprite.frames.indexOf(frameNumber));
+  //     }
+  //   }
 
-    //The `play` function plays all the sprites frames.
-    function play() {
-      playSequence([0, sprite.frames.length - 1]);
-    }
+  //   //The `play` function plays all the sprites frames.
+  //   function play() {
+  //     playSequence([0, sprite.frames.length - 1]);
+  //   }
 
-    //The `stop` function stops the animation at the current frame.
-    function stop() {
-      reset();
-      sprite.gotoAndStop(sprite.currentFrame);
-    }
+  //   //The `stop` function stops the animation at the current frame.
+  //   function stop() {
+  //     reset();
+  //     sprite.gotoAndStop(sprite.currentFrame);
+  //   }
 
-    //The `playSequence` function, to play a sequence of frames.
-    function playSequence(sequenceArray) {
+  //   //The `playSequence` function, to play a sequence of frames.
+  //   function playSequence(sequenceArray) {
 
-      //Reset any possible previous animations.
-      reset();
+  //     //Reset any possible previous animations.
+  //     reset();
 
-      //Figure out how many frames there are in the range.
-      startFrame = sequenceArray[0];
-      endFrame = sequenceArray[1];
-      numberOfFrames = endFrame - startFrame;
+  //     //Figure out how many frames there are in the range.
+  //     startFrame = sequenceArray[0];
+  //     endFrame = sequenceArray[1];
+  //     numberOfFrames = endFrame - startFrame;
 
-      //Compensate for two edge cases:
-      //1. if the `startFrame` happens to be `0`.
-      if (startFrame === 0) {
-        numberOfFrames += 1;
-        frameCounter += 1;
-      }
+  //     //Compensate for two edge cases:
+  //     //1. if the `startFrame` happens to be `0`.
+  //     if (startFrame === 0) {
+  //       numberOfFrames += 1;
+  //       frameCounter += 1;
+  //     }
 
-      //2. if only a two-frame sequence was provided.
-      if (numberOfFrames === 1) {
-        numberOfFrames = 2;
-        frameCounter += 1;
-      };
+  //     //2. if only a two-frame sequence was provided.
+  //     if (numberOfFrames === 1) {
+  //       numberOfFrames = 2;
+  //       frameCounter += 1;
+  //     };
 
-      //Calculate the frame rate. Set a default fps of 12.
-      if (!sprite.fps) sprite.fps = 12;
-      var frameRate = 1000 / sprite.fps;
+  //     //Calculate the frame rate. Set a default fps of 12.
+  //     if (!sprite.fps) sprite.fps = 12;
+  //     var frameRate = 1000 / sprite.fps;
 
-      //Set the sprite to the starting frame.
-      sprite.gotoAndStop(startFrame);
+  //     //Set the sprite to the starting frame.
+  //     sprite.gotoAndStop(startFrame);
 
-      //If the state isn't already playing, start it.
-      if (!playing) {
-        timerInterval = setInterval(advanceFrame.bind(this), frameRate);
-        playing = true;
-      }
-    }
+  //     //If the state isn't already playing, start it.
+  //     if (!playing) {
+  //       timerInterval = setInterval(advanceFrame.bind(this), frameRate);
+  //       playing = true;
+  //     }
+  //   }
 
-    //`advanceFrame` is called by `setInterval` to display the next frame
-    //in the sequence based on the `frameRate`. When frame sequence
-    //reaches the end, it will either stop it or loop it.
-    function advanceFrame() {
+  //   //`advanceFrame` is called by `setInterval` to display the next frame
+  //   //in the sequence based on the `frameRate`. When frame sequence
+  //   //reaches the end, it will either stop it or loop it.
+  //   function advanceFrame() {
 
-      //Advance the frame if `frameCounter` is less than
-      //the state's total frames.
-      if (frameCounter < numberOfFrames) {
+  //     //Advance the frame if `frameCounter` is less than
+  //     //the state's total frames.
+  //     if (frameCounter < numberOfFrames) {
 
-        //Advance the frame.
-        sprite.gotoAndStop(sprite.currentFrame + 1);
+  //       //Advance the frame.
+  //       sprite.gotoAndStop(sprite.currentFrame + 1);
 
-        //Update the frame counter.
-        frameCounter += 1;
-      } else {
+  //       //Update the frame counter.
+  //       frameCounter += 1;
+  //     } else {
 
-        //If we've reached the last frame and `loop`
-        //is `true`, then start from the first frame again.
-        if (sprite.loop) {
-          sprite.gotoAndStop(startFrame);
-          frameCounter = 1;
-        }
-      }
-    }
+  //       //If we've reached the last frame and `loop`
+  //       //is `true`, then start from the first frame again.
+  //       if (sprite.loop) {
+  //         sprite.gotoAndStop(startFrame);
+  //         frameCounter = 1;
+  //       }
+  //     }
+  //   }
 
-    function reset() {
+  //   function reset() {
 
-      //Reset `playing` to `false`, set the `frameCounter` to 0,
-      //and clear the `timerInterval`.
-      if (timerInterval !== undefined && playing === true) {
-        playing = false;
-        frameCounter = 0;
-        startFrame = 0;
-        endFrame = 0;
-        numberOfFrames = 0;
-        clearInterval(timerInterval);
-      }
-    }
+  //     //Reset `playing` to `false`, set the `frameCounter` to 0,
+  //     //and clear the `timerInterval`.
+  //     if (timerInterval !== undefined && playing === true) {
+  //       playing = false;
+  //       frameCounter = 0;
+  //       startFrame = 0;
+  //       endFrame = 0;
+  //       numberOfFrames = 0;
+  //       clearInterval(timerInterval);
+  //     }
+  //   }
 
-    //Add the `show`, `play`, `playing`, `stop` and `playSequence` methods to the sprite.
-    sprite.show = show;
-    sprite.play = play;
-    sprite.stop = stop;
-    sprite.playing = playing;
-    sprite.playSequence = playSequence;
-  };
+  //   //Add the `show`, `play`, `playing`, `stop` and `playSequence` methods to the sprite.
+  //   sprite.show = show;
+  //   sprite.play = play;
+  //   sprite.stop = stop;
+  //   sprite.playing = playing;
+  //   sprite.playSequence = playSequence;
+  // };
 
 
   /*
@@ -3199,9 +3199,7 @@ GA.create = function(width, height, setup, assetsToLoad, load) {
     //Create a group called `world` to contain all the layers, sprites
     //and objects from the `tiledMap`. The `world` object is going to be
     //returned to the main game program
-    console.log(tiledMap);
     tiledMap = ga.json(tiledMap);
-    console.log(tiledMap);
     var world = ga.group();
     world.tileheight = tiledMap.tileheight;
     world.tilewidth = tiledMap.tilewidth;
