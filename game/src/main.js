@@ -39,18 +39,21 @@ config.enemyUnstuckSpeed = config.blockRespawnSpeed / 3;
 //Start the Ga engine
 g.start();
 //Declare your global variables (global to this game)
-var dungeon, player, treasure, enemies, chimes, exit,
-    healthBar, message, gameScene, gameOverScene, sound;
+var player, treasure, enemies, exit, exits,
+    message, gameScene, gameOverScene, sound, 
+    introMessage1, introMessage2, titleMessageSub1, 
+    titleMessageSub2, titleMessageSub3, titleMessageMain,
+    floors, ladders, batteries;
 destroyedBlocks = {
   queue: [],
   hash: {},
 }
 
-holesWithEnemies = [];
-batteryHash = {};
-exitHash = {};
-totalBatteries = 0;
-collectedBatteries = 0;
+const holesWithEnemies = [];
+const batteryHash = {};
+const exitHash = {};
+let totalBatteries = 0;
+let collectedBatteries = 0;
 enemies = [];
 
 function lose() {
@@ -94,15 +97,15 @@ function setup() {
 
   class Sound {
     constructor(context) {
-      this.context = context;
+      this.ctx = context;
     }
 
     init() {
-      this.oscillator = this.context.createOscillator();
-      this.gainNode = this.context.createGain();
+      this.oscillator = this.ctx.createOscillator();
+      this.gainNode = this.ctx.createGain();
 
       this.oscillator.connect(this.gainNode);
-      this.gainNode.connect(this.context.destination);
+      this.gainNode.connect(this.ctx.destination);
       this.oscillator.type = 'sine';
     }
 
@@ -110,7 +113,7 @@ function setup() {
       this.init();
 
       this.oscillator.frequency.value = value;
-      this.gainNode.gain.setValueAtTime(.5, this.context.currentTime);
+      this.gainNode.gain.setValueAtTime(.5, this.ctx.currentTime);
               
       this.oscillator.start(time);
       this.stop(time);
@@ -123,37 +126,37 @@ function setup() {
     }
 
     battery() {
-      this.play(8000, this.context.currentTime);
+      this.play(8000, this.ctx.currentTime);
     }
 
     move() {
-      this.play(5, this.context.currentTime);
+      this.play(5, this.ctx.currentTime);
     }
 
     doorOpen() {
-      this.play(261.63, this.context.currentTime + .25);
-      this.play(329.63, this.context.currentTime + .35);
+      this.play(261.63, this.ctx.currentTime + .25);
+      this.play(329.63, this.ctx.currentTime + .35);
     }
 
     win() {
-      this.play(261.63, this.context.currentTime + .25);
-      this.play(329.63, this.context.currentTime + .35);
-      this.play(392.00, this.context.currentTime + .45);
-      this.play(523.25, this.context.currentTime + .55);
+      this.play(261.63, this.ctx.currentTime + .25);
+      this.play(329.63, this.ctx.currentTime + .35);
+      this.play(392.00, this.ctx.currentTime + .45);
+      this.play(523.25, this.ctx.currentTime + .55);
     }
 
     lose() {
-      this.play(261.63, this.context.currentTime + .25);
-      this.play(246.94, this.context.currentTime + .35);
-      this.play(233.08, this.context.currentTime + .45);
+      this.play(261.63, this.ctx.currentTime + .25);
+      this.play(246.94, this.ctx.currentTime + .35);
+      this.play(233.08, this.ctx.currentTime + .45);
     }
 
     blast() {
-      this.play(185, this.context.currentTime + .25);
+      this.play(185, this.ctx.currentTime + .25);
     }
   }
-  let context = new (window.AudioContext || window.webkitAudioContext)();
-  sound = new Sound(context);
+  let ctx = new (window.AudioContext || window.webkitAudioContext)();
+  sound = new Sound(ctx);
 
   //Set the canvas border and background color
   g.canvas.style.border = "none";
