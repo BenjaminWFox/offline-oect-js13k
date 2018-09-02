@@ -251,13 +251,13 @@ function setup() {
     gameScene.addChild(ladder);
   })
 
-  // pointer = g.pointer;
+  pointer = g.pointer;
 
-  // pointer.press = function() {
-  //   const index = g.getIndex(pointer.centerX, pointer.centerY, 32, 32, 32);
-  //   const currentCoords = g.getTile(index, world.objects[0].data, world);
-  //   console.log(index, currentCoords.x, currentCoords.y);
-  // }
+  pointer.press = function() {
+    const index = g.getIndex(pointer.centerX, pointer.centerY, 32, 32, 32);
+    const currentCoords = g.getTile(index, world.objects[0].data, world);
+    console.log(index, currentCoords.x, currentCoords.y);
+  }
 
   //Left arrow key `press` method
   directions = {
@@ -278,8 +278,8 @@ function setup() {
   // Create and render player
   function makePlayer(sX, sY) {
     let player = g.sprite({image: "tileset.png", x: 128, y: 0, width: 32, height: 32})
-    player.spawnX = 32;
-    player.spawnY = 704;
+    player.spawnX = sX;
+    player.spawnY = sY;
     player.x = player.spawnX;
     player.y = player.spawnY;
     player.dead = false;
@@ -294,7 +294,9 @@ function setup() {
     player.currentTile = g.getSpriteIndex(player);
     return player;
   }
-  player = makePlayer(32, 704)
+  // -> test enclosed spawn
+  // player = makePlayer(672, 256)
+  player = makePlayer(32, 704);
   gameScene.addChild(player);
 
   function makeEnemy(sX, sY, id) {
@@ -364,33 +366,41 @@ function setup() {
 
     // There should be 48 tiles in the graph
     // object[n].index is the unique ID for this tile.
-    objects = world.objects;
-
-    for(let i = 1, len = objects.length; i < objects.length; i++) {
+    const objects = world.objects;
+    console.log('makeLevelGraph()', objects);
+    for(let i = 0, len = objects.length; i < objects.length; i++) {
       let co = objects[i]
-      if(co.name !== g.tileTypes.floor) {
-        // Can re-enable this to omit some tiles from the graph.
-        // But currently causes some undefined issues.
-        ruleOut = {current: g.getAdjacentTile(co.index, 'c'), below: g.getAdjacentTile(co.index, 'd')}
-
-        if(ruleOut.current.type !== g.tileTypes.ladder && !ruleOut.below.isStable) {
-          // skip
-        } else {
+      if(co.name !== 'level') {
+        if(1===1) { // co.name !== g.tileTypes.floor) {
+          // ruleOut = {current: g.getAdjacentTile(co.index, 'c'), below: g.getAdjacentTile(co.index, 'd')}
+          // if(ruleOut.current.type !== g.tileTypes.ladder && !ruleOut.below.isStable) {
+          //   // skip
+          // } else {
+          // }
           graph[co.index] = {};
           // These should all be tiles which are walkable.
           adjTiles = g.getAdjacentTiles(co.index);
-          if(canMoveFromTo(player, adjTiles.c, adjTiles.u)) {
-            graph[co.index][adjTiles.u.index] = 1;
+          if(co.index === 350) {
+            console.log(adjTiles);
           }
-          if(canMoveFromTo(player, adjTiles.c, adjTiles.d)) {
-            graph[co.index][adjTiles.d.index] = 1;
+          if(adjTiles.d.isStable) {
+            if(canMoveFromTo(player, adjTiles.c, adjTiles.u)) {
+              graph[co.index][adjTiles.u.index] = 1;
+            }
+            if(canMoveFromTo(player, adjTiles.c, adjTiles.d)) {
+              graph[co.index][adjTiles.d.index] = 1;
+            }
+            if(canMoveFromTo(player, adjTiles.c, adjTiles.l)) {
+              graph[co.index][adjTiles.l.index] = 1;
+            }
+            if(canMoveFromTo(player, adjTiles.c, adjTiles.r)) {
+              graph[co.index][adjTiles.r.index] = 1;
+            }
           }
-          if(canMoveFromTo(player, adjTiles.c, adjTiles.l)) {
-            graph[co.index][adjTiles.l.index] = 1;
-          }
-          if(canMoveFromTo(player, adjTiles.c, adjTiles.r)) {
-            graph[co.index][adjTiles.r.index] = 1;
-          }
+
+        }
+        if(co.index === 349 || co.index === 350 || co.index === 351) {
+          console.log('Sample nodes:', co.index, graph[co.index]);
         }
       }
     }
@@ -728,6 +738,7 @@ function moveEnemy(enemy) {
         enemy.pathData = dijkstra2.shortestPath(enemy.currentTile - adjust, player.movement.falling ? player.landingTile : player.currentTile);
       } else {
         enemy.pathData = dijkstra2.shortestPath(enemy.currentTile - adjust, player.currentTile);
+        enemy.id === 2 ? console.log('New path', enemy.pathData.distance, enemy.pathData.path, enemy.pathData.updated) : '';
       }
       enemy.needsPath = false;
     }
