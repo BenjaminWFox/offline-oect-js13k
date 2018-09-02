@@ -140,6 +140,10 @@ GA.create = function(width, height, setup, assetsToLoad, load) {
   //Create the context as a property of the canvas.
   ga.canvas.ctx = ga.canvas.getContext("2d");
 
+  ga.canvas.ctx.textBaseline = 'middle';
+  ga.canvas.ctx.textAlign = "center";
+
+
   //Make the `stage`. The `stage` is the root container group
   //for all the sprites and other groups.
   ga.stage = makeStage();
@@ -1338,11 +1342,12 @@ GA.create = function(width, height, setup, assetsToLoad, load) {
     //Add the basic sprite properties.
     makeDisplayObject(o);
 
-    //Set the defaults.
-    o.content = content || "Hello!";
-    o.font = font || "12px sans-serif";
-    o.fillStyle = fillStyle || "red";
-    o.textBaseline = "top";
+    // //Set the defaults.
+    o.content = content;
+    o.font = font;
+    o.fillStyle = fillStyle;
+    // o.textBaseline = "center";
+
 
     //Measure the width and height of the text
     Object.defineProperties(o, {
@@ -1383,7 +1388,7 @@ GA.create = function(width, height, setup, assetsToLoad, load) {
       ctx.textBaseline = o.textBaseline;
       ctx.fillText(
         o.content,
-        0,
+        ga.canvas.width / 2,
         0
       );
     };

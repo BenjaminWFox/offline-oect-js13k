@@ -61,7 +61,6 @@ function lose() {
   gameOverScene.visible = true;
   titleScreen.visible = false
   endMessage.content = "Oh no! You're part of the building, now.";
-  endMessage.x = 155;
   endMessage.y = g.canvas.height / 2 - 35;
 }
 
@@ -70,7 +69,6 @@ function win() {
   titleScreen.visible = false
   gameOverScene.visible = true;
   endMessage.content = "You made it, nice work! We'll be back online in no time!";
-  endMessage.x = 20;
   endMessage.y = g.canvas.height / 2 - 35;
 }
 
@@ -160,7 +158,7 @@ function setup() {
   g.backgroundColor = "black";
 
   //Add some text for the game over message
-  endMessage = g.text("Placeholder Text", "32px Consolas", "#15e815", 0, 0);
+  endMessage = g.text("Placeholder Text", "32px Helvetica", "#15e815", 0, 0);
   //Create a `gameOverScene` group and add the message sprite to it
   gameOverScene = g.group(endMessage);
   //Make the `gameOverScene` invisible for now
@@ -168,43 +166,35 @@ function setup() {
 
   //Add some text for the game over message
   introMessage1 = g.text(
-    "Sir! That earthquake knocked the building offline! The bio-restraint has failed!", 
-    "22px Consolas", "#15e815", 0, 0);
-  introMessage1.x = 15;
-  introMessage1.y = 150;
+    "Sir! That earthquake knocked the building offline! The bio-restraint has failed...", 
+    "25px Helvetica", "#15e815", 0, 0);
+  introMessage1.y = 200;
   introMessage2 = g.text(
     "Electronics are dead, batteries scattered, and the security-organics are haywire!",
-    "22px Consolas", "#15e815", 0, 0);
-  introMessage2.x = 15;
+    "25px Helvetica", "#15e815", 0, 0);
   introMessage2.y = 250;
   introMessage3 = g.text(
     "The door cycle will drain the reserve. Go retrive the batteries so we can fix this!",
-    "22px Consolas", "#15e815", 0, 0);
-  introMessage3.x = 15;
-  introMessage3.y = 350;
+    "25px Helvetica", "#15e815", 0, 0);
+  introMessage3.y = 300;
   introMessage4 = g.text(
-    "You're the best Organic Electro-Chemical Technician we've got. Stay safe in there!",
-    "22px Consolas", "#15e815", 0, 0);
-  introMessage4.x = 15;
-  introMessage4.y = 450;
+    "You're the best Organic Electro-Chemical Technician we've got, be safe in there.",
+    "25px Helvetica", "#15e815", 0, 0);
+  introMessage4.y = 350;
   //Create a `gameOverScene` group and add the message sprite to it
   introScene = g.group(introMessage1, introMessage2, introMessage3, introMessage4);
   //Make the `gameOverScene` invisible for now
   introScene.visible = false;
 
   //Add some text for the game over message
-  titleMessageMain = g.text("- OFFLINE: O.E.C.T. -", "64px Consolas", "#15e815", 0, 0);
-  titleMessageSub1 = g.text("By Ben Fox.", "32px Consolas", "#15e815", 0, 0);
-  titleMessageSub2 = g.text("[ SPACE ] to page/pause.", "32px Consolas", "#15e815", 0, 0);
-  titleMessageSub3 = g.text("[ A/D ] to blast the floor. [ ARROWS ] to move.", "32px Consolas", "#15e815", 0, 0);
-  titleMessageMain.x = 135;
-  titleMessageMain.y = 250;
-  titleMessageSub1.x = 400;
-  titleMessageSub1.y = 350;
-  titleMessageSub2.x = 290;
-  titleMessageSub2.y = 400;
-  titleMessageSub3.x = 100;
-  titleMessageSub3.y = 450;
+  titleMessageMain = g.text("- OFFLINE: O.E.C.T. -", "64px Courier", "#15e815", 0, 0);
+  titleMessageSub1 = g.text("By Ben Fox.", "32px Courier", "#15e815", 0, 0);
+  titleMessageSub2 = g.text("[ SPACE ] to page/pause.", "32px Courier", "#15e815", 0, 0);
+  titleMessageSub3 = g.text("[ A/D ] to blast the floor. [ ARROWS ] to move.", "32px Courier", "#15e815", 0, 0);
+  titleMessageMain.y = 275;
+  titleMessageSub1.y = 360;
+  titleMessageSub2.y = 410;
+  titleMessageSub3.y = 460;
   //Create a `gameOverScene` group and add the message sprite to it
   titleScreen = g.group(titleMessageMain, titleMessageSub1, titleMessageSub2, titleMessageSub3);
   //Make the `gameOverScene` invisible for now
@@ -477,7 +467,10 @@ function setup() {
   //set the game state to `play`
   g.state = title;
   // for dev:
+  // g.state = intro;
   // g.state = play;
+  // g.state = win;
+  // g.state = lose;
 }
 
 function doorsOpen() {
