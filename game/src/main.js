@@ -178,12 +178,12 @@ function setup() {
   introMessage2.x = 15;
   introMessage2.y = 250;
   introMessage3 = g.text(
-    "The door cycle will drain reserve. Go retrive the batteries so we can fix this!",
+    "The door cycle will drain the reserve. Go retrive the batteries so we can fix this!",
     "22px Consolas", "#15e815", 0, 0);
   introMessage3.x = 15;
   introMessage3.y = 350;
   introMessage4 = g.text(
-    "You're the best Organic Electro-Chemical Technician we've got. Stay safe! [SPACE]",
+    "You're the best Organic Electro-Chemical Technician we've got. Stay safe in there!",
     "22px Consolas", "#15e815", 0, 0);
   introMessage4.x = 15;
   introMessage4.y = 450;
@@ -193,11 +193,11 @@ function setup() {
   introScene.visible = false;
 
   //Add some text for the game over message
-  titleMessageMain = g.text("---- O.E.C.T. ----", "64px Consolas", "#15e815", 0, 0);
+  titleMessageMain = g.text("- OFFLINE: O.E.C.T. -", "64px Consolas", "#15e815", 0, 0);
   titleMessageSub1 = g.text("By Ben Fox.", "32px Consolas", "#15e815", 0, 0);
   titleMessageSub2 = g.text("[ SPACE ] to page/pause.", "32px Consolas", "#15e815", 0, 0);
   titleMessageSub3 = g.text("[ A/D ] to blast the floor. [ ARROWS ] to move.", "32px Consolas", "#15e815", 0, 0);
-  titleMessageMain.x = 190;
+  titleMessageMain.x = 135;
   titleMessageMain.y = 250;
   titleMessageSub1.x = 400;
   titleMessageSub1.y = 350;
@@ -367,11 +367,11 @@ function setup() {
     // There should be 48 tiles in the graph
     // object[n].index is the unique ID for this tile.
     const objects = world.objects;
-    console.log('makeLevelGraph()', objects);
     for(let i = 0, len = objects.length; i < objects.length; i++) {
       let co = objects[i]
       if(co.name !== 'level') {
         if(1===1) { // co.name !== g.tileTypes.floor) {
+          // Took this out to improve pathing, let enemies use open air
           // ruleOut = {current: g.getAdjacentTile(co.index, 'c'), below: g.getAdjacentTile(co.index, 'd')}
           // if(ruleOut.current.type !== g.tileTypes.ladder && !ruleOut.below.isStable) {
           //   // skip
@@ -380,9 +380,6 @@ function setup() {
           graph[co.index] = {};
           // These should all be tiles which are walkable.
           adjTiles = g.getAdjacentTiles(co.index);
-          if(co.index === 350) {
-            console.log(adjTiles);
-          }
           if(adjTiles.d.isStable) {
             if(canMoveFromTo(player, adjTiles.c, adjTiles.u)) {
               graph[co.index][adjTiles.u.index] = 1;
@@ -400,9 +397,6 @@ function setup() {
             graph[co.index][adjTiles.d.index] = 1;
           }
 
-        }
-        if(co.index === 349 || co.index === 350 || co.index === 351) {
-          console.log('Sample nodes:', co.index, graph[co.index]);
         }
       }
     }
@@ -745,7 +739,6 @@ function moveEnemy(enemy) {
         enemy.pathData = dijkstra2.shortestPath(enemy.currentTile - adjust, player.movement.falling ? player.landingTile : player.currentTile);
       } else {
         enemy.pathData = dijkstra2.shortestPath(enemy.currentTile - adjust, player.currentTile);
-        enemy.id === 2 ? console.log('New path', enemy.pathData.distance, enemy.pathData.path, enemy.pathData.updated) : '';
       }
       enemy.needsPath = false;
     }
