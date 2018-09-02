@@ -98,28 +98,28 @@ function setup() {
     }
 
     init() {
-      this.oscillator = this.ctx.createOscillator();
+      this.osc = this.ctx.createOscillator();
       this.gainNode = this.ctx.createGain();
 
-      this.oscillator.connect(this.gainNode);
+      this.osc.connect(this.gainNode);
       this.gainNode.connect(this.ctx.destination);
-      this.oscillator.type = 'sine';
+      this.osc.type = 'sine';
     }
 
     play(value, time) {
       this.init();
 
-      this.oscillator.frequency.value = value;
+      this.osc.frequency.value = value;
       this.gainNode.gain.setValueAtTime(.5, this.ctx.currentTime);
               
-      this.oscillator.start(time);
+      this.osc.start(time);
       this.stop(time);
 
     }
 
     stop(time) {
       this.gainNode.gain.exponentialRampToValueAtTime(0.001, time + .25);
-      this.oscillator.stop(time + .25);
+      this.osc.stop(time + .25);
     }
 
     battery() {

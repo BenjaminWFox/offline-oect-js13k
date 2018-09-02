@@ -18,6 +18,13 @@ module.exports = {
         uglifyOptions: {
           warnings: false,
           compress: {
+            sequences: true,
+            dead_code: true,
+            conditionals: true,
+            booleans: true,
+            unused: true,
+            if_return: true,
+            join_vars: true,
             drop_console: true,
             keep_infinity: true,
           },
