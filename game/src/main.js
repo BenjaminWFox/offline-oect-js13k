@@ -835,10 +835,7 @@ function movePlayer() {
         } else {
           idx += 32;  
         }
-        console.log('idx', idx);
       }
-
-      console.log('landingtile', player.landingTile);
     } else if(!player.movement.falling) {
       player.landingTile = undefined;
     }
@@ -847,7 +844,6 @@ function movePlayer() {
 
 //The `play` state
 function play() {
-  console.log('PLAY STATE', g.state);
   // player.currentTile will need setting.
   movePlayer();
   
