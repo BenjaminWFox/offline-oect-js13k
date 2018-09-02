@@ -4,9 +4,7 @@ const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 module.exports = {
   entry: {
     ga: './src/ga.js',
-    dijkstra: './src/dijkstra.js',
     main: './src/main.js',
-    movement: './src/movement.js',
   },
   output: {
     filename: '[name].js',
