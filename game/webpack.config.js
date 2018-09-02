@@ -1,6 +1,7 @@
 const path = require('path');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
   mode: 'production',
@@ -41,6 +42,7 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: 'src/index.html',
       inject: false,
-    })
+    }),
+    new CopyWebpackPlugin(['src/tileset.png']),
   ],
 };
