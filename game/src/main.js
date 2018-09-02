@@ -281,8 +281,7 @@ function setup() {
   // Create and render player
   function makePlayer(sX, sY) {
     let player = g.sprite({image: "tileset.png", x: 128, y: 0, width: 32, height: 32})
-    // player.spawnX = 32;
-    player.spawnX = 256;
+    player.spawnX = 32;
     player.spawnY = 704;
     player.x = player.spawnX;
     player.y = player.spawnY;
@@ -346,13 +345,13 @@ function setup() {
   }
 
   // test enemy:
-  enemies.push(makeEnemy(416, 704, 1));
+  // enemies.push(makeEnemy(416, 704, 1));
 
-  // enemies.push(makeEnemy(672, 256, 1));
-  // enemies.push(makeEnemy(0, 128, 2));
-  // enemies.push(makeEnemy(320, 352, 3));
-  // enemies.push(makeEnemy(288, 32, 4));
-  // enemies.push(makeEnemy(928, 704, 5));
+  enemies.push(makeEnemy(672, 256, 1));
+  enemies.push(makeEnemy(0, 128, 2));
+  enemies.push(makeEnemy(320, 352, 3));
+  enemies.push(makeEnemy(288, 32, 4));
+  enemies.push(makeEnemy(928, 704, 5));
 
   enemies.forEach(enemy => {
     gameScene.addChild(enemy);

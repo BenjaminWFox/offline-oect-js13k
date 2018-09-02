@@ -254,7 +254,6 @@ function moveEnemy(enemy) {
 
     if (enemy.movement.stuck) {
       if(Date.now() - enemy.movement.stuckAt > config.enemyUnstuckSpeed) {
-        console.log('get out of hole!');
         getOutOfHole(enemy);
       }
     }
@@ -275,22 +274,19 @@ function moveEnemy(enemy) {
           enemyDidMove = moveOneTile(enemy, enemy.currentTile, directions.down);
         }
       } else if (nextTile) {
-        console.log('Need to move', enemy.climbingOut, enemy.currentTile, currentPathTile, nextTile);
+        // console.log('Need to move', enemy.climbingOut, enemy.currentTile, currentPathTile, nextTile);
         // Prevent enemies from climbing straight up and falling back into the hole
-        if(enemy.climbingOut && (enemy.currentTile === nextTile || enemy.currentTile - 32 === nextTile)) {
-          console.log('nextTile', nextTile);
-          nextTile += Math.random() < 0.5 ? -1 : 1;
-          console.log('nextTile', nextTile);
-        }
+        // if(enemy.climbingOut && (enemy.currentTile === nextTile || enemy.currentTile - 32 === nextTile)) {
+        //   console.log('nextTile', nextTile);
+        //   nextTile += Math.random() < 0.5 ? -1 : 1;
+        //   console.log('nextTile', nextTile);
+        // }
         enemy.movement.direction = getEnemyMoveDir(currentPathTile, nextTile);
         enemyDidMove = moveOneTile(enemy, currentPathTile, enemy.movement.direction);
-        console.log('enemyDidMove', enemyDidMove);
+        // console.log('enemyDidMove', enemyDidMove);
       }
 
       if(enemyDidMove) {
-        if(enemy.climbingOut) {
-          enemy.climbingOut = false;
-        }
         !enemy.movement.falling && enemy.pathData.path ? enemy.pathData.path.shift() : '';
         
         enemy.movement.moving = true;
@@ -346,10 +342,19 @@ function movePlayer() {
     player.movement.falling = isFalling(player);
     if(player.movement.falling && !player.landingTile) {
       idx = player.currentTile;
-      while(!world.tileTypes[world.objects[0].data[idx] - 1].isStable) {
-        idx += 32;
+      
+      while(!player.landingTile) {
+        let tile = world.tileTypes[world.objects[0].data[idx] - 1];
+        if(tile && tile.isStable) {
+          player.landingTile = idx - 32;
+        } else if (!tile) {
+          player.landingTile = idx - 32;
+        } else {
+          idx += 32;  
+        }
+        console.log('idx', idx);
       }
-      player.landingTile = idx - 32;
+
       console.log('landingtile', player.landingTile);
     } else if(!player.movement.falling) {
       player.landingTile = undefined;
