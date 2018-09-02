@@ -20,7 +20,7 @@ General TODO List:
 var config = {
   playerMoveSpeed: 150,
   enemyMoveSpeed: 250,
-  blockRespawnSpeed: 2000,
+  blockRespawnSpeed: 3300,
   introTextFadein: 2000,
   pathUpdateFrequency: 1000,
   enemyUnstuckSpeed: undefined, //see below
@@ -31,7 +31,7 @@ config.enemyUnstuckSpeed = config.blockRespawnSpeed / 3;
 g.start();
 //Declare your global variables (global to this game)
 var dungeon, player, treasure, enemies, chimes, exit,
-    healthBar, message, gameScene, gameOverScene;
+    healthBar, message, gameScene, gameOverScene, sound;
 destroyedBlocks = {
   queue: [],
   hash: {},
@@ -82,6 +82,70 @@ function intro() {
 //The `setup` function will run only once.
 //Use it for initialization tasks
 function setup() {
+
+  class Sound {
+    constructor(context) {
+      this.context = context;
+    }
+
+    init() {
+      this.oscillator = this.context.createOscillator();
+      this.gainNode = this.context.createGain();
+
+      this.oscillator.connect(this.gainNode);
+      this.gainNode.connect(this.context.destination);
+      this.oscillator.type = 'sine';
+    }
+
+    play(value, time) {
+      this.init();
+
+      this.oscillator.frequency.value = value;
+      this.gainNode.gain.setValueAtTime(.5, this.context.currentTime);
+              
+      this.oscillator.start(time);
+      this.stop(time);
+
+    }
+
+    stop(time) {
+      this.gainNode.gain.exponentialRampToValueAtTime(0.001, time + .25);
+      this.oscillator.stop(time + .25);
+    }
+
+    battery() {
+      this.play(8000, this.context.currentTime);
+    }
+
+    move() {
+      this.play(5, this.context.currentTime);
+    }
+
+    doorOpen() {
+      this.play(261.63, this.context.currentTime + .25);
+      this.play(329.63, this.context.currentTime + .35);
+    }
+
+    win() {
+      this.play(261.63, this.context.currentTime + .25);
+      this.play(329.63, this.context.currentTime + .35);
+      this.play(392.00, this.context.currentTime + .45);
+      this.play(523.25, this.context.currentTime + .55);
+    }
+
+    lose() {
+      this.play(261.63, this.context.currentTime + .25);
+      this.play(246.94, this.context.currentTime + .35);
+      this.play(233.08, this.context.currentTime + .45);
+    }
+
+    blast() {
+      this.play(185, this.context.currentTime + .25);
+    }
+  }
+  let context = new (window.AudioContext || window.webkitAudioContext)();
+  sound = new Sound(context);
+
   //Set the canvas border and background color
   g.canvas.style.border = "none";
   g.backgroundColor = "black";
@@ -142,6 +206,12 @@ function setup() {
 
   world = g.makeTiledWorld('world.json', 'tileset.png');
 
+  console.log(world.objects[0].data.filter((el, idx) => {
+    if(el===0)
+      console.log(`WARNING: INDEX ${idx} HAS NO TILE`);
+    return el === 0;
+  }));
+
   //Create the `gameScene` group
   gameScene = g.group();
 
@@ -199,21 +269,24 @@ function setup() {
   // }
 
   // Create and render player
-  player = g.sprite({image: "tileset.png", x: 128, y: 0, width: 32, height: 32})
-  // player.x = 320;
-  // player.y = 608;
-  player.spawnX = 32;
-  player.spawnY = 704;
-  player.x = player.spawnX;
-  player.y = player.spawnY;
-  player.dead = false;
-  player.movement = {
-    falling: false,
-    moving: false,
-    direction: directions.still,
+  function makePlayer(sX, sY) {
+    let player = g.sprite({image: "tileset.png", x: 128, y: 0, width: 32, height: 32})
+    player.spawnX = 32;
+    player.spawnY = 704;
+    player.x = player.spawnX;
+    player.y = player.spawnY;
+    player.dead = false;
+    player.won = false;
+    player.movement = {
+      falling: false,
+      moving: false,
+      direction: directions.still,
+    }
+    player.freshSpawn = true;
+    player.currentTile = g.getSpriteIndex(player);
+    return player;
   }
-  player.freshSpawn = true;
-  player.currentTile = g.getSpriteIndex(player);
+  player = makePlayer(32, 704)
   gameScene.addChild(player);
 
   function makeEnemy(sX, sY, id) {
@@ -260,16 +333,11 @@ function setup() {
     return enemy;
   }
 
-  enemies.push(makeEnemy(256, 480, 1));
-  enemies.push(makeEnemy(576, 544, 2));
-  enemies.push(makeEnemy(480, 352, 3));
-  enemies.push(makeEnemy(928, 416, 4));
-  enemies.push(makeEnemy(640, 288, 4));
-  enemies.push(makeEnemy(256, 480, 1));
-  enemies.push(makeEnemy(576, 544, 2));
-  enemies.push(makeEnemy(480, 352, 3));
-  enemies.push(makeEnemy(928, 416, 4));
-  enemies.push(makeEnemy(640, 288, 4));
+  enemies.push(makeEnemy(672, 256, 1));
+  enemies.push(makeEnemy(0, 128, 2));
+  enemies.push(makeEnemy(320, 352, 3));
+  enemies.push(makeEnemy(288, 32, 4));
+  enemies.push(makeEnemy(928, 704, 5));
 
   enemies.forEach(enemy => {
     gameScene.addChild(enemy);
@@ -383,9 +451,9 @@ function setup() {
 /******************* MESSAGING AND KEYS ************************/
 
   //set the game state to `play`
-  // g.state = title;
+  g.state = title;
   // for dev:
-  g.state = play;
+  // g.state = play;
 }
 
 function doorsOpen() {

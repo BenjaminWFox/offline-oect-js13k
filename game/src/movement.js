@@ -3,8 +3,10 @@ function destroyBlock(dir) {
   currentTile = g.getSpriteIndex(player);
   
   tileToDestroy = g.getAdjacentTile(currentTile, dir);
+  aboveTile = g.getAdjacentTile(tileToDestroy.index, directions.up);
+  console.log('aboveTile', aboveTile);
   // don't allow destroying the same block if it's already destroyed
-  if(!destroyedBlocks.hash[tileToDestroy.index]) {
+  if(!destroyedBlocks.hash[tileToDestroy.index] && aboveTile.type !== g.tileTypes.floor) {
     spriteToDestroy = floors.find(el => {
       return el.index === tileToDestroy.index;
     })
@@ -14,6 +16,7 @@ function destroyBlock(dir) {
       world.children[0].data[tileToDestroy.index] = 1;
       // fade out the block:
       g.fadeOut(spriteToDestroy, 15);
+      sound.blast();
       // store relevant data for the destroyed block:
       let blockData = {
         sprite: spriteToDestroy,
@@ -38,6 +41,7 @@ function respawnNextBlock() {
   let blockIndex = destroyedBlocks.queue[0];
   let blockData = destroyedBlocks.hash[blockIndex];
   if(blockIndex === player.currentTile) {
+    sound.lose();
     player.dead = true;
     player.visible = false;
     setTimeout(function() {
@@ -158,7 +162,7 @@ function isFalling(sprite) {
   thisTile = g.getAdjacentTile(sprite.currentTile, directions.current);
   belowTile = g.getAdjacentTile(sprite.currentTile, directions.down);
 
-  if(thisTile.type !== g.tileTypes.ladder && !belowTile.isStable) {//adjacentTiles.d.type === g.tileTypes.air) {
+  if(thisTile.type !== g.tileTypes.ladder && !belowTile.isStable && belowTile.index) {//adjacentTiles.d.type === g.tileTypes.air) {
     // sprite.movement.falling = true;
     return true;
   } else {
@@ -174,12 +178,13 @@ function allowPlayerMoveAgain() {
 function checkForPlayerKill(enemy){
   if(enemy.currentTile === player.currentTile) {
     console.log('DEV ONLY: You Died!');
-    // player.dead = true;
-    // setTimeout(function() {
-    //   g.resume();
-    //   g.state = lose
-    // }, 1500);
-    // g.pause();
+    sound.lose();
+    player.dead = true;
+    setTimeout(function() {
+      g.resume();
+      g.state = lose
+    }, 1500);
+    g.pause();
   }
 }
 
@@ -298,6 +303,7 @@ function movePlayer() {
     let playerDidMove;
 
     if(player.movement.falling) {
+      console.log('falling...');
       playerDidMove = moveOneTile(player, player.currentTile, directions.down);
     } else if (player.movement.direction !== directions.still) {
       playerDidMove = moveOneTile(player, player.currentTile, player.movement.direction);
@@ -305,6 +311,7 @@ function movePlayer() {
 
 
     if(playerDidMove) {
+      sound.move();
       player.movement.moving = true;
       g.wait(config.playerMoveSpeed, allowPlayerMoveAgain);
     }
@@ -353,8 +360,10 @@ function checkForBatteryPickup() {
   if(batteryHash[player.currentTile] && batteryHash[player.currentTile].visible) {
     batteryHash[player.currentTile].visible = false;
     collectedBatteries++;
+    sound.battery();
     console.log('COLLECTED A BATTERY');
     if(totalBatteries === collectedBatteries) {
+      sound.doorOpen();
       doorsOpen();
       console.log('ALL BATTERIES GOTTEN');
     }
@@ -362,8 +371,10 @@ function checkForBatteryPickup() {
 }
 
 function checkForExitWin() {
-  if(exitHash[player.currentTile] && exitHash[player.currentTile].canUse) {
+  if(!player.won && exitHash[player.currentTile] && exitHash[player.currentTile].canUse) {
     console.log('DEV ONLY: You Won!')
-    // g.state = win;
+    player.won = true;
+    sound.win();
+    g.state = win;
   }
 }

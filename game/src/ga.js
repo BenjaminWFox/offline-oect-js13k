@@ -990,33 +990,33 @@ GA.create = function(width, height, setup, assetsToLoad, load) {
   //### remove
   //`remove` is a global convenience method that will
   //remove any sprite, or an argument list of sprites, from its parent.
-  // ga.remove = function(spritesToRemove) {
-  //   console.log('using @ line...')
-  //   var sprites = Array.prototype.slice.call(arguments);
+  ga.remove = function(spritesToRemove) {
+    console.log('using @ line...')
+    var sprites = Array.prototype.slice.call(arguments);
 
-  //   //Remove sprites that's aren't in an array
-  //   if (!(sprites[0] instanceof Array)) {
-  //     if (sprites.length > 1) {
-  //       sprites.forEach(function(sprite) {
-  //         sprite.parent.removeChild(sprite);
-  //       });
-  //     } else {
-  //       sprites[0].parent.removeChild(sprites[0]);
-  //     }
-  //   }
+    //Remove sprites that's aren't in an array
+    if (!(sprites[0] instanceof Array)) {
+      if (sprites.length > 1) {
+        sprites.forEach(function(sprite) {
+          sprite.parent.removeChild(sprite);
+        });
+      } else {
+        sprites[0].parent.removeChild(sprites[0]);
+      }
+    }
 
-  //   //Remove sprites in an array of sprites
-  //   else {
-  //     var spritesArray = sprites[0];
-  //     if (spritesArray.length > 0) {
-  //       for (var i = spritesArray.length - 1; i >= 0; i--) {
-  //         var sprite = spritesArray[i];
-  //         sprite.parent.removeChild(sprite);
-  //         spritesArray.splice(spritesArray.indexOf(sprite), 1);
-  //       }
-  //     }
-  //   }
-  // };
+    //Remove sprites in an array of sprites
+    else {
+      var spritesArray = sprites[0];
+      if (spritesArray.length > 0) {
+        for (var i = spritesArray.length - 1; i >= 0; i--) {
+          var sprite = spritesArray[i];
+          sprite.parent.removeChild(sprite);
+          spritesArray.splice(spritesArray.indexOf(sprite), 1);
+        }
+      }
+    }
+  };
 
   //### makeCircular
   //The `makeCircular` function is run whenever a sprite's `circular`
