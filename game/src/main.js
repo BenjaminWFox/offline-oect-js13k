@@ -69,8 +69,8 @@ function win() {
   gameScene.visible = false;
   titleScreen.visible = false
   gameOverScene.visible = true;
-  endMessage.content = "You made it! Nice work!";
-  endMessage.x = 300;
+  endMessage.content = "You made it, nice work! We'll be back online in no time!";
+  endMessage.x = 20;
   endMessage.y = g.canvas.height / 2 - 35;
 }
 
