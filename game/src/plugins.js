@@ -940,7 +940,7 @@ GA.plugins = function(ga) {
   displacement, in pixels.
   */
 
-  ga.shake = function(sprite, magnitude, angular) {
+  ga.shake = function(sprite, magnitude, angular, frameDur) {
 
     if (magnitude === undefined) magnitude = 16;
     if (angular === undefined) angular = false;
@@ -949,7 +949,7 @@ GA.plugins = function(ga) {
     var counter = 1;
 
     //The total number of shakes (there will be 1 shake per frame)
-    var numberOfShakes = 10;
+    var numberOfShakes = frameDur;
 
     //Capture the sprite's position and angle so you can
     //restore them after the shaking has finished

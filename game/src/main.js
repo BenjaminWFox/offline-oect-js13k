@@ -281,7 +281,8 @@ function setup() {
   // Create and render player
   function makePlayer(sX, sY) {
     let player = g.sprite({image: "tileset.png", x: 128, y: 0, width: 32, height: 32})
-    player.spawnX = 32;
+    // player.spawnX = 32;
+    player.spawnX = 256;
     player.spawnY = 704;
     player.x = player.spawnX;
     player.y = player.spawnY;
@@ -344,11 +345,14 @@ function setup() {
     return enemy;
   }
 
-  enemies.push(makeEnemy(672, 256, 1));
-  enemies.push(makeEnemy(0, 128, 2));
-  enemies.push(makeEnemy(320, 352, 3));
-  enemies.push(makeEnemy(288, 32, 4));
-  enemies.push(makeEnemy(928, 704, 5));
+  // test enemy:
+  enemies.push(makeEnemy(416, 704, 1));
+
+  // enemies.push(makeEnemy(672, 256, 1));
+  // enemies.push(makeEnemy(0, 128, 2));
+  // enemies.push(makeEnemy(320, 352, 3));
+  // enemies.push(makeEnemy(288, 32, 4));
+  // enemies.push(makeEnemy(928, 704, 5));
 
   enemies.forEach(enemy => {
     gameScene.addChild(enemy);
@@ -403,34 +407,19 @@ function setup() {
   //You can also do it the long way, like this:
   g.key.space.press = function() {
     if (g.state === title) {
+      g.state === 'temp';
       console.log('switch from title', titleScreen);
-      g.shake(titleScreen, 16, false);
-      g.wait(100, () => {
-        g.shake(titleScreen, 0.05, true);
-        g.wait(100, () => {
-          g.shake(titleScreen, 32, false);
-          g.wait(100, () => {
-            g.shake(titleScreen, 0.1, true);        
-            g.wait(100, () => {
-              g.shake(titleScreen, 0.15, true);
-              g.wait(100, () => {
-                g.shake(titleScreen, 64, false);
-                g.wait(100, () => {
-                  g.shake(titleScreen, 0.2, true);        
-                  g.wait(500, () => {
-                    g.state = intro;        
-                  });
-                })
-              })
-            })
-          })
-        })
-      })
+
+      g.shake(titleScreen, 16, false, 120);
+
+      g.wait(2000, () => {
+        g.state = intro;
+      });
     } else if (g.state === intro) {
+      g.state = play;
       console.log('switch from into');
       gameScene.visible = true;
       introScene.visible = false;
-      g.state = play;
     } else if(g.state === play) {
       if(g.paused && !player.dead) {
         g.resume();
@@ -483,9 +472,9 @@ function setup() {
 /******************* MESSAGING AND KEYS ************************/
 
   //set the game state to `play`
-  g.state = title;
+  // g.state = title;
   // for dev:
-  // g.state = play;
+  g.state = play;
 }
 
 function doorsOpen() {

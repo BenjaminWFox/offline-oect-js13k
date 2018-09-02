@@ -140,8 +140,8 @@ function canMoveFromTo(sprite, currentTile, destTile) {
 
 function moveOneTile(sprite, currentTileIndex, dir) {
   // let adjacentTiles = g.getAdjacentTiles(currentTileIndex);
-  let currentTile = g.getAdjacentTile(sprite.currentTile, directions.current);
-  let moveToTile = g.getAdjacentTile(sprite.currentTile, dir);
+  let currentTile = g.getAdjacentTile(currentTileIndex, directions.current);
+  let moveToTile = g.getAdjacentTile(currentTileIndex, dir);
 
   canMove = canMoveFromTo(sprite, currentTile, moveToTile);
 
@@ -229,18 +229,22 @@ function moveEnemy(enemy) {
     // Make sure we're not falling now...
     if(!enemy.movement.stuck) {
       enemy.movement.falling = isFalling(enemy);
+    } else {
+      // console.log('Stuck!', enemy.currentTile, enemy.pathData);
     }
+
 
     // Figure out if enemy needs path
     if(!enemy.movement.falling && enemy.needsPath) {
+      let adjust = 0;
       if(enemy.movement.stuck) {
-        enemy.currentTile -= 32;
+        adjust = 32;
       }
 
       if(config.difficulty === config.difficulties.hard) {
-        enemy.pathData = dijkstra2.shortestPath(enemy.currentTile, player.movement.falling ? player.landingTile : player.currentTile);
+        enemy.pathData = dijkstra2.shortestPath(enemy.currentTile - adjust, player.movement.falling ? player.landingTile : player.currentTile);
       } else {
-        enemy.pathData = dijkstra2.shortestPath(enemy.currentTile, player.currentTile);        
+        enemy.pathData = dijkstra2.shortestPath(enemy.currentTile - adjust, player.currentTile);
       }
       enemy.needsPath = false;
     }
@@ -250,6 +254,7 @@ function moveEnemy(enemy) {
 
     if (enemy.movement.stuck) {
       if(Date.now() - enemy.movement.stuckAt > config.enemyUnstuckSpeed) {
+        console.log('get out of hole!');
         getOutOfHole(enemy);
       }
     }
@@ -259,6 +264,7 @@ function moveEnemy(enemy) {
     // }
 
     let enemyDidMove = false;
+    let currentPathTile = enemy.pathData.path ? enemy.pathData.path[0] : undefined;
     let nextTile = enemy.pathData.path ? enemy.pathData.path[1] : undefined;
 
     if(!enemy.movement.stuck) {
@@ -269,15 +275,22 @@ function moveEnemy(enemy) {
           enemyDidMove = moveOneTile(enemy, enemy.currentTile, directions.down);
         }
       } else if (nextTile) {
+        console.log('Need to move', enemy.climbingOut, enemy.currentTile, currentPathTile, nextTile);
         // Prevent enemies from climbing straight up and falling back into the hole
         if(enemy.climbingOut && (enemy.currentTile === nextTile || enemy.currentTile - 32 === nextTile)) {
+          console.log('nextTile', nextTile);
           nextTile += Math.random() < 0.5 ? -1 : 1;
+          console.log('nextTile', nextTile);
         }
-        enemy.movement.direction = getEnemyMoveDir(enemy.currentTile, nextTile);
-        enemyDidMove = moveOneTile(enemy, enemy.currentTile, enemy.movement.direction);
+        enemy.movement.direction = getEnemyMoveDir(currentPathTile, nextTile);
+        enemyDidMove = moveOneTile(enemy, currentPathTile, enemy.movement.direction);
+        console.log('enemyDidMove', enemyDidMove);
       }
 
       if(enemyDidMove) {
+        if(enemy.climbingOut) {
+          enemy.climbingOut = false;
+        }
         !enemy.movement.falling && enemy.pathData.path ? enemy.pathData.path.shift() : '';
         
         enemy.movement.moving = true;
