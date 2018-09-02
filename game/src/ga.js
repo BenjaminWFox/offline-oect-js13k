@@ -145,7 +145,7 @@ GA.create = function(width, height, setup, assetsToLoad, load) {
   ga.stage = makeStage();
 
   //Initialize the pointer.
-  ga.pointer = makePointer();
+  // ga.pointer = makePointer();
 
   //Make the keyboard keys (arrow keys and space bar.)
   ga.key = makeKeys();
@@ -418,41 +418,41 @@ GA.create = function(width, height, setup, assetsToLoad, load) {
   //### hidePointer and showPointer
   //Use `hidePointer` and `showPointer` to hide and display the
   //pointer.
-  ga.hidePointer = function() {
-    ga.canvas.style.cursor = "none";
-  };
-  ga.showPointer = function() {
-    ga.canvas.style.cursor = "auto";
-  };
+  // ga.hidePointer = function() {
+  //   ga.canvas.style.cursor = "none";
+  // };
+  // ga.showPointer = function() {
+  //   ga.canvas.style.cursor = "auto";
+  // };
 
   //Getters and setters for various game engine properties.
-  Object.defineProperties(ga, {
+  // Object.defineProperties(ga, {
 
-    //### fps
-    //The `fps` getter/setter. Use it to set the frame rate.
-    fps: {
-      get: function() {
-        return ga._fps;
-      },
-      set: function(value) {
-        ga._fps = value;
-        ga._startTime = Date.now();
-        ga._frameDuration = 1000 / ga._fps;
-      },
-      enumerable: true,
-      configurable: true
-    },
+  //   //### fps
+  //   //The `fps` getter/setter. Use it to set the frame rate.
+  //   fps: {
+  //     get: function() {
+  //       return ga._fps;
+  //     },
+  //     set: function(value) {
+  //       ga._fps = value;
+  //       ga._startTime = Date.now();
+  //       ga._frameDuration = 1000 / ga._fps;
+  //     },
+  //     enumerable: true,
+  //     configurable: true
+  //   },
 
-    //### backgroundColor
-    //Set the background color.
-    backgroundColor: {
-      set: function(value) {
-        ga.canvas.style.backgroundColor = value;
-      },
-      enumerable: true,
-      configurable: true
-    }
-  });
+  //   //### backgroundColor
+  //   //Set the background color.
+  //   backgroundColor: {
+  //     set: function(value) {
+  //       ga.canvas.style.backgroundColor = value;
+  //     },
+  //     enumerable: true,
+  //     configurable: true
+  //   }
+  // });
 
 
 
@@ -1796,9 +1796,9 @@ GA.create = function(width, height, setup, assetsToLoad, load) {
   };
 
   //A convenience method that lets you access JSON files by their file names.
-  ga.json = function(jsonFileName) {
-    return ga.assets[jsonFileName];
-  };
+  // ga.json = function(jsonFileName) {
+  //   return ga.assets[jsonFileName];
+  // };
 
   //### addStatePlayer
   //`addStatePlayer` adds a state manager and keyframe animation player for
@@ -2085,10 +2085,10 @@ GA.create = function(width, height, setup, assetsToLoad, load) {
     loaded: 0,
 
     //File extensions for different types of assets.
-    imageExtensions: ["png", "jpg", "gif", "webp"],
-    fontExtensions: ["ttf", "otf", "ttc", "woff"],
-    audioExtensions: ["mp3", "ogg", "wav", "webm"],
-    jsonExtensions: ["json"],
+    imageExtensions: ["png"], //, "jpg", "gif", "webp"],
+    // fontExtensions: ["ttf", "otf", "ttc", "woff"],
+    // audioExtensions: ["mp3", "ogg", "wav", "webm"],
+    // jsonExtensions: ["json"],
 
     //The callback function that should run when all assets have loaded.
     //Assign this when you load the fonts, like this: `assets.whenLoaded = makeSprites;`.
@@ -2235,50 +2235,50 @@ GA.create = function(width, height, setup, assetsToLoad, load) {
     //#### createTilesetFrames
     //`createTilesetFrames` parses the JSON file  texture atlas and loads the frames
     //into this `assets` object.
-    createTilesetFrames: function(json, source) {
-      var self = this;
+    // createTilesetFrames: function(json, source) {
+    //   var self = this;
 
-      //Get the image's file path.
-      var baseUrl = source.replace(/[^\/]*$/, '');
-      var image = new Image();
-      image.addEventListener("load", loadImage, false);
-      image.src = baseUrl + json.meta.image;
+    //   //Get the image's file path.
+    //   var baseUrl = source.replace(/[^\/]*$/, '');
+    //   var image = new Image();
+    //   image.addEventListener("load", loadImage, false);
+    //   image.src = baseUrl + json.meta.image;
 
-      function loadImage() {
+    //   function loadImage() {
 
-        //Assign the image as a property of the `assets` object so
-        //we can access it like this:
-        //`assets["images/imageName.png"]`.
-        self[baseUrl + json.meta.image] = {
-          source: image,
-          frame: {
-            x: 0,
-            y: 0,
-            w: image.width,
-            h: image.height
-          }
-        };
+    //     //Assign the image as a property of the `assets` object so
+    //     //we can access it like this:
+    //     //`assets["images/imageName.png"]`.
+    //     self[baseUrl + json.meta.image] = {
+    //       source: image,
+    //       frame: {
+    //         x: 0,
+    //         y: 0,
+    //         w: image.width,
+    //         h: image.height
+    //       }
+    //     };
 
-        //Loop through all the frames.
-        Object.keys(json.frames).forEach(function(tilesetImage) {
+    //     //Loop through all the frames.
+    //     Object.keys(json.frames).forEach(function(tilesetImage) {
 
-          //console.log(json.frames[image].frame);
-          //The `frame` object contains all the size and position
-          //data.
-          //Add the frame to the asset object so that we
-          //can access it like this: `assets["frameName.png"]`.
-          self[tilesetImage] = json.frames[tilesetImage];
+    //       //console.log(json.frames[image].frame);
+    //       //The `frame` object contains all the size and position
+    //       //data.
+    //       //Add the frame to the asset object so that we
+    //       //can access it like this: `assets["frameName.png"]`.
+    //       self[tilesetImage] = json.frames[tilesetImage];
 
-          //Get a reference to the source so that it will be easy for
-          //us to access it later.
-          self[tilesetImage].source = image;
-          //console.log(self[tilesetImage].source)
-        });
+    //       //Get a reference to the source so that it will be easy for
+    //       //us to access it later.
+    //       self[tilesetImage].source = image;
+    //       //console.log(self[tilesetImage].source)
+    //     });
 
-        //Alert the load handler that the file has loaded.
-        self.loadHandler();
-      }
-    },
+    //     //Alert the load handler that the file has loaded.
+    //     self.loadHandler();
+    //   }
+    // },
 
     //#### loadHandler
     //The `loadHandler` will be called each time an asset finishes loading.
@@ -2300,310 +2300,6 @@ GA.create = function(width, height, setup, assetsToLoad, load) {
       }
     }
   };
-
-  //### makePointer
-  //Makes a pointer object that unifies touch and mouse interactivity.
-  //The pointer has `x` and `y` properties and `isUp`, `isDown` and
-  //`tapped` Boolean states.
-  function makePointer() {
-    console.log('using makePointer() - DELETE FOR DIST BUILD')
-    var o = {};
-    o._x = 0;
-    o._y = 0;
-
-    //Add `centerX` and `centerY` getters so that we
-    //can use the pointer's coordinates with easing
-    //and collision functions.
-    Object.defineProperties(o, {
-      x: {
-        get: function() {
-          return o._x / ga.scale;
-        },
-        enumerable: true,
-        configurable: true
-      },
-      y: {
-        get: function() {
-          return o._y / ga.scale;
-        },
-        enumerable: true,
-        configurable: true
-      },
-      centerX: {
-        get: function() {
-          return o.x;
-        },
-        enumerable: true,
-        configurable: true
-      },
-      centerY: {
-        get: function() {
-          return o.y;
-        },
-        enumerable: true,
-        configurable: true
-      },
-      //`position` returns an object with x and y properties that
-      //contain the pointer's position.
-      position: {
-        get: function() {
-          return {
-            x: o.x,
-            y: o.y
-          };
-        },
-        enumerable: true,
-        configurable: true
-      }
-    });
-
-    //Booleans to track the pointer state.
-    o.isDown = false;
-    o.isUp = true;
-    o.tapped = false;
-
-    //Properties to help measure the time between up and down states.
-    o.downTime = 0;
-    o.elapsedTime = 0;
-
-    //Optional, user-definable `press`, `release`, and `tap` methods
-    o.press = undefined;
-    o.release = undefined;
-    o.tap = undefined;
-
-    //A `dragSprite` property to help with drag and drop.
-    o.dragSprite = null;
-
-    //The drag offsets to help drag sprites.
-    o.dragOffsetX = 0;
-    o.dragOffsetY = 0;
-
-
-    //The pointer's mouse `moveHandler`
-    o.moveHandler = function(event) {
-
-      //Find the pointer’s x and y position (for mouse).
-      //Subtract the element's top and left offset from the browser window.
-      o._x = (event.pageX - event.target.offsetLeft);
-      o._y = (event.pageY - event.target.offsetTop);
-
-      //Prevent the canvas from being selected.
-      event.preventDefault();
-    };
-
-    //The pointer's `touchmoveHandler`.
-    o.touchmoveHandler = function(event) {
-
-      //Find the touch point's x and y position.
-      o._x = (event.targetTouches[0].pageX - ga.canvas.offsetLeft);
-      o._y = (event.targetTouches[0].pageY - ga.canvas.offsetTop);
-
-      //Prevent the canvas from being selected.
-      event.preventDefault();
-    };
-
-    //The pointer's `downHandler`.
-    o.downHandler = function(event) {
-
-      //Find the pointer’s x and y position (for mouse).
-      o._x = (event.pageX - event.target.offsetLeft);
-      o._y = (event.pageY - event.target.offsetTop);
-
-      //Set the down states.
-      o.isDown = true;
-      o.isUp = false;
-      o.tapped = false;
-
-      //Capture the current time.
-      o.downTime = Date.now();
-
-      //Call the `press` method if it's been assigned by the user
-      if (o.press) o.press();
-
-      //Prevent the canvas from being selected.
-      event.preventDefault();
-    };
-
-    //The pointer's `touchstartHandler`.
-    o.touchstartHandler = function(event) {
-
-      //Find the touch point's x and y position.
-      o._x = event.targetTouches[0].pageX - ga.canvas.offsetLeft;
-      o._y = event.targetTouches[0].pageY - ga.canvas.offsetTop;
-
-      //Set the down states.
-      o.isDown = true;
-      o.isUp = false;
-      o.tapped = false;
-
-      //Capture the current time.
-      o.downTime = Date.now();
-
-      //Call the `press` method if it's been assigned by the user.
-      if (o.press) o.press();
-
-      //Prevent the canvas from being selected.
-      event.preventDefault();
-    };
-
-    //The pointer's `upHandler`.
-    o.upHandler = function(event) {
-
-      //Figure out how much time the pointer has been down.
-      o.elapsedTime = Math.abs(o.downTime - Date.now());
-
-      //If it's less than 200 milliseconds, it must be a tap or click.
-      if (o.elapsedTime <= 200) {
-        o.tapped = true;
-
-        //Call the `tapped` method if it's been assigned by the user.
-        if (o.tap) o.tap();
-      }
-      o.isUp = true;
-      o.isDown = false;
-
-      //Call the `release` method if it's been assigned by the user.
-      if (o.release) o.release();
-
-      //Prevent the canvas from being selected.
-      event.preventDefault();
-    };
-
-    //Bind the events to the handlers.
-    //Mouse events.
-    ga.canvas.addEventListener(
-      "mousemove", o.moveHandler.bind(o), false
-    );
-    ga.canvas.addEventListener(
-      "mousedown", o.downHandler.bind(o), false
-    );
-
-    //Add a `mouseup` event to the `window` object as well to
-    //catch a mouse button release outside of the canvas area.
-    window.addEventListener(
-      "mouseup", o.upHandler.bind(o), false
-    );
-
-    //Touch events.
-    ga.canvas.addEventListener(
-      "touchmove", o.touchmoveHandler.bind(o), false
-    );
-    ga.canvas.addEventListener(
-      "touchstart", o.touchstartHandler.bind(o), false
-    );
-
-    //Add a `touchend` event to the `window` object as well to
-    //catch a mouse button release outside of the canvas area.
-    window.addEventListener(
-      "touchend", o.upHandler.bind(o), false
-    );
-
-    //Disable the default pan and zoom actions on the `canvas`.
-    ga.canvas.style.touchAction = "none";
-
-    //`hitTestSprite` figures out if the pointer is touching a sprite.
-    o.hitTestSprite = function(sprite) {
-      var hit = false;
-
-      //Is the sprite rectangular?
-      if (!sprite.circular) {
-
-        //Get the position of the sprite's edges using global
-        //coordinates.
-        var left = sprite.gx, // * ga.scale,
-          right = (sprite.gx + sprite.width), // * ga.scale,
-          top = sprite.gy, // * ga.scale,
-          bottom = (sprite.gy + sprite.height), // * ga.scale;
-
-          //Find out if the point is intersecting the rectangle.
-          hit = o.x > left && o.x < right && o.y > top && o.y < bottom;
-      }
-
-      //Is the sprite circular?
-      else {
-
-        //Find the distance between the point and the
-        //center of the circle.
-        var vx = o.x - ((sprite.gx + sprite.halfWidth)), // * ga.scale),
-          vy = o.y - ((sprite.gy + sprite.halfHeight)), // * ga.scale),
-          magnitude = Math.sqrt(vx * vx + vy * vy);
-
-        //The point is intersecting the circle if the magnitude
-        //(distance) is less than the circle's radius.
-        hit = magnitude < sprite.radius;
-      }
-      return hit;
-    };
-
-    o.updateDragAndDrop = function() {
-      if (o.isDown) {
-
-        //Capture the co-ordinates at which the pointer was
-        //pressed down and find out if it's touching a sprite.
-        if (o.dragSprite === null) {
-
-          //Loop through the draggable sprites in reverse to start searching at the bottom of the stack.
-          for (var i = ga.draggableSprites.length - 1; i > -1; i--) {
-            var sprite = ga.draggableSprites[i];
-
-            //Check for a collision with the pointer using `hitTestPoint`.
-            if (sprite.draggable && o.hitTestSprite(sprite)) {
-
-              //Calculate the difference between the pointer's
-              //position and the sprite's position.
-              o.dragOffsetX = o.x - sprite.gx;
-              o.dragOffsetY = o.y - sprite.gy;
-
-              //Set the sprite as the pointer's `dragSprite` property.
-              o.dragSprite = sprite;
-
-              //The next two lines re-order the `sprites` array so that the
-              //selected sprite is displayed above all the others.
-              //First, splice the sprite out of its current position in
-              //its parent's `children` array.
-              var children = sprite.parent.children;
-              children.splice(children.indexOf(sprite), 1);
-
-              //Next, push the `dragSprite` to the end of its `children` array so that it's
-              //displayed last, above all the other sprites.
-              children.push(sprite);
-
-              //Reorganize the `draggableSpites` array in the same way
-              ga.draggableSprites.splice(ga.draggableSprites.indexOf(sprite), 1);
-              ga.draggableSprites.push(sprite);
-              break;
-            }
-          }
-        } else {
-
-          //If the pointer is down and it has a `dragSprite`, make the sprite follow the pointer's
-          //position, with the calculated offset.
-          o.dragSprite.x = o.x - o.dragOffsetX;
-          o.dragSprite.y = o.y - o.dragOffsetY;
-        }
-      }
-
-      //If the pointer is up, drop the `dragSprite` by setting it to `null`.
-      if (o.isUp) {
-        o.dragSprite = null;
-      }
-
-      //Change the mouse arrow pointer to a hand if it's over a
-      //sprite.
-      ga.draggableSprites.some(function(sprite) {
-        if (sprite.draggable && o.hitTestSprite(sprite)) {
-          ga.canvas.style.cursor = "pointer";
-          return true;
-        } else {
-          ga.canvas.style.cursor = "auto";
-          return false;
-        }
-      });
-    }
-
-    //Return the pointer.
-    return o;
-  }
 
   /*
   ### keyboard
@@ -2703,17 +2399,17 @@ GA.create = function(width, height, setup, assetsToLoad, load) {
   //### byLayer
   //`byLayer` is an array sort method that's called when a sprite's
   //`layer` property is changed.
-  function byLayer(a, b) {
-
-    //return a.layer - b.layer;
-    if (a.layer < b.layer) {
-      return -1;
-    } else if (a.layer > b.layer) {
-      return 1;
-    } else {
-      return 1;
-    }
-  }
+  // function byLayer(a, b) {
+  //   console.log('testing12');
+  //   //return a.layer - b.layer;
+  //   if (a.layer < b.layer) {
+  //     return -1;
+  //   } else if (a.layer > b.layer) {
+  //     return 1;
+  //   } else {
+  //     return 1;
+  //   }
+  // }
 
   //Make the `keyboard` and `makeDisplayObject` functions public.
   ga.keyboard = keyboard;
@@ -2759,6 +2455,17 @@ GA.create = function(width, height, setup, assetsToLoad, load) {
   ga.getSpriteIndex = function(sprite) {
     return ga.getIndex(sprite.x, sprite.y, 32, 32, 32);
   }
+
+  ga.getIndex = function(x, y, tilewidth, tileheight, mapWidthInTiles) {
+    var index = {};
+
+    //Convert pixel coordinates to map index coordinates
+    index.x = Math.floor(x / tilewidth);
+    index.y = Math.floor(y / tileheight);
+
+    //Return the index number
+    return index.x + (index.y * mapWidthInTiles);
+  };
 
   ga.getAdjacentTiles = function(index) {
     console.log('getting all tiles');
@@ -2828,32 +2535,21 @@ GA.create = function(width, height, setup, assetsToLoad, load) {
     }
   }
 
-  ga.getIndex = function(x, y, tilewidth, tileheight, mapWidthInTiles) {
-    var index = {};
-
-    //Convert pixel coordinates to map index coordinates
-    index.x = Math.floor(x / tilewidth);
-    index.y = Math.floor(y / tileheight);
-
-    //Return the index number
-    return index.x + (index.y * mapWidthInTiles);
-  };
-
   //### move
   //Move a sprite or an array of sprites by adding its
   //velocity to its position
-  ga.move = function(sprites) {
-    if (sprites instanceof Array === false) {
-      internal_move(sprites)
-    } else {
-      for (var i = 0; i < sprites.length; i++) {
-        internal_move(sprites[i])
-      }
-    }
-  };
+  // ga.move = function(sprites) {
+  //   if (sprites instanceof Array === false) {
+  //     internal_move(sprites)
+  //   } else {
+  //     for (var i = 0; i < sprites.length; i++) {
+  //       internal_move(sprites[i])
+  //     }
+  //   }
+  // };
 
-  function internal_move(sprite) {
-  }
+  // function internal_move(sprite) {
+  // }
 
   //#### contain
   // ga.contain = function(s, bounds, bounce, extra){
@@ -3137,29 +2833,29 @@ GA.create = function(width, height, setup, assetsToLoad, load) {
   //The `ease` object. It stores all the easing functions
   var ease = {
 
-    //Linear
-    linear: function(x) {return x;},
+    // //Linear
+    // linear: function(x) {return x;},
 
-    //Smoothstep
-    smoothstep: function(x) {return x * x * (3 - 2 * x);},
-    smoothstepSquared: function(x) {return Math.pow((x * x * (3 - 2 * x)), 2);},
-    smoothstepCubed: function(x) {return Math.pow((x * x * (3 - 2 * x)), 3);},
+    // //Smoothstep
+    // smoothstep: function(x) {return x * x * (3 - 2 * x);},
+    // smoothstepSquared: function(x) {return Math.pow((x * x * (3 - 2 * x)), 2);},
+    // smoothstepCubed: function(x) {return Math.pow((x * x * (3 - 2 * x)), 3);},
 
-    //Acceleration
-    acceleration: function(x) {return x * x;},
-    accelerationCubed: function(x) {return Math.pow(x * x, 3);},
+    // //Acceleration
+    // acceleration: function(x) {return x * x;},
+    // accelerationCubed: function(x) {return Math.pow(x * x, 3);},
 
-    //Deceleration
-    deceleration: function(x) {return 1 - Math.pow(1 - x, 2);},
-    decelerationCubed: function(x) {return 1 - Math.pow(1 - x, 3);},
+    // //Deceleration
+    // deceleration: function(x) {return 1 - Math.pow(1 - x, 2);},
+    // decelerationCubed: function(x) {return 1 - Math.pow(1 - x, 3);},
 
     //Sine
     sine: function(x) {return Math.sin(x * Math.PI / 2);},
-    sineSquared: function(x) {return Math.pow(Math.sin(x * Math.PI / 2), 2);},
-    sineCubed: function(x) {return Math.pow(Math.sin(x * Math.PI / 2), 2);},
-    inverseSine: function(x) {return 1 - Math.sin((1 - x) * Math.PI / 2);},
-    inverseSineSquared: function(x) {return 1 - Math.pow(Math.sin((1 - x) * Math.PI / 2), 2);},
-    inverseSineCubed: function(x) {return 1 - Math.pow(Math.sin((1 - x) * Math.PI / 2), 3);},
+    // sineSquared: function(x) {return Math.pow(Math.sin(x * Math.PI / 2), 2);},
+    // sineCubed: function(x) {return Math.pow(Math.sin(x * Math.PI / 2), 2);},
+    // inverseSine: function(x) {return 1 - Math.sin((1 - x) * Math.PI / 2);},
+    // inverseSineSquared: function(x) {return 1 - Math.pow(Math.sin((1 - x) * Math.PI / 2), 2);},
+    // inverseSineCubed: function(x) {return 1 - Math.pow(Math.sin((1 - x) * Math.PI / 2), 3);},
 
     //Spline
     spline: function(t, p0, p1, p2, p3) {
@@ -3361,26 +3057,26 @@ GA.create = function(width, height, setup, assetsToLoad, load) {
         });
       }
 
-      //Is this layer an `objectgroup`?
-      if (tiledLayer.type === "objectgroup") {
-        tiledLayer.objects.forEach(function(object) {
-          //We're just going to capture the object's properties
-          //so that we can decide what to do with it later
+      // //Is this layer an `objectgroup`?
+      // if (tiledLayer.type === "objectgroup") {
+      //   tiledLayer.objects.forEach(function(object) {
+      //     //We're just going to capture the object's properties
+      //     //so that we can decide what to do with it later
 
-          //Get a reference to the layer group the object is in
-          object.group = layerGroup;
+      //     //Get a reference to the layer group the object is in
+      //     object.group = layerGroup;
 
-          //Because this is an object layer, it doesn't contain any
-          //sprites, just data object. That means it won't be able to
-          //calucalte its own height and width. To help it out, give
-          //the `layerGroup` the same `width` and `height` as the `world`
-          layerGroup.width = world.width;
-          layerGroup.height = world.height;
+      //     //Because this is an object layer, it doesn't contain any
+      //     //sprites, just data object. That means it won't be able to
+      //     //calucalte its own height and width. To help it out, give
+      //     //the `layerGroup` the same `width` and `height` as the `world`
+      //     layerGroup.width = world.width;
+      //     layerGroup.height = world.height;
 
-          //Push the object into the world's `objects` array
-          world.objects.push(object);
-        });
-      }
+      //     //Push the object into the world's `objects` array
+      //     world.objects.push(object);
+      //   });
+      // }
     });
 
     //Search functions

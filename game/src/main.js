@@ -251,13 +251,13 @@ function setup() {
     gameScene.addChild(ladder);
   })
 
-  pointer = g.pointer;
+  // pointer = g.pointer;
 
-  pointer.press = function() {
-    const index = g.getIndex(pointer.centerX, pointer.centerY, 32, 32, 32);
-    const currentCoords = g.getTile(index, world.objects[0].data, world);
-    console.log(index, currentCoords.x, currentCoords.y);
-  }
+  // pointer.press = function() {
+  //   const index = g.getIndex(pointer.centerX, pointer.centerY, 32, 32, 32);
+  //   const currentCoords = g.getTile(index, world.objects[0].data, world);
+  //   console.log(index, currentCoords.x, currentCoords.y);
+  // }
 
   //Left arrow key `press` method
   directions = {
