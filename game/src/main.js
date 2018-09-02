@@ -487,7 +487,7 @@ function destroyBlock(dir) {
   aboveTile = g.getAdjacentTile(tileToDestroy.index, directions.up);
 
   // don't allow destroying the same block if it's already destroyed
-  if(!destroyedBlocks.hash[tileToDestroy.index] && aboveTile.type !== g.tileTypes.floor) {
+  if(!destroyedBlocks.hash[tileToDestroy.index] && aboveTile.type !== g.tileTypes.floor && !player.dead) {
 
     spriteToDestroy = floors.find(el => {
       return el.index === tileToDestroy.index;
