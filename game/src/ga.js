@@ -3199,7 +3199,7 @@ GA.create = function(width, height, setup, assetsToLoad, load) {
     //Create a group called `world` to contain all the layers, sprites
     //and objects from the `tiledMap`. The `world` object is going to be
     //returned to the main game program
-    tiledMap = ga.json(tiledMap);
+    tiledMap = JSON.parse(tiledMap); // ga.json(tiledMap);
     var world = ga.group();
     world.tileheight = tiledMap.tileheight;
     world.tilewidth = tiledMap.tilewidth;
