@@ -24,7 +24,7 @@ var config = {
   enemyMoveSpeed: 250,
   blockRespawnSpeed: 3300,
   introTextFadein: 2000,
-  pathUpdateFrequency: 500,
+  pathUpdateFrequency: 750,
   enemyUnstuckSpeed: undefined, //see below
   difficulties: {
     easy: 'easy',
@@ -396,6 +396,8 @@ function setup() {
             if(canMoveFromTo(player, adjTiles.c, adjTiles.r)) {
               graph[co.index][adjTiles.r.index] = 1;
             }
+          } else if (!adjTiles.d.isStable) {
+            graph[co.index][adjTiles.d.index] = 1;
           }
 
         }
@@ -680,7 +682,12 @@ function allowPlayerMoveAgain() {
 }
 
 function checkForPlayerKill(enemy){
-  if(enemy.currentTile === player.currentTile) {
+  let allowFallingKills;
+  if(config.difficulty === config.difficulties.hard) {
+      allowFallingKills = true;
+  }
+  if(enemy.currentTile === player.currentTile && 
+    (allowFallingKills || (!allowFallingKills && !player.movement.falling))) {
     console.log('DEV ONLY: You Died!');
     sound.lose();
     player.dead = true;
