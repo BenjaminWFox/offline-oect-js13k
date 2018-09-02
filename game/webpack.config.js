@@ -2,6 +2,7 @@ const path = require('path');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
 module.exports = {
+  mode: 'production',
   entry: {
     ga: './src/ga.js',
     main: './src/main.js',
@@ -23,8 +24,9 @@ module.exports = {
             comments: false,
             beautify: false,
           },
-        }
-      })
-    ]
-  }
+          mangle: { toplevel: true },
+        },
+      }),
+    ],
+  },
 };
