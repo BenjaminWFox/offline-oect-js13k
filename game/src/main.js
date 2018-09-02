@@ -43,7 +43,7 @@ var player, treasure, enemies, exit, exits,
     message, gameScene, gameOverScene, sound, 
     introMessage1, introMessage2, titleMessageSub1, 
     titleMessageSub2, titleMessageSub3, titleMessageMain,
-    floors, ladders, batteries;
+    floors, ladders, batteries, skipQuake;
 destroyedBlocks = {
   queue: [],
   hash: {},
@@ -86,9 +86,6 @@ function intro() {
   titleScreen.visible = false;
   gameOverScene.visible = false;
   introScene.visible = true;
-  g.wait(config.introTextFadein, () => { introMessage2.visible = true });
-  g.wait(config.introTextFadein * 2, () => { introMessage3.visible = true });
-  g.wait(config.introTextFadein * 3, () => { introMessage4.visible = true });
 }
 
 //The `setup` function will run only once.
@@ -171,39 +168,36 @@ function setup() {
 
   //Add some text for the game over message
   introMessage1 = g.text(
-    "I'm glad you're coming on shift sir! That earthquake really messed up the building!", 
+    "Sir! That earthquake knocked the building offline! The bio-restraint has failed!", 
     "22px Consolas", "#15e815", 0, 0);
   introMessage1.x = 15;
   introMessage1.y = 150;
   introMessage2 = g.text(
-    "Electronics are offline, batteries scattered, and the organic security is haywire!",
+    "Electronics are dead, batteries scattered, and the security-organics are haywire!",
     "22px Consolas", "#15e815", 0, 0);
   introMessage2.x = 15;
-  introMessage2.y = 185;
-  introMessage2.visible = false;
+  introMessage2.y = 250;
   introMessage3 = g.text(
-    "Barely enough juice to open the door. You'll need all the batteries to fix it up!",
+    "The door cycle will drain reserve. Go retrive the batteries so we can fix this!",
     "22px Consolas", "#15e815", 0, 0);
   introMessage3.x = 15;
-  introMessage3.y = 220;
-  introMessage3.visible = false;
+  introMessage3.y = 350;
   introMessage4 = g.text(
-    "You're the best Organic Electro-Chemical Technician we've got. You can do it! >>>",
+    "You're the best Organic Electro-Chemical Technician we've got. Stay safe! [SPACE]",
     "22px Consolas", "#15e815", 0, 0);
-  introMessage4.visible = false;
   introMessage4.x = 15;
-  introMessage4.y = 255;
+  introMessage4.y = 450;
   //Create a `gameOverScene` group and add the message sprite to it
   introScene = g.group(introMessage1, introMessage2, introMessage3, introMessage4);
   //Make the `gameOverScene` invisible for now
   introScene.visible = false;
 
   //Add some text for the game over message
-  titleMessageMain = g.text("---- OECT ----", "64px Consolas", "#15e815", 0, 0);
+  titleMessageMain = g.text("---- O.E.C.T. ----", "64px Consolas", "#15e815", 0, 0);
   titleMessageSub1 = g.text("By Ben Fox.", "32px Consolas", "#15e815", 0, 0);
   titleMessageSub2 = g.text("[ SPACE ] to page/pause.", "32px Consolas", "#15e815", 0, 0);
   titleMessageSub3 = g.text("[ A/D ] to blast the floor. [ ARROWS ] to move.", "32px Consolas", "#15e815", 0, 0);
-  titleMessageMain.x = 250;
+  titleMessageMain.x = 190;
   titleMessageMain.y = 250;
   titleMessageSub1.x = 400;
   titleMessageSub1.y = 350;
@@ -409,17 +403,18 @@ function setup() {
   //You can also do it the long way, like this:
   g.key.space.press = function() {
     if (g.state === title) {
-      g.state === 'temp';
-      console.log('switch from title', titleScreen);
-
       g.shake(titleScreen, 16, false, 120);
-
-      g.wait(2000, () => {
+      if(!skipQuake) {
+        skipQuake = g.wait(2000, () => {
+          g.state = intro;
+        });
+      } else {
+        clearTimeout(skipQuake);
         g.state = intro;
-      });
+      }
     } else if (g.state === intro) {
+      if(skipQuake) { skipQuake = undefined }
       g.state = play;
-      console.log('switch from into');
       gameScene.visible = true;
       introScene.visible = false;
     } else if(g.state === play) {
@@ -852,6 +847,7 @@ function movePlayer() {
 
 //The `play` state
 function play() {
+  console.log('PLAY STATE', g.state);
   // player.currentTile will need setting.
   movePlayer();
   
@@ -1009,4 +1005,6 @@ function Graph(vertices){
     }
   };
 }
+
+function stateless() {}
 /**************** DIJKSTRA CODE ******************/
