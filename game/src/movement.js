@@ -1,22 +1,33 @@
+/************* MOVEMENT CODE *******************/
 
 function destroyBlock(dir) {
   currentTile = g.getSpriteIndex(player);
-  
   tileToDestroy = g.getAdjacentTile(currentTile, dir);
   aboveTile = g.getAdjacentTile(tileToDestroy.index, directions.up);
-  console.log('aboveTile', aboveTile);
+
   // don't allow destroying the same block if it's already destroyed
   if(!destroyedBlocks.hash[tileToDestroy.index] && aboveTile.type !== g.tileTypes.floor) {
+
     spriteToDestroy = floors.find(el => {
       return el.index === tileToDestroy.index;
     })
 
     if(spriteToDestroy && spriteToDestroy.visible) {
+      let adjust = 1;
+      if(dir === 'dl') {
+        adjust *= -1;
+      }
+      var line = g.line('yellow', 3, player.centerX + 10*adjust, player.centerY + 2, spriteToDestroy.centerX  + 2*adjust, spriteToDestroy.centerY - 16);
+      g.wait(35, () => {
+        g.remove(line)
+      });
+      // ga.line = function(strokeStyle, lineWidth, ax, ay, bx, by) {
+
+      sound.blast();
       // Change the block type to air:
       world.children[0].data[tileToDestroy.index] = 1;
       // fade out the block:
       g.fadeOut(spriteToDestroy, 15);
-      sound.blast();
       // store relevant data for the destroyed block:
       let blockData = {
         sprite: spriteToDestroy,
@@ -225,8 +236,12 @@ function moveEnemy(enemy) {
       if(enemy.movement.stuck) {
         enemy.currentTile -= 32;
       }
-//      enemy.pathData = dijkstra(enemy.currentTile, player.currentTile);
-      enemy.pathData = dijkstra2.shortestPath(enemy.currentTile, player.currentTile);
+
+      if(config.difficulty === config.difficulties.hard) {
+        enemy.pathData = dijkstra2.shortestPath(enemy.currentTile, player.movement.falling ? player.landingTile : player.currentTile);
+      } else {
+        enemy.pathData = dijkstra2.shortestPath(enemy.currentTile, player.currentTile);        
+      }
       enemy.needsPath = false;
     }
     if(!enemy.movement.falling && Date.now() - enemy.pathData.updated > config.pathUpdateFrequency) {
@@ -303,7 +318,6 @@ function movePlayer() {
     let playerDidMove;
 
     if(player.movement.falling) {
-      console.log('falling...');
       playerDidMove = moveOneTile(player, player.currentTile, directions.down);
     } else if (player.movement.direction !== directions.still) {
       playerDidMove = moveOneTile(player, player.currentTile, player.movement.direction);
@@ -317,6 +331,16 @@ function movePlayer() {
     }
 
     player.movement.falling = isFalling(player);
+    if(player.movement.falling && !player.landingTile) {
+      idx = player.currentTile;
+      while(!world.tileTypes[world.objects[0].data[idx] - 1].isStable) {
+        idx += 32;
+      }
+      player.landingTile = idx - 32;
+      console.log('landingtile', player.landingTile);
+    } else if(!player.movement.falling) {
+      player.landingTile = undefined;
+    }
   }
 }
 
@@ -378,3 +402,4 @@ function checkForExitWin() {
     g.state = win;
   }
 }
+/************* MOVEMENT CODE **********************/

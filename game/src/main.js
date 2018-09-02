@@ -6,6 +6,8 @@
     'tileset.png',
   ]
 );
+
+document.getElementById('restart').addEventListener('click', ()=>{location.reload()});
 /***********************************************************************************
 General TODO List:
 
@@ -22,9 +24,16 @@ var config = {
   enemyMoveSpeed: 250,
   blockRespawnSpeed: 3300,
   introTextFadein: 2000,
-  pathUpdateFrequency: 1000,
+  pathUpdateFrequency: 500,
   enemyUnstuckSpeed: undefined, //see below
+  difficulties: {
+    easy: 'easy',
+    normal: 'normal',
+    hard: 'hard',
+  },
+  difficulty: undefined,
 }
+config.difficulty = config.difficulties.normal;
 config.enemyUnstuckSpeed = config.blockRespawnSpeed / 3;
 
 //Start the Ga engine
@@ -49,7 +58,7 @@ function lose() {
   gameOverScene.visible = true;
   titleScreen.visible = false
   endMessage.content = "Oh no! You're part of the building, now.";
-  endMessage.x = 180;
+  endMessage.x = 155;
   endMessage.y = g.canvas.height / 2 - 35;
 }
 
@@ -206,11 +215,12 @@ function setup() {
 
   world = g.makeTiledWorld('world.json', 'tileset.png');
 
-  console.log(world.objects[0].data.filter((el, idx) => {
-    if(el===0)
-      console.log(`WARNING: INDEX ${idx} HAS NO TILE`);
-    return el === 0;
-  }));
+  // DEV ONLY
+  // world.objects[0].data.filter((el, idx) => {
+  //   if(el===0)
+  //     console.log(`WARNING: INDEX ${idx} HAS NO TILE`);
+  //   return el === 0;
+  // });
 
   //Create the `gameScene` group
   gameScene = g.group();
@@ -277,6 +287,7 @@ function setup() {
     player.y = player.spawnY;
     player.dead = false;
     player.won = false;
+    player.landingTile = undefined;
     player.movement = {
       falling: false,
       moving: false,
@@ -392,8 +403,29 @@ function setup() {
   //You can also do it the long way, like this:
   g.key.space.press = function() {
     if (g.state === title) {
-      console.log('switch from title');
-      g.state = intro;
+      console.log('switch from title', titleScreen);
+      g.shake(titleScreen, 16, false);
+      g.wait(100, () => {
+        g.shake(titleScreen, 0.05, true);
+        g.wait(100, () => {
+          g.shake(titleScreen, 32, false);
+          g.wait(100, () => {
+            g.shake(titleScreen, 0.1, true);        
+            g.wait(100, () => {
+              g.shake(titleScreen, 0.15, true);
+              g.wait(100, () => {
+                g.shake(titleScreen, 64, false);
+                g.wait(100, () => {
+                  g.shake(titleScreen, 0.2, true);        
+                  g.wait(500, () => {
+                    g.state = intro;        
+                  });
+                })
+              })
+            })
+          })
+        })
+      })
     } else if (g.state === intro) {
       console.log('switch from into');
       gameScene.visible = true;
@@ -462,4 +494,3 @@ function doorsOpen() {
     exit.canUse = true;
   })
 }
-

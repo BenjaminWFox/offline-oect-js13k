@@ -991,7 +991,6 @@ GA.create = function(width, height, setup, assetsToLoad, load) {
   //`remove` is a global convenience method that will
   //remove any sprite, or an argument list of sprites, from its parent.
   ga.remove = function(spritesToRemove) {
-    console.log('using @ line...')
     var sprites = Array.prototype.slice.call(arguments);
 
     //Remove sprites that's aren't in an array
@@ -1286,49 +1285,48 @@ GA.create = function(width, height, setup, assetsToLoad, load) {
   //### line
   //`line` creates and returns a line with a start and end points.
   //arguments: lineColor, lineWidth, startX, startY, endX, endY.
-  // ga.line = function(strokeStyle, lineWidth, ax, ay, bx, by) {
-  //   console.log('using @ line...')
-  //   var o = {};
+  ga.line = function(strokeStyle, lineWidth, ax, ay, bx, by) {
+    var o = {};
 
-  //   //Add basic properties to the sprite.
-  //   makeDisplayObject(o);
+    //Add basic properties to the sprite.
+    makeDisplayObject(o);
 
-  //   //Set the defaults.
-  //   if (!ax && ax !== 0) ax = 0;
-  //   if (!ay && ay !== 0) ay = 0;
-  //   if (!bx && bx !== 0) bx = 32;
-  //   if (!by && by !== 0) by = 32;
-  //   o.ax = ax;
-  //   o.ay = ay;
-  //   o.bx = bx;
-  //   o.by = by;
-  //   o.strokeStyle = strokeStyle || "red";
-  //   o.lineWidth = lineWidth || 1;
+    //Set the defaults.
+    if (!ax && ax !== 0) ax = 0;
+    if (!ay && ay !== 0) ay = 0;
+    if (!bx && bx !== 0) bx = 32;
+    if (!by && by !== 0) by = 32;
+    o.ax = ax;
+    o.ay = ay;
+    o.bx = bx;
+    o.by = by;
+    o.strokeStyle = strokeStyle || "red";
+    o.lineWidth = lineWidth || 1;
 
-  //   //The `lineJoin` style.
-  //   //Options are "round", "mitre" and "bevel".
-  //   o.lineJoin = "round";
+    //The `lineJoin` style.
+    //Options are "round", "mitre" and "bevel".
+    o.lineJoin = "round";
 
-  //   //Add the sprite to the stage.
-  //   ga.stage.addChild(o);
+    //Add the sprite to the stage.
+    ga.stage.addChild(o);
 
-  //   //Add a `render` method that explains to the canvas how to draw
-  //   //a line.
-  //   o.render = function(ctx) {
-  //     ctx.strokeStyle = o.strokeStyle;
-  //     ctx.lineWidth = o.lineWidth;
-  //     ctx.lineJoin = o.lineJoin;
-  //     ctx.beginPath();
-  //     ctx.moveTo(o.ax, o.ay);
-  //     ctx.lineTo(o.bx, o.by);
-  //     //ctx.closePath();
-  //     if (o.strokeStyle !== "none") ctx.stroke();
-  //     if (o.fillStyle !== "none") ctx.fill();
-  //   };
+    //Add a `render` method that explains to the canvas how to draw
+    //a line.
+    o.render = function(ctx) {
+      ctx.strokeStyle = o.strokeStyle;
+      ctx.lineWidth = o.lineWidth;
+      ctx.lineJoin = o.lineJoin;
+      ctx.beginPath();
+      ctx.moveTo(o.ax, o.ay);
+      ctx.lineTo(o.bx, o.by);
+      //ctx.closePath();
+      if (o.strokeStyle !== "none") ctx.stroke();
+      if (o.fillStyle !== "none") ctx.fill();
+    };
 
-  //   //Return the line.
-  //   return o;
-  // };
+    //Return the line.
+    return o;
+  };
 
   //### text
   //`text` creates and returns a single line of dynamic text.
@@ -2287,7 +2285,7 @@ GA.create = function(width, height, setup, assetsToLoad, load) {
     loadHandler: function() {
       var self = this;
       self.loaded += 1;
-      console.log(self.loaded);
+      console.log('Asset loaded:', self.loaded);
 
       //Check whether everything has loaded.
       if (self.toLoad === self.loaded) {
@@ -3438,6 +3436,167 @@ GA.create = function(width, height, setup, assetsToLoad, load) {
     return world;
   };
 
+  /*
+  ###shakingSprites
+
+  An array to store all the shaking sprites in the game
+  */
+
+  ga.shakingSprites = [];
+
+  /*
+  ###updateShakingSprites
+  
+  `updateShakingSprites` loops through all the sprites in `ga.particles`
+  and runs their `updateParticles` functions.
+  */
+
+  ga.updateShakingSprites = function() {
+    
+    //Update all the shaking sprites
+    if (ga.shakingSprites.length > 0) {
+      for(var i = ga.shakingSprites.length - 1; i >= 0; i--) {
+        var shakingSprite = ga.shakingSprites[i];
+        if (shakingSprite.updateShake) shakingSprite.updateShake();
+      }
+    }
+  }
+
+  //Push `updateShakingSprites` into the `ga.updateFunctions` array so that
+  //it runs inside Ga's game loop. (See the `ga.update` method in the 
+  //`ga.js` file to see how this works.
+  ga.updateFunctions.push(ga.updateShakingSprites);
+
+  /*
+  shake
+  -----
+
+  Used to create a shaking effect, like a screen shake.
+  `shake` arguments: sprite, magnitude, angularShake?
+  Use it like this:
+
+      g.shake(sprite, 0.05, true);
+
+  If `angularShake?` (the 3rd argument) is `true`, the sprite will shake around
+  its axis. The `magnitude` will be the maximum value, in
+  radians, that it should shake. 
+  
+  If `angularShake?` is `false` the shake effect will happen on the x/y axis. 
+  
+      g.shake(sprite, 16, false);
+
+  In that case the magnitude will be the maximum amount of 
+  displacement, in pixels.
+  */
+
+  ga.shake = function(sprite, magnitude, angular) {
+
+    if (magnitude === undefined) magnitude = 16;
+    if (angular === undefined) angular = false;
+
+    //A counter to count the number of shakes
+    var counter = 1;
+
+    //The total number of shakes (there will be 1 shake per frame)
+    var numberOfShakes = 10;
+
+    //Capture the sprite's position and angle so you can
+    //restore them after the shaking has finished
+    var startX = sprite.x,
+        startY = sprite.y,
+        startAngle = sprite.rotation;
+
+    //Divide the magnitude into 10 units so that you can 
+    //reduce the amount of shake by 10 percent each frame
+    var magnitudeUnit = magnitude / numberOfShakes;
+    
+    //The `randomInt` helper function
+    var randomInt = function(min, max){
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    };
+    
+    //Add the sprite to the `shakingSprites` array if it
+    //isn't already there
+    if(ga.shakingSprites.indexOf(sprite) === -1) {
+
+      ga.shakingSprites.push(sprite);
+      
+      //Add an `updateShake` method to the sprite.
+      //The `updateShake` method will be called each frame
+      //in the game loop. The shake effect type can be either
+      //up and down (x/y shaking) or angular (rotational shaking).
+      sprite.updateShake = function(){
+        if(angular) {
+          angularShake();
+        } else {
+          upAndDownShake();
+        }
+      };
+    }
+
+    //The `upAndDownShake` function
+    function upAndDownShake() {
+
+      //Shake the sprite while the `counter` is less than 
+      //the `numberOfShakes`
+      if (counter < numberOfShakes) {
+
+        //Reset the sprite's position at the start of each shake
+        sprite.x = startX;
+        sprite.y = startY;
+
+        //Reduce the magnitude
+        magnitude -= magnitudeUnit;
+
+        //Randomly change the sprite's position
+        sprite.x += randomInt(-magnitude, magnitude);
+        sprite.y += randomInt(-magnitude, magnitude);
+
+        //Add 1 to the counter
+        counter += 1;
+      }
+
+      //When the shaking is finished, restore the sprite to its original 
+      //position and remove it from the `shakingSprites` array
+      if (counter >= numberOfShakes) {
+        sprite.x = startX;
+        sprite.y = startY;
+        ga.shakingSprites.splice(ga.shakingSprites.indexOf(sprite), 1);
+      }
+    }
+    
+    //The `angularShake` function
+    //First set the initial tilt angle to the right (+1) 
+    var tiltAngle = 1;
+
+    function angularShake() {
+      if (counter < numberOfShakes) {
+
+        //Reset the sprite's rotation
+        sprite.rotation = startAngle;
+
+        //Reduce the magnitude
+        magnitude -= magnitudeUnit;
+
+        //Rotate the sprite left or right, depending on the direction,
+        //by an amount in radians that matches the magnitude
+        sprite.rotation = magnitude * tiltAngle;
+        counter += 1;
+
+        //Reverse the tilt angle so that the sprite is tilted
+        //in the opposite direction for the next shake
+        tiltAngle *= -1;
+      }
+
+      //When the shaking is finished, reset the sprite's angle and
+      //remove it from the `shakingSprites` array
+      if (counter >= numberOfShakes) {
+        sprite.rotation = startAngle;
+        ga.shakingSprites.splice(ga.shakingSprites.indexOf(sprite), 1);
+      }
+    }
+  };
+ 
 /*******************************************************************************CUSTOM*/
 /*******************************************************************************CUSTOM*/
 /*******************************************************************************CUSTOM*/
