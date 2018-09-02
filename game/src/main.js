@@ -366,27 +366,26 @@ function setup() {
           // if(ruleOut.current.type !== g.tileTypes.ladder && !ruleOut.below.isStable) {
           //   // skip
           // } else {
-          // }
-          graph[co.index] = {};
-          // These should all be tiles which are walkable.
-          adjTiles = g.getAdjacentTiles(co.index);
-          if(adjTiles.d.isStable) {
-            if(canMoveFromTo(player, adjTiles.c, adjTiles.u)) {
-              graph[co.index][adjTiles.u.index] = 1;
-            }
-            if(canMoveFromTo(player, adjTiles.c, adjTiles.d)) {
+            graph[co.index] = {};
+            // These should all be tiles which are walkable.
+            adjTiles = g.getAdjacentTiles(co.index);
+            if(adjTiles.d.isStable) {
+              if(canMoveFromTo(player, adjTiles.c, adjTiles.u)) {
+                graph[co.index][adjTiles.u.index] = 1;
+              }
+              if(canMoveFromTo(player, adjTiles.c, adjTiles.d)) {
+                graph[co.index][adjTiles.d.index] = 1;
+              }
+              if(canMoveFromTo(player, adjTiles.c, adjTiles.l)) {
+                graph[co.index][adjTiles.l.index] = 1;
+              }
+              if(canMoveFromTo(player, adjTiles.c, adjTiles.r)) {
+                graph[co.index][adjTiles.r.index] = 1;
+              }
+            } else if (!adjTiles.d.isStable) {
               graph[co.index][adjTiles.d.index] = 1;
             }
-            if(canMoveFromTo(player, adjTiles.c, adjTiles.l)) {
-              graph[co.index][adjTiles.l.index] = 1;
-            }
-            if(canMoveFromTo(player, adjTiles.c, adjTiles.r)) {
-              graph[co.index][adjTiles.r.index] = 1;
-            }
-          } else if (!adjTiles.d.isStable) {
-            graph[co.index][adjTiles.d.index] = 1;
-          }
-
+          // }
         }
       }
     }
