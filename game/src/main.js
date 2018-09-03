@@ -51,6 +51,7 @@ destroyedBlocks = {
 const holesWithEnemies = [];
 const batteryHash = {};
 const exitHash = {};
+const closingBlocks = [];
 let totalBatteries = 0;
 let collectedBatteries = 0;
 enemies = [];
@@ -125,10 +126,13 @@ function setup() {
 
     move() {
       this.play(5, this.ctx.currentTime);
+      this.play(5, this.ctx.currentTime);
+      this.play(5, this.ctx.currentTime);
     }
 
     blast() {
-      this.play(185, this.ctx.currentTime);
+      this.play(50, this.ctx.currentTime);
+      this.play(99, this.ctx.currentTime + .05);
     }
 
     doorOpen() {
@@ -538,19 +542,13 @@ function destroyBlock(dir) {
 function respawnNextBlock() {
   let blockIndex = destroyedBlocks.queue[0];
   let blockData = destroyedBlocks.hash[blockIndex];
-  if(blockIndex === player.currentTile) {
-    sound.lose();
-    player.dead = true;
-    player.visible = false;
-    setTimeout(function() {
-      g.resume();
-      g.state = lose
-    }, 1500);
-    g.pause();
-  }
+  closingBlocks.push(blockIndex);
   removeDestroyBlock(blockData);
-  world.children[0].data[blockData.tile.index] = 2;
-  let tween = g.fadeIn(blockData.sprite, 6)
+  world.children[0].data[blockIndex] = 2;
+  let tween = g.fadeIn(blockData.sprite, 10);
+  tween.onComplete = function() {
+    closingBlocks.splice(closingBlocks.indexOf(blockIndex), 1);
+  }
 }
 
 function addDestroyedBlock(bData) {
@@ -681,14 +679,24 @@ function checkForPlayerKill(enemy){
   if(enemy.currentTile === player.currentTile && 
     (allowFallingKills || (!allowFallingKills && !player.movement.falling))) {
     console.log('DEV ONLY: You Died!');
+    makePlayerDead();
+  }
+}
+
+function makeEnemyDead(enemy) {
+  enemy.dead = true;
+  enemy.visible = false;
+  respawnEnemy(enemy);
+}
+function makePlayerDead() {
     sound.lose();
     player.dead = true;
+    player.visible = false;
     setTimeout(function() {
       g.resume();
       g.state = lose
     }, 1500);
     g.pause();
-  }
 }
 
 function checkForFallenIntoBlock(enemy) {
@@ -704,10 +712,6 @@ function getOutOfHole(enemy) {
   if(!enemy.dead && destroyedBlocks.hash[enemy.inHoleRef.tile.index]) {
     enemy.inHoleRef.vacate();
     enemy.unStick();
-  } else {
-    enemy.dead = true;
-    enemy.visible = false;
-    respawnEnemy(enemy);
   }
 }
 
@@ -857,8 +861,8 @@ function movePlayer() {
 function play() {
   if(player.hasStarted) {
     // player.currentTile will need setting.
+    checkForAnyoneInClosingBlock();
     movePlayer();
-
     enemies.forEach(enemy => {
       if(!enemy.dead) {
         // console.log(`Cycling for enemy ${enemy.id}`)
@@ -874,6 +878,17 @@ function play() {
 
   }
 
+}
+
+function checkForAnyoneInClosingBlock() {
+  if(closingBlocks.indexOf(player.currentTile) !== -1) {
+    makePlayerDead();
+  }
+  enemies.forEach(enemy => {
+    if(closingBlocks.indexOf(enemy.currentTile) !== -1) {
+      makeEnemyDead(enemy);
+    }
+  });
 }
 
 function checkForBlockRespawn() {
