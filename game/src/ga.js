@@ -1965,9 +1965,9 @@ GA.create = function(width, height, setup, assetsToLoad, load) {
 
     function displaySprite(sprite) {
       if (
+        sprite.name !== 'air' &&
         sprite.visible && sprite.gx < canvas.width + sprite.width && sprite.gx + sprite.width >= -sprite.width && sprite.gy < canvas.height + sprite.height && sprite.gy + sprite.height >= -sprite.height
       ) {
-
         //Save the current context state.
         ctx.save();
 
@@ -3012,7 +3012,6 @@ GA.create = function(width, height, setup, assetsToLoad, load) {
 
             //I've dedcided that any tiles that have a `name` property are important
             //and should be accessible in the `world.objects` array.
-
             var tileproperties = tiledMap.tilesets[0].tileproperties,
                 key = String(gid - 1);
 
