@@ -827,6 +827,8 @@ function movePlayer() {
 
     if(playerDidMove) {
       sound.move();
+      checkForExitWin();
+      checkForBatteryPickup();
       player.movement.moving = true;
       g.wait(config.playerMoveSpeed, allowPlayerMoveAgain);
     }
@@ -856,10 +858,6 @@ function play() {
   if(player.hasStarted) {
     // player.currentTile will need setting.
     movePlayer();
-    
-    checkForBatteryPickup();
-    checkForExitWin();
-
 
     enemies.forEach(enemy => {
       if(!enemy.dead) {
