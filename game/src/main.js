@@ -25,6 +25,7 @@ var config = {
   blockRespawnSpeed: 3300,
   pathUpdateFrequency: 500,
   enemyUnstuckSpeed: undefined, //see below
+  allowFallingKills: false,
   difficulties: {
     easy: 'easy',
     normal: 'normal',
@@ -32,8 +33,22 @@ var config = {
   },
   difficulty: undefined,
 }
-config.difficulty = config.difficulties.normal;
-config.enemyUnstuckSpeed = config.blockRespawnSpeed / 2.5;
+
+function updateDifficulty(diff) {
+  if(diff === config.difficulties.normal) {
+    config.difficulty = config.difficulties.normal;
+    config.allowFallingKills = false;
+    config.enemyMoveSpeed = 250;
+    config.enemyUnstuckSpeed = config.blockRespawnSpeed / 2.5;
+  }
+  if(diff === config.difficulties.hard) {
+    config.difficulty = config.difficulties.hard;
+    config.allowFallingKills = true;
+    config.enemyMoveSpeed = 200;
+    config.enemyUnstuckSpeed = config.blockRespawnSpeed / 2.5;
+  }
+}
+updateDifficulty(config.difficulties.normal);
 
 //Start the Ga engine
 g.start();
@@ -418,6 +433,11 @@ function setup() {
       g.state = play;
       gameScene.visible = true;
       introScene.visible = false;
+      console.log('*** starting game loop ***');
+      console.log('difficulty:', config.difficulty);
+      console.log('total batteries:', totalBatteries);
+      console.log('total enemies:', enemies.length);
+      console.log('**************************');
     } else if(g.state === play) {
       if(g.paused && !player.dead) {
         g.resume();
@@ -453,7 +473,7 @@ function setup() {
       !player.hasStarted ? player.hasStarted = true : player.hasStarted;
       destroyBlock('dr');
     } else if(g.state === title) {
-      config.difficulty = config.difficulty === config.difficulties.normal ? config.difficulties.hard : config.difficulties.normal;
+      config.difficulty === config.difficulties.normal ? updateDifficulty(config.difficulties.hard) : updateDifficulty(config.difficulties.normal);
       titleMessageSub4.content = `[ D ] -> Difficulty: ${config.difficulty.toUpperCase()}${config.difficulty === config.difficulties.hard ? ' (good luck)' : '' }`;
     }
   };
@@ -679,12 +699,8 @@ function allowPlayerMoveAgain() {
 }
 
 function checkForPlayerKill(enemy){
-  let allowFallingKills;
-  if(config.difficulty === config.difficulties.hard) {
-      allowFallingKills = true;
-  }
-  if(enemy.currentTile === player.currentTile && 
-    (allowFallingKills || (!allowFallingKills && !player.movement.falling))) {
+  if(enemy.currentTile === player.currentTile &&
+    (config.allowFallingKills || (!config.allowFallingKills && !player.movement.falling))) {
     console.log('DEV ONLY: You Died!');
     makePlayerDead();
   }
