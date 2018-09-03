@@ -42,7 +42,7 @@ var player, treasure, enemies, exit, exits,
     message, gameScene, gameOverScene, sound, 
     introMessage1, introMessage2, titleMessageSub1, 
     titleMessageSub2, titleMessageSub3, titleMessageMain,
-    floors, ladders, batteries, skipQuake;
+    floors, ladders, batteries, skipQuake, titleMessageSub4;
 destroyedBlocks = {
   queue: [],
   hash: {},
@@ -194,12 +194,14 @@ function setup() {
   titleMessageSub1 = g.text("By Ben Fox.", "32px Courier", "#15e815", 0, 0);
   titleMessageSub2 = g.text("[ SPACE ] to page/pause.", "32px Courier", "#15e815", 0, 0);
   titleMessageSub3 = g.text("[ A/D ] to blast the floor. [ ARROWS ] to move.", "32px Courier", "#15e815", 0, 0);
+  titleMessageSub4 = g.text(`[ D ] -> Difficulty: ${config.difficulty.toUpperCase()}`, "32px Courier", "#15e815", 0, 0);
   titleMessageMain.y = 275;
   titleMessageSub1.y = 360;
   titleMessageSub2.y = 410;
   titleMessageSub3.y = 460;
+  titleMessageSub4.y = 510;
   //Create a `gameOverScene` group and add the message sprite to it
-  titleScreen = g.group(titleMessageMain, titleMessageSub1, titleMessageSub2, titleMessageSub3);
+  titleScreen = g.group(titleMessageMain, titleMessageSub1, titleMessageSub2, titleMessageSub3, titleMessageSub4);
   //Make the `gameOverScene` invisible for now
   titleScreen.visible = false;
 
@@ -447,8 +449,13 @@ function setup() {
     destroyBlock('dl');
   };
   g.key.d.press = function() {
-    !player.hasStarted ? player.hasStarted = true : player.hasStarted;
-    destroyBlock('dr');
+    if(g.state === play) {
+      !player.hasStarted ? player.hasStarted = true : player.hasStarted;
+      destroyBlock('dr');
+    } else if(g.state === title) {
+      config.difficulty = config.difficulty === config.difficulties.normal ? config.difficulties.hard : config.difficulties.normal;
+      titleMessageSub4.content = `[ D ] -> Difficulty: ${config.difficulty.toUpperCase()}${config.difficulty === config.difficulties.hard ? ' (good luck)' : '' }`;
+    }
   };
 
   g.key.rightArrow.release = function() {
