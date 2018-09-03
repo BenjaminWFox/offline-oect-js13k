@@ -273,6 +273,7 @@ function setup() {
     player.y = player.spawnY;
     player.dead = false;
     player.won = false;
+    player.hasStarted = false;
     player.landingTile = undefined;
     player.movement = {
       falling: false,
@@ -422,21 +423,27 @@ function setup() {
     }
   }
   g.key.rightArrow.press = function() {
+    !player.hasStarted ? player.hasStarted = true : player.hasStarted;
     player.movement.direction = directions.right;
   };
   g.key.leftArrow.press = function() {
+    !player.hasStarted ? player.hasStarted = true : player.hasStarted;
     player.movement.direction = directions.left;
   };
   g.key.upArrow.press = function() {
+    !player.hasStarted ? player.hasStarted = true : player.hasStarted;
     player.movement.direction = directions.up;
   };
   g.key.downArrow.press = function() {
+    !player.hasStarted ? player.hasStarted = true : player.hasStarted;
     player.movement.direction = directions.down;
   };
   g.key.a.press = function() {
+    !player.hasStarted ? player.hasStarted = true : player.hasStarted;
     destroyBlock('dl');
   };
   g.key.d.press = function() {
+    !player.hasStarted ? player.hasStarted = true : player.hasStarted;
     destroyBlock('dr');
   };
 
@@ -846,25 +853,29 @@ function movePlayer() {
 
 //The `play` state
 function play() {
-  // player.currentTile will need setting.
-  movePlayer();
-  
-  checkForBatteryPickup();
-  checkForExitWin();
+  if(player.hasStarted) {
+    // player.currentTile will need setting.
+    movePlayer();
+    
+    checkForBatteryPickup();
+    checkForExitWin();
 
 
-  enemies.forEach(enemy => {
-    if(!enemy.dead) {
-      // console.log(`Cycling for enemy ${enemy.id}`)
-      moveEnemy(enemy);
-      if(!enemy.movement.stuck) {
-        checkForPlayerKill(enemy);
-        checkForFallenIntoBlock(enemy);
+    enemies.forEach(enemy => {
+      if(!enemy.dead) {
+        // console.log(`Cycling for enemy ${enemy.id}`)
+        moveEnemy(enemy);
+        if(!enemy.movement.stuck) {
+          checkForPlayerKill(enemy);
+          checkForFallenIntoBlock(enemy);
+        }
       }
-    }
-  })
+    })
 
-  checkForBlockRespawn();
+    checkForBlockRespawn();
+
+  }
+
 }
 
 function checkForBlockRespawn() {
