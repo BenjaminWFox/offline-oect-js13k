@@ -23,8 +23,7 @@ var config = {
   playerMoveSpeed: 150,
   enemyMoveSpeed: 250,
   blockRespawnSpeed: 3300,
-  introTextFadein: 2000,
-  pathUpdateFrequency: 750,
+  pathUpdateFrequency: 500,
   enemyUnstuckSpeed: undefined, //see below
   difficulties: {
     easy: 'easy',
@@ -34,7 +33,7 @@ var config = {
   difficulty: undefined,
 }
 config.difficulty = config.difficulties.normal;
-config.enemyUnstuckSpeed = config.blockRespawnSpeed / 3;
+config.enemyUnstuckSpeed = config.blockRespawnSpeed / 2.5;
 
 //Start the Ga engine
 g.start();
@@ -128,6 +127,10 @@ function setup() {
       this.play(5, this.ctx.currentTime);
     }
 
+    blast() {
+      this.play(185, this.ctx.currentTime);
+    }
+
     doorOpen() {
       this.play(261.63, this.ctx.currentTime + .25);
       this.play(329.63, this.ctx.currentTime + .35);
@@ -144,10 +147,6 @@ function setup() {
       this.play(261.63, this.ctx.currentTime + .25);
       this.play(246.94, this.ctx.currentTime + .35);
       this.play(233.08, this.ctx.currentTime + .45);
-    }
-
-    blast() {
-      this.play(185, this.ctx.currentTime + .25);
     }
   }
   let ctx = new (window.AudioContext || window.webkitAudioContext)();
