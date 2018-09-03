@@ -977,7 +977,12 @@ function Graph(vertices){
           path.push(Number(smallest));
           smallest = previous[smallest];
         }
+        break;
+      }
 
+      // This is custom. In this game, at least, we can assume this means
+      // that there is no connected path to the player.
+      if(distances[smallest] === INFINITY && smallest == '0') {
         break;
       }
 
