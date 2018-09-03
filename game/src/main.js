@@ -434,7 +434,9 @@ function setup() {
       gameScene.visible = true;
       introScene.visible = false;
       console.log('*** starting game loop ***');
-      console.log('difficulty:', config.difficulty);
+      for(var key in config) {
+        console.log(`${key}: ${config[key]}`);
+      }
       console.log('total batteries:', totalBatteries);
       console.log('total enemies:', enemies.length);
       console.log('**************************');
