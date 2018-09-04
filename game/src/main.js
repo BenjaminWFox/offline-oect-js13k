@@ -64,6 +64,9 @@ function updateDifficulty(diff) {
 }
 updateDifficulty(config.difficulties.normal);
 
+// Remove batteries for easy mode
+// tile, number, offset
+// This isn't really a sustainable method, but will work for the initial game version.
 //Start the Ga engine
 g.start();
 //Declare your global variables (global to this game)
@@ -84,6 +87,14 @@ const closingBlocks = [];
 let totalBatteries = 0;
 let collectedBatteries = 0;
 enemies = [];
+
+function rB(t, n, o) {
+  while(n) {
+    n--;
+    batteryHash[t - (n * o)].visible = false;
+    collectedBatteries++;
+  }
+}
 
 // Create and render player
 function makePlayer(sX, sY) {
@@ -459,6 +470,15 @@ function setup() {
         enemies.forEach(enemy => {
           gameScene.addChild(enemy);
         })
+      }
+      if(config.difficulty === config.difficulties.easy) {
+        rB(645, 2, 32);
+        rB(649, 2, 32);
+        rB(684, 10, 32);
+        rB(275, 8, 1);
+        rB(444, 3, 1);
+        rB(476, 2, 1);
+        rB(508, 1, 1);
       }
       g.state = play;
       gameScene.visible = true;
@@ -892,6 +912,7 @@ function movePlayer() {
     let playerDidMove;
 
     if(Date.now() > player.lastMove + 2000) {
+      // If the player hasn't moved they may be stuck. If they're stuck for good, kill them.
       let l = g.getAdjacentTile(player.currentTile, directions.left);
       let r = g.getAdjacentTile(player.currentTile, directions.right);
       let d = g.getAdjacentTile(player.currentTile, directions.down);
