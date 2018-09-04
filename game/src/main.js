@@ -96,6 +96,7 @@ function makePlayer(sX, sY) {
   player.won = false;
   player.hasStarted = false;
   player.landingTile = undefined;
+  player.lastMove = Date.now();
   player.movement = {
     falling: false,
     moving: false,
@@ -890,6 +891,16 @@ function movePlayer() {
   if(!player.movement.moving) {
     let playerDidMove;
 
+    if(Date.now() > player.lastMove + 2000) {
+      let l = g.getAdjacentTile(player.currentTile, directions.left);
+      let r = g.getAdjacentTile(player.currentTile, directions.right);
+      let d = g.getAdjacentTile(player.currentTile, directions.down);
+      if(l.type === g.tileTypes.floor && r.type === g.tileTypes.floor && d.type === g.tileTypes.floor) {
+        makePlayerDead();
+      }
+      player.lastMove = Date.now();
+    }
+
     if(player.movement.falling) {
       playerDidMove = moveOneTile(player, player.currentTile, directions.down);
     } else if (player.movement.direction !== directions.still) {
@@ -898,6 +909,7 @@ function movePlayer() {
 
 
     if(playerDidMove) {
+      player.lastMove = Date.now();
       sound.move();
       checkForExitWin();
       checkForBatteryPickup();
