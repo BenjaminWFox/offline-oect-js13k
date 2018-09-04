@@ -27,6 +27,7 @@ var config = {
   enemyUnstuckSpeed: undefined, //see below
   allowFallingKills: false,
   difficulties: {
+    playground: 'playground',
     easy: 'easy',
     normal: 'normal',
     hard: 'hard',
@@ -47,6 +48,19 @@ function updateDifficulty(diff) {
     config.enemyMoveSpeed = 200;
     config.enemyUnstuckSpeed = config.blockRespawnSpeed / 2.5;
   }
+  if(diff === config.difficulties.easy) {
+    config.difficulty = config.difficulties.easy;
+    config.allowFallingKills = false;
+    config.enemyMoveSpeed = 300;
+    config.enemyUnstuckSpeed = config.blockRespawnSpeed / 2;
+  }
+  if(diff === config.difficulties.playground) {
+    config.difficulty = config.difficulties.playground;
+    config.allowFallingKills = false;
+    config.enemyMoveSpeed = 250;
+    config.enemyUnstuckSpeed = config.blockRespawnSpeed / 2.5;
+  }
+  console.log('Updated to', diff);
 }
 updateDifficulty(config.difficulties.normal);
 
@@ -70,6 +84,83 @@ const closingBlocks = [];
 let totalBatteries = 0;
 let collectedBatteries = 0;
 enemies = [];
+
+// Create and render player
+function makePlayer(sX, sY) {
+  let player = g.sprite({image: "tileset.png", x: 128, y: 0, width: 32, height: 32})
+  player.spawnX = sX;
+  player.spawnY = sY;
+  player.x = player.spawnX;
+  player.y = player.spawnY;
+  player.dead = false;
+  player.won = false;
+  player.hasStarted = false;
+  player.landingTile = undefined;
+  player.movement = {
+    falling: false,
+    moving: false,
+    direction: directions.still,
+  }
+  player.freshSpawn = true;
+  player.currentTile = g.getSpriteIndex(player);
+  return player;
+}
+
+function makeEnemy(sX, sY, id) {
+  let enemy = g.sprite({image: "tileset.png", x: 160, y: 0, width: 32, height: 32})
+  enemy.spawnX = sX;
+  enemy.spawnY = sY;
+  enemy.x = enemy.spawnX;
+  enemy.y = enemy.spawnY;
+  enemy.id = id;
+  enemy.movement = {
+    falling: false,
+    moving: false,
+    stuck: false,
+    stuckAt: undefined,
+    direction: directions.still,
+  }
+  enemy.allowMoveAgain = function() {
+    enemy.movement.moving = false;
+  }
+  enemy.makeStuck = function(blockRef) {
+    this.movement.moving = false;
+    this.movement.falling = false;
+    this.movement.stuck = true;
+    this.inHoleRef = blockRef;
+    this.movement.stuckAt = Date.now();
+  }
+  enemy.unStick = function() {
+    this.movement.stuck = false;
+    this.inHoleRef = undefined;
+    this.movement.stuckAt = undefined;
+    this.climbingOut = true;
+  }
+  enemy.climbingOut = false;
+  enemy.currentTile = g.getSpriteIndex(enemy);
+  enemy.dead = false;
+  enemy.freshSpawn = true;
+  enemy.inHoleRef = undefined;
+  enemy.needsPath = true;
+  enemy.pathData = {
+    path: null,
+    updated: null,
+    distance: null,
+  }
+  return enemy;
+}
+
+function makeEnemies() {
+  enemies.push(makeEnemy(672, 256, 1));
+  enemies.push(makeEnemy(0, 128, 2));
+  enemies.push(makeEnemy(320, 352, 3));
+  enemies.push(makeEnemy(288, 32, 4));
+  enemies.push(makeEnemy(928, 704, 5));
+
+  enemies.forEach(enemy => {
+    gameScene.addChild(enemy);
+  })
+}
 
 function lose() {
   gameScene.visible = false;
@@ -285,87 +376,14 @@ function setup() {
   //   direction: directions.still,
   // }
 
-  // Create and render player
-  function makePlayer(sX, sY) {
-    let player = g.sprite({image: "tileset.png", x: 128, y: 0, width: 32, height: 32})
-    player.spawnX = sX;
-    player.spawnY = sY;
-    player.x = player.spawnX;
-    player.y = player.spawnY;
-    player.dead = false;
-    player.won = false;
-    player.hasStarted = false;
-    player.landingTile = undefined;
-    player.movement = {
-      falling: false,
-      moving: false,
-      direction: directions.still,
-    }
-    player.freshSpawn = true;
-    player.currentTile = g.getSpriteIndex(player);
-    return player;
-  }
   // -> test enclosed spawn
   // player = makePlayer(672, 256)
+  // player = makePlayer(288, 640);
   player = makePlayer(32, 704);
   gameScene.addChild(player);
 
-  function makeEnemy(sX, sY, id) {
-    let enemy = g.sprite({image: "tileset.png", x: 160, y: 0, width: 32, height: 32})
-    enemy.spawnX = sX;
-    enemy.spawnY = sY;
-    enemy.x = enemy.spawnX;
-    enemy.y = enemy.spawnY;
-    enemy.id = id;
-    enemy.movement = {
-      falling: false,
-      moving: false,
-      stuck: false,
-      stuckAt: undefined,
-      direction: directions.still,
-    }
-    enemy.allowMoveAgain = function() {
-      enemy.movement.moving = false;
-    }
-    enemy.makeStuck = function(blockRef) {
-      this.movement.moving = false;
-      this.movement.falling = false;
-      this.movement.stuck = true;
-      this.inHoleRef = blockRef;
-      this.movement.stuckAt = Date.now();
-    }
-    enemy.unStick = function() {
-      this.movement.stuck = false;
-      this.inHoleRef = undefined;
-      this.movement.stuckAt = undefined;
-      this.climbingOut = true;
-    }
-    enemy.climbingOut = false;
-    enemy.currentTile = g.getSpriteIndex(enemy);
-    enemy.dead = false;
-    enemy.freshSpawn = true;
-    enemy.inHoleRef = undefined;
-    enemy.needsPath = true;
-    enemy.pathData = {
-      path: null,
-      updated: null,
-      distance: null,
-    }
-    return enemy;
-  }
-
   // test enemy:
   // enemies.push(makeEnemy(416, 704, 1));
-
-  enemies.push(makeEnemy(672, 256, 1));
-  enemies.push(makeEnemy(0, 128, 2));
-  enemies.push(makeEnemy(320, 352, 3));
-  enemies.push(makeEnemy(288, 32, 4));
-  enemies.push(makeEnemy(928, 704, 5));
-
-  enemies.forEach(enemy => {
-    gameScene.addChild(enemy);
-  })
 
 /******************* GRAPHING AND dijkstra ************************/
   levelGraph = makeLevelGraph();
@@ -430,6 +448,17 @@ function setup() {
       }
     } else if (g.state === intro) {
       if(skipQuake) { skipQuake = undefined }
+      if(config.difficulty !== config.difficulties.playground) {
+        enemies.push(makeEnemy(672, 256, 1));
+        enemies.push(makeEnemy(0, 128, 2));
+        enemies.push(makeEnemy(320, 352, 3));
+        enemies.push(makeEnemy(288, 32, 4));
+        enemies.push(makeEnemy(928, 704, 5));
+
+        enemies.forEach(enemy => {
+          gameScene.addChild(enemy);
+        })
+      }
       g.state = play;
       gameScene.visible = true;
       introScene.visible = false;
@@ -475,10 +504,23 @@ function setup() {
       !player.hasStarted ? player.hasStarted = true : player.hasStarted;
       destroyBlock('dr');
     } else if(g.state === title) {
-      config.difficulty === config.difficulties.normal ? updateDifficulty(config.difficulties.hard) : updateDifficulty(config.difficulties.normal);
-      titleMessageSub4.content = `[ D ] -> Difficulty: ${config.difficulty.toUpperCase()}${config.difficulty === config.difficulties.hard ? ' (good luck)' : '' }`;
+      cycleDifficulty();
     }
   };
+
+  function cycleDifficulty() {
+    if(config.difficulty === config.difficulties.normal) {
+      updateDifficulty(config.difficulties.hard)
+    } else if(config.difficulty === config.difficulties.hard) {
+      updateDifficulty(config.difficulties.playground)
+    } else if(config.difficulty === config.difficulties.playground) {
+      updateDifficulty(config.difficulties.easy)
+    } else if(config.difficulty === config.difficulties.easy) {
+      updateDifficulty(config.difficulties.normal)
+    }
+    console.log('test');
+    titleMessageSub4.content = `[ D ] -> Difficulty: ${config.difficulty.toUpperCase()}${config.difficulty === config.difficulties.hard ? ' (good luck)' : '' }`;
+  }
 
   g.key.rightArrow.release = function() {
     if(player.movement.direction === directions.right) {
