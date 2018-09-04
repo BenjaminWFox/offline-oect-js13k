@@ -16,7 +16,7 @@ Run with `npm start` from the `game/` directory.
 
 Build with `npm run build` to minify and copy files to `dist`.
 
-The source files are in `game/src`. All Ga code is in `ga.js`, all other code is in `main.js`, including a condensed copy of `world.json`.
+The source files are in `game/src`. All Ga code is in `ga.js`, all other code is in `main.js`, including a condensed copy of `world.json`. The other two required files are `index.html` and `tileset.png`.
 
 ### The Good
 
