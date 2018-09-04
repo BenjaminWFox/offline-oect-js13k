@@ -10,8 +10,11 @@ The enemy AI uses Dijkstra's algorithm, a slightly modified version of the one f
 
 ###Run & Build
 
-The source files are in `game/src`. All Ga code is in `ga.js`, all other code is in `main.js`, including a condensed copy of `world.json`.
+Run with `npm start` from the `game/` directory.
 
+Build with `npm run build` to minify and copy files to `dist`.
+
+The source files are in `game/src`. All Ga code is in `ga.js`, all other code is in `main.js`, including a condensed copy of `world.json`.
 
 ###The Good
 
