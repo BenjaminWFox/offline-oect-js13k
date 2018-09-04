@@ -1,6 +1,8 @@
 ### About
 
-This project is a game for the [JS13K](http://js13kgames.com/) 2018 competition. It's currently weighing in at 12,911 bytes.
+This project is a game for the [JS13K](http://js13kgames.com/) 2018 competition. It's currently weighing in at 12,911 bytes. 
+
+For best performance, use Chrome.
 
 It is built on top of the [Ga](https://github.com/kittykatattack/ga) game engine and uses most of the core engine as well as a few extra plugins, most notably the `makeTiledWorld` method to assemble the game level.
 
@@ -18,8 +20,38 @@ The source files are in `game/src`. All Ga code is in `ga.js`, all other code is
 
 ### The Good
 
+The best thing about this game (for me) is that it's a finished piece. I have a bad habit of starting personal projects and not finishing them, so was excited to use the competition as a motivation to complete a game.
+
+A challenge was figuring out the enemy ai. I haven't had much opportunity to work with algorithms and graphs. After some reading I identified Dijkstra's as a good solution, but was having a hard time visualizing the game level as a graph. It took some tinkering before realizing that I could build the graph nodes from each tile and its neighbors, and it was cool to see how small changes in the graph construction (adding or preventing certain types of tiles) changed the enemy behavior.
+
+Ga was a great catalyst to get this going. While there were situations where it was a bit more opaque that I'd have liked, the framework allowed me to spend far less time on the low-level implementation that would have been possible without it.
+
+Also good is the stability of the game. I haven't been able to crash it or freeze it throughout testing.
+
+Key takeaways:
+- You can do it
+- Testing pays off in eliminating headaches later on
 
 ### The Bad
 
+As above, building the graph from each tile individually is inefficient and lead to a large graph and a lot of processing when enemies recalculate their paths. Especially problematic in the current version is the situation where enemies have no path to the player. Two potential solutions are:
+- A graph built on tiles that sensibly group into a large node.
+- Additional metadata for each node that can inform smarter pathing.
+
+The level code was significantly larger than I expected. I would have liked to have included several levels that eased the player into the game, 
+
+Key takeaways:
+- There's always more to learn
+- Sometimes a deeper understanding is necessary, especially for optimization
 
 ### The Ugly
+
+Code structure & orgnization is essentially non-existant. It wouldn't be an easy project for someone else to go in and understand, let alone edit (that includes myself in 6 months).
+
+Lack of structure also made it challenging to be sure that changing some code woudln't affect something seemingly unrelated. Unit tests actually would have been very convenient, although I wouldn't have had the time to include them.
+
+I didn't create a build system right away, and when I finally got around to that step I had to do a lot of refactoring to get the files structured in a way that worked with Webpack.
+
+Key takeaways:
+- Spend time to organize code into logical classes and methods
+- Create a sensible build pipeline and then organize code to work within it, rather than the other way around.
