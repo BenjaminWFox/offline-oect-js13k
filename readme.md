@@ -38,11 +38,13 @@ As above, building the graph from each tile individually is inefficient and lead
 - A graph built on tiles that sensibly group into a large node.
 - Additional metadata for each node that can inform smarter pathing.
 
+There is a tendency in javascript development that I think is prevalent to want to grab example code and jam it in as a final solution. I'm certainly guilty of this, but it's neccessary to do more than skim tutorials to snip code for a robust solution.
+
 The level code was significantly larger than I expected. I would have liked to have included several levels that eased the player into the game, 
 
 Key takeaways:
-- There's always more to learn
-- Sometimes a deeper understanding is necessary, especially for optimization
+- There's always more to learn (take the time to do so)
+- The harder it feels to understand, the bigger the payoff (especially for optimization)
 
 ### The Ugly
 
