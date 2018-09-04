@@ -312,7 +312,7 @@ function setup() {
   titleMessageSub1 = g.text("By Ben Fox.", "32px Courier", "#15e815", 0, 0);
   titleMessageSub2 = g.text("[ SPACE ] to page/pause.", "32px Courier", "#15e815", 0, 0);
   titleMessageSub3 = g.text("[ A/D ] to blast the floor. [ ARROWS ] to move.", "32px Courier", "#15e815", 0, 0);
-  titleMessageSub4 = g.text(`[ D ] -> Difficulty: ${config.difficulty.toUpperCase()}`, "32px Courier", "#15e815", 0, 0);
+  titleMessageSub4 = g.text(`[ D ] -> Difficulty: ${config.difficulty.toUpperCase()}`, "24px Courier", "#0098ff", 0, 0);
   titleMessageMain.y = 275;
   titleMessageSub1.y = 360;
   titleMessageSub2.y = 410;
@@ -540,7 +540,7 @@ function setup() {
       updateDifficulty(config.difficulties.normal)
     }
     console.log('test');
-    titleMessageSub4.content = `[ D ] -> Difficulty: ${config.difficulty.toUpperCase()}${config.difficulty === config.difficulties.hard ? ' (good luck)' : '' }`;
+    titleMessageSub4.content = `[ D ] -> Difficulty: ${config.difficulty.toUpperCase()}${config.difficulty === config.difficulties.hard ? ' (!)' : '' }`;
   }
 
   g.key.rightArrow.release = function() {
