@@ -40,7 +40,7 @@ As above, building the graph from each tile individually is inefficient and lead
 
 The graph is also static, which means that when the player is within a destroyed tile the enemies can't find a path to the player. This could be solved by adding the destroyed tile into the graph temporarily, but I haven't had time to get around to it.
 
-There is a tendency in javascript development that I think is prevalent to want to grab example code and jam it in as a final solution. I'm certainly guilty of this, but it's neccessary to do more than skim tutorials to snip code for a robust solution.
+There is a tendency in javascript development that I think is prevalent to want to grab example code and jam it in as a final solution. I'm certainly guilty of this, but it's neccessary to do more than skim tutorials to snip code for a robust solution. I still haven't fully internalized everything the Djikstra algorithm is doing, which make it hard to tune it for performance.
 
 The level code was significantly larger than I expected. I would have liked to have included several levels that eased the player into the game, but couldn't accomodate them due to the size of the JSON files :(
 
