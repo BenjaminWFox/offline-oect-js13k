@@ -24,12 +24,15 @@ The best thing about this game (for me) is that it's a finished piece. I have a 
 
 A challenge was figuring out the enemy ai. I haven't had much opportunity to work with algorithms and graphs. After some reading I identified Dijkstra's as a good solution, but was having a hard time visualizing the game level as a graph. It took some tinkering before realizing that I could build the graph nodes from each tile and its neighbors, and it was cool to see how small changes in the graph construction (adding or preventing certain types of tiles) changed the enemy behavior.
 
+There were a lot of moving parts in the game, and I kept a running list of what the smallest pieces were and how they would be assembled into the bigger picture. This helped make the larger tasks more manageable.
+
 Ga was a great catalyst to get this going. While there were situations where it was a bit more opaque that I'd have liked, the framework allowed me to spend far less time on the low-level implementation that would have been possible without it.
 
 Also good is the stability of the game. I haven't been able to crash it or freeze it throughout testing.
 
 Key takeaways:
 - You can do it
+- Break large problems down into smaller pieces
 - Testing pays off in eliminating headaches later on
 
 ### The Bad
