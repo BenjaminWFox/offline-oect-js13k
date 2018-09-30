@@ -1,5 +1,5 @@
-/* global ga world */
-import Player from './classes/Player';
+/* global ga */
+// import Player from './classes/Player';
 
 const worldJson = '{"height":24,"infinite":false,"layers":[{"data":[1,1,1,1,1,1,1,1,1,1,1,1,7,7,7,7,7,7,7,1,1,1,1,1,1,1,1,1,1,1,1,1,7,7,1,1,1,1,1,1,1,1,3,2,2,2,2,2,2,2,2,3,2,2,2,2,2,2,2,2,2,2,2,3,2,2,3,2,2,2,2,2,2,2,3,2,1,1,1,1,1,1,1,3,2,7,1,1,1,1,1,1,1,7,2,3,1,1,3,1,1,1,1,1,1,1,3,2,7,7,7,7,7,7,7,3,2,7,1,1,1,1,1,1,1,7,2,3,1,7,3,1,1,1,7,7,7,7,3,2,2,2,2,2,2,2,2,2,2,7,1,1,1,1,1,1,1,7,2,3,3,2,2,1,1,3,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,7,1,1,1,1,1,1,1,7,2,3,3,1,1,1,1,3,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,7,1,1,1,1,1,1,1,7,2,3,3,7,1,1,1,3,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,7,1,1,1,1,1,1,1,7,2,3,2,2,3,1,1,3,7,7,7,7,7,2,7,7,7,7,7,7,7,7,2,1,1,7,1,7,1,7,1,1,2,3,1,1,3,1,3,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,3,1,7,3,1,3,1,1,1,1,1,1,1,1,1,1,7,7,7,7,7,1,1,1,1,1,1,1,1,1,1,7,3,3,2,2,1,3,7,7,1,7,7,1,1,1,1,3,2,2,2,2,2,1,1,1,1,2,2,2,2,2,2,7,3,3,1,1,7,2,2,2,3,2,2,2,7,7,7,3,1,1,7,7,7,7,7,1,1,2,2,2,2,2,2,7,3,3,7,1,7,7,7,7,3,7,7,7,7,7,7,3,1,3,2,2,2,2,2,1,1,2,2,7,7,7,2,7,3,2,2,3,7,2,2,2,3,2,2,2,7,7,7,3,1,3,1,1,7,7,7,7,7,1,2,2,7,7,2,7,3,1,1,3,7,2,7,2,3,2,7,2,7,7,7,3,1,3,1,3,2,2,2,2,2,1,1,2,2,7,2,7,3,1,7,3,7,2,2,2,3,2,2,2,7,7,7,3,1,3,1,3,1,1,7,7,7,7,7,1,2,2,2,7,3,3,2,2,7,1,1,1,3,1,1,1,7,7,7,3,1,3,1,3,1,3,2,2,2,2,2,1,1,1,1,7,3,3,1,1,7,2,2,2,3,2,2,2,7,7,7,3,1,3,1,3,1,3,1,1,7,7,7,7,7,1,1,7,3,3,7,1,7,2,7,2,3,2,7,2,7,7,7,3,1,3,1,3,1,3,1,3,2,2,2,2,2,1,1,7,3,2,2,3,7,2,7,2,3,2,7,2,7,7,7,3,1,3,1,3,1,3,1,3,1,1,7,7,7,7,7,7,3,1,1,3,7,2,2,2,3,2,2,2,7,7,7,3,1,3,1,3,1,3,1,3,1,3,2,2,2,2,2,7,3,4,1,3,1,1,1,1,3,1,1,1,1,1,1,3,1,3,1,3,1,3,1,3,1,3,1,1,1,1,1,7,3,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],"height":24,"name":"level","opacity":1,"type":"tilelayer","visible":true,"width":32,"x":0,"y":0}],"nextobjectid":10,"orientation":"orthogonal","renderorder":"right-down","tiledversion":"1.1.6","tileheight":32,"tilesets":[{"columns":7,"firstgid":1,"image":"../../assets/tileset.png","imageheight":32,"imagewidth":224,"margin":0,"name":"js13k","spacing":0,"tilecount":7,"tileheight":32,"tileproperties":{"0":{"isStable":false,"name":"air"},"1":{"isStable":true,"name":"floor"},"2":{"isStable":true,"name":"ladder"},"3":{"isStable":false,"name":"door"},"4":{"isStable":false,"name":"player"},"5":{"isStable":false,"name":"enemy"},"6":{"isStable":false,"name":"battery"}},"tilepropertytypes":{"0":{"isStable":"bool","name":"string"},"1":{"isStable":"bool","name":"string"},"2":{"isStable":"bool","name":"string"},"3":{"isStable":"bool","name":"string"},"4":{"isStable":"bool","name":"string"},"5":{"isStable":"bool","name":"string"},"6":{"isStable":"bool","name":"string"}},"tilewidth":32}],"tilewidth":32,"type":"map","version":1,"width":32}';
 
@@ -83,8 +83,13 @@ let exits;
 let gameScene;
 let gameOverScene;
 let sound;
+let introScene;
+let titleScreen;
+let endMessage;
 let introMessage1;
 let introMessage2;
+let introMessage3;
+let introMessage4;
 let titleMessageSub1;
 let titleMessageSub2;
 let titleMessageSub3;
@@ -94,6 +99,8 @@ let ladders;
 let batteries;
 let skipQuake;
 let titleMessageSub4;
+let dijkstra2;
+let world;
 
 const destroyedBlocks = {
   queue: [],
@@ -111,6 +118,30 @@ function rB(t, n, o) {
     batteryHash[t - (n * o)].visible = false;
     collectedBatteries++;
   }
+}
+
+// Create and render player
+function makePlayer(sX, sY) {
+  const player = g.sprite({image: 'tileset.png', x: 128, y: 0, width: 32, height: 32});
+
+  player.spawnX = sX;
+  player.spawnY = sY;
+  player.x = player.spawnX;
+  player.y = player.spawnY;
+  player.dead = false;
+  player.won = false;
+  player.hasStarted = false;
+  player.landingTile = undefined;
+  player.lastMove = Date.now();
+  player.movement = {
+    falling: false,
+    moving: false,
+    direction: directions.still,
+  };
+  player.freshSpawn = true;
+  player.currentTile = g.getSpriteIndex(player);
+
+  return player;
 }
 
 function makeEnemy(sX, sY, id) {
@@ -162,17 +193,17 @@ function makeEnemy(sX, sY, id) {
 function lose() {
   gameScene.visible = false;
   gameOverScene.visible = true;
-  titleScreen.visible = false
+  titleScreen.visible = false;
   endMessage.content = "Oh no! You're part of the building, now.";
-  endMessage.y = g.canvas.height / 2 - 35;
+  endMessage.y = (g.canvas.height / 2) - 35;
 }
 
 function win() {
   gameScene.visible = false;
-  titleScreen.visible = false
+  titleScreen.visible = false;
   gameOverScene.visible = true;
   endMessage.content = "You made it, nice work! We'll be back online in no time!";
-  endMessage.y = g.canvas.height / 2 - 35;
+  endMessage.y = (g.canvas.height / 2) - 35;
 }
 
 function title() {
@@ -274,19 +305,23 @@ function setup() {
   // Add some text for the game over message
   introMessage1 = g.text(
     'Sir! That earthquake knocked the building offline! The bio-restraint has failed...',
-    '25px Helvetica', '#15e815', 0, 0);
+    '25px Helvetica', '#15e815', 0, 0,
+  );
   introMessage1.y = 200;
   introMessage2 = g.text(
     'Electronics are dead, batteries scattered, and the security-organics are haywire!',
-    '25px Helvetica', '#15e815', 0, 0);
+    '25px Helvetica', '#15e815', 0, 0,
+  );
   introMessage2.y = 250;
   introMessage3 = g.text(
     'The door cycle will drain the reserve. Go retrive the batteries so we can fix this!',
-    '25px Helvetica', '#15e815', 0, 0);
+    '25px Helvetica', '#15e815', 0, 0,
+  );
   introMessage3.y = 300;
   introMessage4 = g.text(
     'You\'re the best Organic Electro-Chemical Technician we\'ve got, be safe in there.',
-    '25px Helvetica', '#15e815', 0, 0);
+    '25px Helvetica', '#15e815', 0, 0,
+  );
   introMessage4.y = 350;
   // Create a `gameOverScene` group and add the message sprite to it
   introScene = g.group(introMessage1, introMessage2, introMessage3, introMessage4);
@@ -334,21 +369,21 @@ function setup() {
     exit.canUse = false;
     exit.alpha = .25;
     exitHash[exit.index] = exit;
-  })
+  });
   floors.forEach(floor => {
     gameScene.addChild(floor);
-  })
+  });
   batteries.forEach(battery => {
     gameScene.addChild(battery);
     batteryHash[battery.index] = battery;
-  })
+  });
   totalBatteries = Object.keys(batteryHash).length;
   //  airs.forEach(air => {
   //    gameScene.addChild(air);
   //  })
   ladders.forEach(ladder => {
     gameScene.addChild(ladder);
-  })
+  });
 
   //  pointer = g.pointer;
 
@@ -367,14 +402,14 @@ function setup() {
   //  -> test enclosed spawn
   //  player = makePlayer(672, 256)
   //  player = makePlayer(288, 640);
-  player = new Player(32, 704);
-  gameScene.addChild(player.sprite);
+  player = makePlayer(32, 704); // new Player(32, 704);
+  gameScene.addChild(player);
 
   //  test enemy:
   //  enemies.push(makeEnemy(416, 704, 1));
 
-/******************* GRAPHING AND dijkstra ************************/
-  levelGraph = makeLevelGraph();
+  /* ****************** GRAPHING AND dijkstra *********************** */
+  const levelGraph = makeLevelGraph();
 
   dijkstra2 = new Graph(levelGraph);
 
@@ -384,46 +419,72 @@ function setup() {
     //  There should be 48 tiles in the graph
     //  object[n].index is the unique ID for this tile.
     const objects = world.objects;
-    for(let i = 0, len = objects.length; i < objects.length; i++) {
-      let co = objects[i]
+    const len = objects.length;
+
+    for (let i = 0; i < len; i++) {
+      const co = objects[i];
+
       if (co.name !== 'level') {
-        if (1===1) { //  co.name !== g.tileTypes.floor) {
-          //  Took this out to improve pathing, let enemies use open air
-          //  ruleOut = {current: g.getAdjacentTile(co.index, 'c'), below: g.getAdjacentTile(co.index, 'd')}
-          //  if (ruleOut.current.type !== g.tileTypes.ladder && !ruleOut.below.isStable) {
-          //    //  skip
-          //  } else {
-            graph[co.index] = {};
-            //  These should all be tiles which are walkable.
-            adjTiles = g.getAdjacentTiles(co.index);
-            if (adjTiles.d.isStable) {
-              if (canMoveFromTo(player, adjTiles.c, adjTiles.u)) {
-                graph[co.index][adjTiles.u.index] = 1;
-              }
-              if (canMoveFromTo(player, adjTiles.c, adjTiles.d)) {
-                graph[co.index][adjTiles.d.index] = 1;
-              }
-              if (canMoveFromTo(player, adjTiles.c, adjTiles.l)) {
-                graph[co.index][adjTiles.l.index] = 1;
-              }
-              if (canMoveFromTo(player, adjTiles.c, adjTiles.r)) {
-                graph[co.index][adjTiles.r.index] = 1;
-              }
-            } else if (!adjTiles.d.isStable) {
-              graph[co.index][adjTiles.d.index] = 1;
-            }
-          //  }
+
+        graph[co.index] = {};
+        //  These should all be tiles which are walkable.
+        const adjTiles = g.getAdjacentTiles(co.index);
+
+        if (adjTiles.d.isStable) {
+          if (canMoveFromTo(player, adjTiles.c, adjTiles.u)) {
+            graph[co.index][adjTiles.u.index] = 1;
+          }
+          if (canMoveFromTo(player, adjTiles.c, adjTiles.d)) {
+            graph[co.index][adjTiles.d.index] = 1;
+          }
+          if (canMoveFromTo(player, adjTiles.c, adjTiles.l)) {
+            graph[co.index][adjTiles.l.index] = 1;
+          }
+          if (canMoveFromTo(player, adjTiles.c, adjTiles.r)) {
+            graph[co.index][adjTiles.r.index] = 1;
+          }
+        } else if (!adjTiles.d.isStable) {
+          graph[co.index][adjTiles.d.index] = 1;
         }
+
+        // if (true) { //  co.name !== g.tileTypes.floor) {
+        //   //  Took this out to improve pathing, let enemies use open air
+        //   //  ruleOut = {current: g.getAdjacentTile(co.index, 'c'), below: g.getAdjacentTile(co.index, 'd')}
+        //   //  if (ruleOut.current.type !== g.tileTypes.ladder && !ruleOut.below.isStable) {
+        //   //    //  skip
+        //   //  } else {
+        //     graph[co.index] = {};
+        //     //  These should all be tiles which are walkable.
+        //     adjTiles = g.getAdjacentTiles(co.index);
+        //     if (adjTiles.d.isStable) {
+        //       if (canMoveFromTo(player, adjTiles.c, adjTiles.u)) {
+        //         graph[co.index][adjTiles.u.index] = 1;
+        //       }
+        //       if (canMoveFromTo(player, adjTiles.c, adjTiles.d)) {
+        //         graph[co.index][adjTiles.d.index] = 1;
+        //       }
+        //       if (canMoveFromTo(player, adjTiles.c, adjTiles.l)) {
+        //         graph[co.index][adjTiles.l.index] = 1;
+        //       }
+        //       if (canMoveFromTo(player, adjTiles.c, adjTiles.r)) {
+        //         graph[co.index][adjTiles.r.index] = 1;
+        //       }
+        //     } else if (!adjTiles.d.isStable) {
+        //       graph[co.index][adjTiles.d.index] = 1;
+        //     }
+        //   //  }
+        // }
       }
     }
 
     return graph;
   }
-/******************* GRAPHING AND dijkstra ************************/
 
-/******************* MESSAGING AND KEYS ************************/
+  /* ****************** GRAPHING AND dijkstra *********************** */
+
+  /* ****************** MESSAGING AND KEYS *********************** */
   // You can also do it the long way, like this:
-  g.key.space.press = function() {
+  g.key.space.press = function () {
     if (g.state === title) {
       g.shake(titleScreen, 16, false, 120);
       if (!skipQuake) {
@@ -435,7 +496,9 @@ function setup() {
         g.state = intro;
       }
     } else if (g.state === intro) {
-      if (skipQuake) { skipQuake = undefined }
+      if (skipQuake) {
+        skipQuake = undefined;
+      }
       if (config.difficulty !== config.difficulties.playground) {
         enemies.push(makeEnemy(672, 256, 1));
         enemies.push(makeEnemy(0, 128, 2));
@@ -445,7 +508,7 @@ function setup() {
 
         enemies.forEach(enemy => {
           gameScene.addChild(enemy);
-        })
+        });
       }
       if (config.difficulty === config.difficulties.easy) {
         rB(645, 2, 32);
@@ -460,7 +523,7 @@ function setup() {
       gameScene.visible = true;
       introScene.visible = false;
       console.log('*** starting game loop ***');
-      for(var key in config) {
+      for (const key in config) {
         console.log(`${key}: ${config[key]}`);
       }
       console.log('total batteries:', totalBatteries);
@@ -475,28 +538,29 @@ function setup() {
     } else if (g.state === win || g.state === lose) {
       location.reload();
     }
-  }
-  g.key.rightArrow.press = function() {
+  };
+
+  g.key.rightArrow.press = function () {
     !player.hasStarted ? player.hasStarted = true : player.hasStarted;
     player.movement.direction = directions.right;
   };
-  g.key.leftArrow.press = function() {
+  g.key.leftArrow.press = function () {
     !player.hasStarted ? player.hasStarted = true : player.hasStarted;
     player.movement.direction = directions.left;
   };
-  g.key.upArrow.press = function() {
+  g.key.upArrow.press = function () {
     !player.hasStarted ? player.hasStarted = true : player.hasStarted;
     player.movement.direction = directions.up;
   };
-  g.key.downArrow.press = function() {
+  g.key.downArrow.press = function () {
     !player.hasStarted ? player.hasStarted = true : player.hasStarted;
     player.movement.direction = directions.down;
   };
-  g.key.a.press = function() {
+  g.key.a.press = function () {
     !player.hasStarted ? player.hasStarted = true : player.hasStarted;
     destroyBlock('dl');
   };
-  g.key.d.press = function() {
+  g.key.d.press = function () {
     if (g.state === play) {
       !player.hasStarted ? player.hasStarted = true : player.hasStarted;
       destroyBlock('dr');
@@ -507,39 +571,39 @@ function setup() {
 
   function cycleDifficulty() {
     if (config.difficulty === config.difficulties.normal) {
-      updateDifficulty(config.difficulties.hard)
+      updateDifficulty(config.difficulties.hard);
     } else if (config.difficulty === config.difficulties.hard) {
-      updateDifficulty(config.difficulties.playground)
+      updateDifficulty(config.difficulties.playground);
     } else if (config.difficulty === config.difficulties.playground) {
-      updateDifficulty(config.difficulties.easy)
+      updateDifficulty(config.difficulties.easy);
     } else if (config.difficulty === config.difficulties.easy) {
-      updateDifficulty(config.difficulties.normal)
+      updateDifficulty(config.difficulties.normal);
     }
     console.log('test');
     titleMessageSub4.content = `[ D ] -> Difficulty: ${config.difficulty.toUpperCase()}${config.difficulty === config.difficulties.hard ? ' (!)' : '' }`;
   }
 
-  g.key.rightArrow.release = function() {
+  g.key.rightArrow.release = function () {
     if (player.movement.direction === directions.right) {
       player.movement.direction = directions.still;
     }
   };
-  g.key.leftArrow.release = function() {
+  g.key.leftArrow.release = function () {
     if (player.movement.direction === directions.left) {
       player.movement.direction = directions.still;
     }
   };
-  g.key.upArrow.release = function() {
+  g.key.upArrow.release = function () {
     if (player.movement.direction === directions.up) {
       player.movement.direction = directions.still;
     }
   };
-  g.key.downArrow.release = function() {
+  g.key.downArrow.release = function () {
     if (player.movement.direction === directions.down) {
       player.movement.direction = directions.still;
     }
   };
-/******************* MESSAGING AND KEYS ************************/
+  /* ****************** MESSAGING AND KEYS *********************** */
 
   // set the game state to `play`
   g.state = title;
@@ -554,31 +618,41 @@ function doorsOpen() {
   exits.forEach(exit => {
     exit.alpha = 1;
     exit.canUse = true;
-  })
+  });
 }
 
-/************* MOVEMENT CODE *******************/
+/* ************ MOVEMENT CODE ****************** */
 
 function destroyBlock(dir) {
-  currentTile = g.getSpriteIndex(player);
-  tileToDestroy = g.getAdjacentTile(currentTile, dir);
-  aboveTile = g.getAdjacentTile(tileToDestroy.index, directions.up);
+  const currentTile = g.getSpriteIndex(player);
+  const tileToDestroy = g.getAdjacentTile(currentTile, dir);
+  const aboveTile = g.getAdjacentTile(tileToDestroy.index, directions.up);
 
   //  don't allow destroying the same block if it's already destroyed
   if (!destroyedBlocks.hash[tileToDestroy.index] && aboveTile.type !== g.tileTypes.floor && !player.dead) {
 
-    spriteToDestroy = floors.find(el => {
+    const spriteToDestroy = floors.find(el => {
       return el.index === tileToDestroy.index;
-    })
+    });
 
     if (spriteToDestroy && spriteToDestroy.visible) {
       let adjust = 1;
+
       if (dir === 'dl') {
         adjust *= -1;
       }
-      var line = g.line('yellow', 3, player.centerX + 10*adjust, player.centerY + 2, spriteToDestroy.centerX  + 2*adjust, spriteToDestroy.centerY - 16);
+
+      const line = g.line(
+        'yellow',
+        3,
+        player.centerX + (10 * adjust),
+        player.centerY + 2,
+        spriteToDestroy.centerX + (2 * adjust),
+        spriteToDestroy.centerY - 16,
+      );
+
       g.wait(35, () => {
-        g.remove(line)
+        g.remove(line);
       });
       //  ga.line = function(strokeStyle, lineWidth, ax, ay, bx, by) {
 
@@ -588,35 +662,39 @@ function destroyBlock(dir) {
       //  fade out the block:
       g.fadeOut(spriteToDestroy, 15);
       //  store relevant data for the destroyed block:
-      let blockData = {
+      const blockData = {
         sprite: spriteToDestroy,
         tile: tileToDestroy,
         time: Date.now(),
         occupied: false,
-        occupy: function() {
+        occupy: function () { // eslint-disable-line
           this.occupied = true;
           world.children[0].data[this.tile.index] = 2;
         },
-        vacate: function() {
+        vacate: function () { // eslint-disable-line
           this.occupied = false;
           world.children[0].data[this.tile.index] = 1;
         },
       };
+
       addDestroyedBlock(blockData);
     }
   }
 }
 
 function respawnNextBlock() {
-  let blockIndex = destroyedBlocks.queue[0];
-  let blockData = destroyedBlocks.hash[blockIndex];
+  const blockIndex = destroyedBlocks.queue[0];
+  const blockData = destroyedBlocks.hash[blockIndex];
+
   closingBlocks.push(blockIndex);
   removeDestroyBlock(blockData);
   world.children[0].data[blockIndex] = 2;
-  let tween = g.fadeIn(blockData.sprite, 10);
-  tween.onComplete = function() {
+
+  const tween = g.fadeIn(blockData.sprite, 10);
+
+  tween.onComplete = function () {
     closingBlocks.splice(closingBlocks.indexOf(blockIndex), 1);
-  }
+  };
 }
 
 function addDestroyedBlock(bData) {
@@ -644,102 +722,99 @@ function respawnEnemy(eSprite) {
     stuck: false,
     stuckAt: undefined,
     direction: directions.still,
-  }
+  };
   eSprite.pathData = {
     path: null,
     updated: null,
     distance: null,
-  }
-  setTimeout(function(){
+  };
+
+  setTimeout(function () {
     eSprite.visible = true;
   }, 250);
-  setTimeout(function(){
+
+  setTimeout(function () {
     eSprite.dead = false;
   }, 1000);
 }
 
 function canMoveFromTo(sprite, currentTile, destTile) {
-  let dir = currentTile.index - destTile.index;
-  switch(dir) {
+  const dir = currentTile.index - destTile.index;
+
+  switch (dir) {
     case 32:
       if (destTile.type &&
         currentTile.type === g.tileTypes.ladder &&
         destTile.type !== g.tileTypes.floor) {
         return true;
       }
-    break;
+      break;
     case -32:
-      if (destTile.type && currentTile.type === g.tileTypes.ladder && destTile.type !== g.tileTypes.floor ||
-        destTile.type && destTile.type === g.tileTypes.ladder ||
-        destTile.type && sprite.movement.falling) {
+      if ((destTile.type && currentTile.type === g.tileTypes.ladder && destTile.type !== g.tileTypes.floor) ||
+        (destTile.type && destTile.type === g.tileTypes.ladder) ||
+        (destTile.type && sprite.movement.falling)) {
         return true;
       }
-    break;
+      break;
     case -1:
       if (destTile.type && destTile.type !== g.tileTypes.floor) {
         return true;
       }
-    break;
+      break;
     case 1:
       if (destTile.type && destTile.type !== g.tileTypes.floor) {
         return true;
       }
-    break;
+      break;
     default:
       return false;
-    break;
   }
 }
 
 function moveOneTile(sprite, currentTileIndex, dir) {
   //  let adjacentTiles = g.getAdjacentTiles(currentTileIndex);
-  let currentTile = g.getAdjacentTile(currentTileIndex, directions.current);
-  let moveToTile = g.getAdjacentTile(currentTileIndex, dir);
+  const currentTile = g.getAdjacentTile(currentTileIndex, directions.current);
+  const moveToTile = g.getAdjacentTile(currentTileIndex, dir);
 
-  canMove = canMoveFromTo(sprite, currentTile, moveToTile);
+  const canMove = canMoveFromTo(sprite, currentTile, moveToTile);
 
   if (canMove) {
-    let nextTileIndex = moveToTile.index;
-    let currentCoords = g.getTile(currentTileIndex, world.objects[0].data, world);
-    let nextCoords = g.getTile(nextTileIndex, world.objects[0].data, world);
-    nextX = nextCoords.x;
-    nextY = nextCoords.y;
+    const nextTileIndex = moveToTile.index;
+    // const currentCoords = g.getTile(currentTileIndex, world.objects[0].data, world);
+    const nextCoords = g.getTile(nextTileIndex, world.objects[0].data, world);
+
+    const nextX = nextCoords.x;
+    const nextY = nextCoords.y;
+
     sprite.x = nextX;
     sprite.y = nextY;
     sprite.currentTile = nextTileIndex;
+
     return true;
   }
+
   //  Prevent bug at bottom of map w/ infinite loop
   return false;
 }
 
-function teleportTo(sprite, tile) {
-    nextCoords = g.getTile(tile, world.objects[0].data, world);
-    nextX = nextCoords.x;
-    nextY = nextCoords.y;
-    sprite.x = nextX;
-    sprite.y = nextY;
-    return true;
-}
-
 function isFalling(sprite) {
-  thisTile = g.getAdjacentTile(sprite.currentTile, directions.current);
-  belowTile = g.getAdjacentTile(sprite.currentTile, directions.down);
+  const thisTile = g.getAdjacentTile(sprite.currentTile, directions.current);
+  const belowTile = g.getAdjacentTile(sprite.currentTile, directions.down);
 
   if (thisTile.type !== g.tileTypes.ladder && !belowTile.isStable && belowTile.index) {// adjacentTiles.d.type === g.tileTypes.air) {
     //  sprite.movement.falling = true;
     return true;
-  } else {
-    //  sprite.movement.falling = false;
-    return false;
   }
+
+  //  sprite.movement.falling = false;
+  return false;
 }
 
 function allowPlayerMoveAgain() {
   player.movement.moving = false;
 }
 
-function checkForPlayerKill(enemy){
+function checkForPlayerKill(enemy) {
   if (enemy.currentTile === player.currentTile &&
     (config.allowFallingKills || (!config.allowFallingKills && !player.movement.falling))) {
     console.log('DEV ONLY: You Died!');
@@ -753,19 +828,20 @@ function makeEnemyDead(enemy) {
   respawnEnemy(enemy);
 }
 function makePlayerDead() {
-    sound.lose();
-    g.shake(gameScene, 12, false, 75);
-    player.dead = true;
-    player.visible = false;
-    setTimeout(function() {
-      g.resume();
-      g.state = lose
-    }, 1500);
-    g.pause();
+  sound.lose();
+  g.shake(gameScene, 12, false, 75);
+  player.dead = true;
+  player.visible = false;
+  setTimeout(function () {
+    g.resume();
+    g.state = lose;
+  }, 1500);
+  g.pause();
 }
 
 function checkForFallenIntoBlock(enemy) {
-  let occupiedBlock = destroyedBlocks.hash[enemy.currentTile];
+  const occupiedBlock = destroyedBlocks.hash[enemy.currentTile];
+
   if (occupiedBlock) {
     //  console.log('Stuck and occupied');
     enemy.makeStuck(occupiedBlock);
@@ -794,10 +870,10 @@ function moveEnemy(enemy) {
       //  console.log('Stuck!', enemy.currentTile, enemy.pathData);
     }
 
-
     //  Figure out if enemy needs path
     if (!enemy.movement.falling && enemy.needsPath) {
       let adjust = 0;
+
       if (enemy.movement.stuck) {
         adjust = 32;
       }
@@ -824,14 +900,14 @@ function moveEnemy(enemy) {
     //  }
 
     let enemyDidMove = false;
-    let currentPathTile = enemy.pathData.path ? enemy.pathData.path[0] : undefined;
-    let nextTile = enemy.pathData.path ? enemy.pathData.path[1] : undefined;
+    const currentPathTile = enemy.pathData.path ? enemy.pathData.path[0] : undefined;
+    const nextTile = enemy.pathData.path ? enemy.pathData.path[1] : undefined;
 
     if (!enemy.movement.stuck) {
       if (enemy.movement.falling) {
         //  Prevent enemies falling into the same hole.
-        if (destroyedBlocks.hash[enemy.currentTile + 32] && !destroyedBlocks.hash[enemy.currentTile + 32].occupied
-          || !destroyedBlocks.hash[enemy.currentTile + 32]) {
+        if ((destroyedBlocks.hash[enemy.currentTile + 32] && !destroyedBlocks.hash[enemy.currentTile + 32].occupied) ||
+          !destroyedBlocks.hash[enemy.currentTile + 32]) {
           enemyDidMove = moveOneTile(enemy, enemy.currentTile, directions.down);
         }
       } else if (nextTile) {
@@ -864,16 +940,17 @@ function moveEnemy(enemy) {
       //  moving l/u
       if (nT + 1 === cT) {
         return directions.left;
-      } else {
-        return directions.up;
       }
-    } else if (nT > cT) {
+
+      return directions.up;
+    }
+    if (nT > cT) {
       //  moving r/d
       if (nT - 1 === cT) {
         return directions.right;
-      } else {
-        return directions.down;
       }
+
+      return directions.down;
     }
   }
 
@@ -889,12 +966,14 @@ function movePlayer() {
 
     if (Date.now() > player.lastMove + 2000) {
       //  If the player hasn't moved they may be stuck. If they're stuck for good, kill them.
-      let l = g.getAdjacentTile(player.currentTile, directions.left);
-      let r = g.getAdjacentTile(player.currentTile, directions.right);
-      let d = g.getAdjacentTile(player.currentTile, directions.down);
+      const l = g.getAdjacentTile(player.currentTile, directions.left);
+      const r = g.getAdjacentTile(player.currentTile, directions.right);
+      const d = g.getAdjacentTile(player.currentTile, directions.down);
+
       if (l.type === g.tileTypes.floor && r.type === g.tileTypes.floor && d.type === g.tileTypes.floor) {
         makePlayerDead();
       }
+
       player.lastMove = Date.now();
     }
 
@@ -903,7 +982,6 @@ function movePlayer() {
     } else if (player.movement.direction !== directions.still) {
       playerDidMove = moveOneTile(player, player.currentTile, player.movement.direction);
     }
-
 
     if (playerDidMove) {
       player.lastMove = Date.now();
@@ -916,10 +994,11 @@ function movePlayer() {
 
     player.movement.falling = isFalling(player);
     if (player.movement.falling && !player.landingTile) {
-      idx = player.currentTile;
+      let idx = player.currentTile;
 
-      while(!player.landingTile) {
-        let tile = world.tileTypes[world.objects[0].data[idx] - 1];
+      while (!player.landingTile) {
+        const tile = world.tileTypes[world.objects[0].data[idx] - 1];
+
         if (tile && tile.isStable) {
           player.landingTile = idx - 32;
         } else if (!tile) {
@@ -949,7 +1028,7 @@ function play() {
           checkForFallenIntoBlock(enemy);
         }
       }
-    })
+    });
 
     checkForBlockRespawn();
 
@@ -974,7 +1053,7 @@ function checkForBlockRespawn() {
       respawnNextBlock();
     }
   } catch (err) {
-    console.log('Block respawn error', err)
+    console.log('Block respawn error', err);
     console.log('Queue length', destroyedBlocks.queue.length);
     console.log('Queue', destroyedBlocks.queue);
     console.log('Hash', destroyedBlocks.hash);
@@ -997,15 +1076,15 @@ function checkForBatteryPickup() {
 
 function checkForExitWin() {
   if (!player.won && exitHash[player.currentTile] && exitHash[player.currentTile].canUse) {
-    console.log('DEV ONLY: You Won!')
+    console.log('DEV ONLY: You Won!');
     player.won = true;
     sound.win();
     g.state = win;
   }
 }
-/************* MOVEMENT CODE **********************/
+/* ************ MOVEMENT CODE ********************* */
 
-/**************** DIJKSTRA CODE ******************/
+/* *************** DIJKSTRA CODE ***************** */
 
 /** from: https:// github.com/mburst/dijkstras-algorithm/blob/master/dijkstras.js
  * Basic priority queue implementation. If a better priority queue is wanted/needed,
@@ -1013,11 +1092,14 @@ function checkForExitWin() {
  * Use goog.require('goog.structs.PriorityQueue'); and new goog.structs.PriorityQueue()
  */
 
-function PriorityQueue () {
+function PriorityQueue() {
   this._nodes = [];
 
   this.enqueue = function (priority, key) {
-    this._nodes.push({key: key, priority: priority });
+    this._nodes.push({
+      key,
+      priority,
+    });
   };
   this.dequeue = function () {
     return this._nodes.shift().key;
@@ -1032,14 +1114,13 @@ function PriorityQueue () {
   };
 }
 
-/**
- * Pathfinding starts here
- */
-function Graph(vertices){
-  var INFINITY = 1/0;
+// Pathfinding starts here
+function Graph(vertices) {
+  const INFINITY = 1 / 0;
+
   this.vertices = vertices;
 
-  this.addVertex = function(name, edges){
+  this.addVertex = function (name, edges) {
     this.vertices[name] = edges;
   };
 
@@ -1047,18 +1128,20 @@ function Graph(vertices){
     start = start.toString();
     finish = finish.toString();
 
-    var nodes = new PriorityQueue(),
-        distances = {},
-        previous = {},
-        path = [],
-        smallest, vertex, neighbor, alt;
+    const nodes = new PriorityQueue();
+    const distances = {};
+    const previous = {};
+    const path = [];
+    let smallest;
+    let vertex;
+    let neighbor;
+    let alt;
 
-    for(vertex in this.vertices) {
+    for (vertex in this.vertices) {
       if (vertex === start) {
         distances[vertex] = 0;
         nodes.enqueue(0, vertex);
-      }
-      else {
+      } else {
         distances[vertex] = INFINITY;
         nodes.enqueue(INFINITY, vertex);
       }
@@ -1068,13 +1151,13 @@ function Graph(vertices){
 
     nodes.sort();
 
-    while(!nodes.isEmpty()) {
+    while (!nodes.isEmpty()) {
       smallest = nodes.dequeue();
 
       if (smallest === finish) {
-        path = [];
+        const path = [];
 
-        while(previous[smallest]) {
+        while (previous[smallest]) {
           path.push(Number(smallest));
           smallest = previous[smallest];
         }
@@ -1083,15 +1166,15 @@ function Graph(vertices){
 
       //  This is custom. In this game, at least, we can assume this means
       //  that there is no connected path to the player.
-      if (distances[smallest] === INFINITY && smallest == '0') {
+      if (distances[smallest] === INFINITY && smallest === '0') {
         break;
       }
 
-      if (!smallest || distances[smallest] === INFINITY){
+      if (!smallest || distances[smallest] === INFINITY) {
         continue;
       }
 
-      for(neighbor in this.vertices[smallest]) {
+      for (neighbor in this.vertices[smallest]) {
         alt = distances[smallest] + this.vertices[smallest][neighbor];
 
         if (alt < distances[neighbor]) {
@@ -1108,9 +1191,10 @@ function Graph(vertices){
       path: path.concat([Number(start)]).reverse(),
       distance: path.length,
       updated: Date.now(),
-    }
+    };
   };
 }
 
-function stateless() {}
-/**************** DIJKSTRA CODE ******************/
+function stateless() {} // eslint-disable-line
+
+/* *************** DIJKSTRA CODE ***************** */
