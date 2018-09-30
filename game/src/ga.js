@@ -1,3 +1,6 @@
+/* global world */
+/* eslint-disable */
+
 // ==ClosureCompiler==
 // @output_file_name default.js
 // @compilation_level SIMPLE_OPTIMIZATIONS
@@ -254,7 +257,7 @@ GA.create = function(width, height, setup, assetsToLoad, load) {
       //Run the code for each frame.
       update();
       ga.render(ga.canvas, 0);
-      
+
     }
 
     //If `fps` has been set, clamp the frame rate to that upper limit.
@@ -2421,7 +2424,6 @@ GA.create = function(width, height, setup, assetsToLoad, load) {
   ga.makeDisplayObject = makeDisplayObject;
 
 
-/*CUSTOM******************************************************************************CUSTOM*/
 /*******************************************************************************CUSTOM*/
 /*******************************************************************************CUSTOM*/
 /*******************************************************************************CUSTOM*/
@@ -2443,37 +2445,41 @@ GA.create = function(width, height, setup, assetsToLoad, load) {
 /*******************************************************************************CUSTOM*/
 /*******************************************************************************CUSTOM*/
 /*******************************************************************************CUSTOM*/
-    // CONFIG
+/*******************************************************************************CUSTOM*/
+  /* eslint-enable */
+
+  // CONFIG
   ga.tileTypes = {
     air: 'air',
     floor: 'floor',
     ladder: 'ladder',
     door: 'door',
     battery: 'battery',
-  }
+  };
 
-  //#### getIndex
-  //The `getIndex` helper method
-  //converts a sprite's x and y position to an array index number.
-  //It returns a single index value that tells you the map array
-  //index number that the sprite is in
-  ga.getSpriteIndex = function(sprite) {
+  // #### getIndex
+  // The `getIndex` helper method
+  // converts a sprite's x and y position to an array index number.
+  // It returns a single index value that tells you the map array
+  // index number that the sprite is in
+  ga.getSpriteIndex = function (sprite) {
     return ga.getIndex(sprite.x, sprite.y, 32, 32, 32);
-  }
+  };
 
-  ga.getIndex = function(x, y, tilewidth, tileheight, mapWidthInTiles) {
-    var index = {};
+  ga.getIndex = function (x, y, tilewidth, tileheight, mapWidthInTiles) {
+    const index = {};
 
-    //Convert pixel coordinates to map index coordinates
+    // Convert pixel coordinates to map index coordinates
     index.x = Math.floor(x / tilewidth);
     index.y = Math.floor(y / tileheight);
 
-    //Return the index number
+    // Return the index number
     return index.x + (index.y * mapWidthInTiles);
   };
 
-  ga.getAdjacentTiles = function(index) {
+  ga.getAdjacentTiles = function (index) {
     console.log('getting all tiles');
+
     return {
       c: ga.getAdjacentTile(index, 'c'),
       u: ga.getAdjacentTile(index, 'u'),
@@ -2482,42 +2488,46 @@ GA.create = function(width, height, setup, assetsToLoad, load) {
       l: ga.getAdjacentTile(index, 'l'),
       dl: ga.getAdjacentTile(index, 'dl'),
       dr: ga.getAdjacentTile(index, 'dr'),
-    }
-  }
+    };
+  };
 
-  ga.getAdjacentTile = function(index, dir) {
-    tileIndex = undefined;
-    switch(dir) {
+  ga.getAdjacentTile = function (index, dir) {
+    let tileIndex = undefined;
+    let downTile;
+    let leftTile;
+    let rightTile;
+
+    switch (dir) {
       case 'u':
-        if(index < world.widthInTiles) {
+        if (index < world.widthInTiles) {
           tileIndex = null;
         } else {
           tileIndex = index - 32;
         }
         break;
       case 'r':
-        if((index + 1) % 32 === 0) {
+        if ((index + 1) % 32 === 0) {
           tileIndex = null;
         } else {
           tileIndex = index + 1;
         }
         break;
       case 'd':
-        if(index >= world.widthInTiles * world.heightInTiles - world.widthInTiles) {
+        if (index >= (world.widthInTiles * world.heightInTiles) - world.widthInTiles) {
           tileIndex = null;
         } else {
           tileIndex = index + 32;
         }
         break;
       case 'l':
-        if(index % 32 === 0) {
+        if (index % 32 === 0) {
           tileIndex = null;
         } else {
           tileIndex = index - 1;
         }
         break;
       case 'dl':
-        leftTile = ga.getAdjacentTile(index, 'l'); 
+        leftTile = ga.getAdjacentTile(index, 'l');
         downTile = ga.getAdjacentTile(index, 'd');
         tileIndex = leftTile ? downTile.index - 1 : null;
         break;
@@ -2531,15 +2541,16 @@ GA.create = function(width, height, setup, assetsToLoad, load) {
         break;
     }
     // console.log('index', index, dir, tileIndex);
-    type = world.tileTypes[world.objects[0].data[tileIndex] - 1];
+    const type = world.tileTypes[world.objects[0].data[tileIndex] - 1];
 
     return {
       index: tileIndex,
       type: type ? type.name : undefined,
       isStable: type ? type.isStable : undefined,
-    }
-  }
+    };
+  };
 
+  /* eslint-disable */
   //### move
   //Move a sprite or an array of sprites by adding its
   //velocity to its position
@@ -2711,7 +2722,7 @@ GA.create = function(width, height, setup, assetsToLoad, load) {
     o.start = function(startValue, endValue) {
 
       //Clone the start and end values so that any possible references to sprite
-      //properties are converted to ordinary numbers 
+      //properties are converted to ordinary numbers
       o.startValue = JSON.parse(JSON.stringify(startValue));
       o.endValue = JSON.parse(JSON.stringify(endValue));
       o.playing = true;
@@ -2729,7 +2740,7 @@ GA.create = function(width, height, setup, assetsToLoad, load) {
     //The `update` method will be called on each frame by the game loop.
     //This is what makes the tween move
     o.update = function() {
-      
+
       var time, curvedTime;
 
       if (o.playing) {
@@ -2741,14 +2752,14 @@ GA.create = function(width, height, setup, assetsToLoad, load) {
           //Find the normalized value
           var normalizedTime = o.frameCounter / o.totalFrames;
 
-          //Select the correct easing function from the 
+          //Select the correct easing function from the
           //`ease` object’s library of easing functions
 
           //If it's not a spline, use one of the ordinary easing functions
           if (typeArray[0] !== "bounce") {
             curvedTime = ease[type](normalizedTime);
-          } 
-          
+          }
+
           //If it's a spline, use the `spline` function and apply the
           //2 additional `type` array values as the spline's start and
           //end points
@@ -2764,7 +2775,7 @@ GA.create = function(width, height, setup, assetsToLoad, load) {
 
         //When the tween has finished playing, run the end tasks
         else {
-          o.end(); 
+          o.end();
         }
       }
     };
@@ -2783,7 +2794,7 @@ GA.create = function(width, height, setup, assetsToLoad, load) {
 
       //If the tween's `yoyo` property is `true`, create a new tween
       //using the same values, but use the current tween's `startValue`
-      //as the next tween's `endValue` 
+      //as the next tween's `endValue`
       if (yoyo) {
         ga.wait(delayBeforeRepeat, function() {
           o.start(o.endValue, o.startValue);
@@ -2794,7 +2805,7 @@ GA.create = function(width, height, setup, assetsToLoad, load) {
     //Pause and play methods
     o.play = function() {o.playing = true;};
     o.pause = function() {o.playing = false;};
-    
+
     //Return the tween object
     return o;
   }
@@ -2806,7 +2817,7 @@ GA.create = function(width, height, setup, assetsToLoad, load) {
   */
 
   ga.updateTweens = function() {
-    
+
     //Update all the particles in the game.
     if (ga.tweens.length > 0) {
       for(var i = ga.tweens.length - 1; i >= 0; i--) {
@@ -2817,7 +2828,7 @@ GA.create = function(width, height, setup, assetsToLoad, load) {
   }
 
   //Push `updateTweens` into the `ga.updateFunctions` array so that
-  //it runs inside Ga's game loop. (See the `ga.update` method in the 
+  //it runs inside Ga's game loop. (See the `ga.update` method in the
   //`ga.js` file to see how this works.
   ga.updateFunctions.push(ga.updateTweens);
 
@@ -2829,9 +2840,9 @@ GA.create = function(width, height, setup, assetsToLoad, load) {
   ga.cubicBezier = function(t, a, b, c, d) {
     var t2 = t * t;
     var t3 = t2 * t;
-    return a  
+    return a
       + (-a * 3 + t * (3 * a - a * t)) * t
-      + (3 * b + t * (-6 * b + b * 3 * t)) * t 
+      + (3 * b + t * (-6 * b + b * 3 * t)) * t
       + (c * 3 - c * 3 * t) * t2 + d * t3;
   }
 
@@ -3146,13 +3157,13 @@ GA.create = function(width, height, setup, assetsToLoad, load) {
 
   /*
   ###updateShakingSprites
-  
+
   `updateShakingSprites` loops through all the sprites in `ga.particles`
   and runs their `updateParticles` functions.
   */
 
   ga.updateShakingSprites = function() {
-    
+
     //Update all the shaking sprites
     if (ga.shakingSprites.length > 0) {
       for(var i = ga.shakingSprites.length - 1; i >= 0; i--) {
@@ -3163,7 +3174,7 @@ GA.create = function(width, height, setup, assetsToLoad, load) {
   }
 
   //Push `updateShakingSprites` into the `ga.updateFunctions` array so that
-  //it runs inside Ga's game loop. (See the `ga.update` method in the 
+  //it runs inside Ga's game loop. (See the `ga.update` method in the
   //`ga.js` file to see how this works.
   ga.updateFunctions.push(ga.updateShakingSprites);
 
@@ -3179,13 +3190,13 @@ GA.create = function(width, height, setup, assetsToLoad, load) {
 
   If `angularShake?` (the 3rd argument) is `true`, the sprite will shake around
   its axis. The `magnitude` will be the maximum value, in
-  radians, that it should shake. 
-  
-  If `angularShake?` is `false` the shake effect will happen on the x/y axis. 
-  
+  radians, that it should shake.
+
+  If `angularShake?` is `false` the shake effect will happen on the x/y axis.
+
       g.shake(sprite, 16, false);
 
-  In that case the magnitude will be the maximum amount of 
+  In that case the magnitude will be the maximum amount of
   displacement, in pixels.
   */
 
@@ -3206,21 +3217,21 @@ GA.create = function(width, height, setup, assetsToLoad, load) {
         startY = sprite.y,
         startAngle = sprite.rotation;
 
-    //Divide the magnitude into 10 units so that you can 
+    //Divide the magnitude into 10 units so that you can
     //reduce the amount of shake by 10 percent each frame
     var magnitudeUnit = magnitude / numberOfShakes;
-    
+
     //The `randomInt` helper function
     var randomInt = function(min, max){
       return Math.floor(Math.random() * (max - min + 1)) + min;
     };
-    
+
     //Add the sprite to the `shakingSprites` array if it
     //isn't already there
     if(ga.shakingSprites.indexOf(sprite) === -1) {
 
       ga.shakingSprites.push(sprite);
-      
+
       //Add an `updateShake` method to the sprite.
       //The `updateShake` method will be called each frame
       //in the game loop. The shake effect type can be either
@@ -3237,7 +3248,7 @@ GA.create = function(width, height, setup, assetsToLoad, load) {
     //The `upAndDownShake` function
     function upAndDownShake() {
 
-      //Shake the sprite while the `counter` is less than 
+      //Shake the sprite while the `counter` is less than
       //the `numberOfShakes`
       if (counter < numberOfShakes) {
 
@@ -3256,7 +3267,7 @@ GA.create = function(width, height, setup, assetsToLoad, load) {
         counter += 1;
       }
 
-      //When the shaking is finished, restore the sprite to its original 
+      //When the shaking is finished, restore the sprite to its original
       //position and remove it from the `shakingSprites` array
       if (counter >= numberOfShakes) {
         sprite.x = startX;
@@ -3264,9 +3275,9 @@ GA.create = function(width, height, setup, assetsToLoad, load) {
         ga.shakingSprites.splice(ga.shakingSprites.indexOf(sprite), 1);
       }
     }
-    
+
     //The `angularShake` function
-    //First set the initial tilt angle to the right (+1) 
+    //First set the initial tilt angle to the right (+1)
     var tiltAngle = 1;
 
     function angularShake() {
@@ -3296,7 +3307,7 @@ GA.create = function(width, height, setup, assetsToLoad, load) {
       }
     }
   };
- 
+
 /*******************************************************************************CUSTOM*/
 /*******************************************************************************CUSTOM*/
 /*******************************************************************************CUSTOM*/
@@ -3314,3 +3325,4 @@ GA.create = function(width, height, setup, assetsToLoad, load) {
 //instance of Ga without having the call `Ga.create()` It's really not
 //necessary, but I like it!
 window.ga = GA.create;
+/* eslint-enable */
