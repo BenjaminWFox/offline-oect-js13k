@@ -1,25 +1,25 @@
-/* global g */
 // Create and render player
 
 class Player {
-  constructor(sX, sY) {
-    this.sprite = g.sprite({image: 'tileset.png', x: 128, y: 0, width: 32, height: 32});
-    this.spawnX = sX;
-    this.spawnY = sY;
-    this.x = this.spawnX;
-    this.y = this.spawnY;
-    this.dead = false;
-    this.won = false;
-    this.hasStarted = false;
-    this.landingTile = undefined;
-    this.lastMove = Date.now();
-    this.movement = {
+  constructor(sX, sY, gaInstance) {
+    this.sprite = gaInstance.sprite({image: 'tileset.png', x: 128, y: 0, width: 32, height: 32});
+
+    this.sprite.spawnX = sX;
+    this.sprite.spawnY = sY;
+    this.sprite.x = this.sprite.spawnX;
+    this.sprite.y = this.sprite.spawnY;
+    this.sprite.dead = false;
+    this.sprite.won = false;
+    this.sprite.hasStarted = false;
+    this.sprite.landingTile = undefined;
+    this.sprite.lastMove = Date.now();
+    this.sprite.movement = {
       falling: false,
       moving: false,
-      direction: undefined,
+      direction: 'still',
     };
-    this.freshSpawn = true;
-    this.currentTile = g.getSpriteIndex(this.sprite);
+    this.sprite.freshSpawn = true;
+    this.sprite.currentTile = gaInstance.getSpriteIndex(this.sprite);
   }
 }
 
