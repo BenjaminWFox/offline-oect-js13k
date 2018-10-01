@@ -124,30 +124,6 @@ function rB(t, n, o) {
   }
 }
 
-// Create and render player
-// function makePlayer(sX, sY) {
-//   const player = g.sprite({image: 'tileset.png', x: 128, y: 0, width: 32, height: 32});
-
-//   player.spawnX = sX;
-//   player.spawnY = sY;
-//   player.x = player.spawnX;
-//   player.y = player.spawnY;
-//   player.dead = false;
-//   player.won = false;
-//   player.hasStarted = false;
-//   player.landingTile = undefined;
-//   player.lastMove = Date.now();
-//   player.movement = {
-//     falling: false,
-//     moving: false,
-//     direction: directions.still,
-//   };
-//   player.freshSpawn = true;
-//   player.currentTile = g.getSpriteIndex(player);
-
-//   return player;
-// }
-
 function makeEnemy(sX, sY, id) {
   const enemy = g.sprite({image: 'tileset.png', x: 160, y: 0, width: 32, height: 32});
 
