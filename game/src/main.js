@@ -100,7 +100,9 @@ let batteries;
 let skipQuake;
 let titleMessageSub4;
 let dijkstra2;
-let world;
+
+// Must be gloabl
+// let world;
 
 const destroyedBlocks = {
   queue: [],

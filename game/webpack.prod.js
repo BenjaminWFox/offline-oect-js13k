@@ -1,18 +1,11 @@
 const path = require('path');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
 
-module.exports = {
+const merge = require('webpack-merge');
+const common = require('./webpack.common.js');
+
+module.exports = merge(common, {
   mode: 'production',
-  entry: {
-    ga: './src/ga.js',
-    main: './src/main.js',
-  },
-  output: {
-    filename: '[name].js',
-    path: __dirname + '/dist'
-  },
   optimization: {
     minimizer: [
       new UglifyJsPlugin({
@@ -38,11 +31,4 @@ module.exports = {
       }),
     ],
   },
-  plugins: [
-    new HtmlWebpackPlugin({
-      template: 'src/index.html',
-      inject: false,
-    }),
-    new CopyWebpackPlugin(['src/tileset.png']),
-  ],
-};
+});
