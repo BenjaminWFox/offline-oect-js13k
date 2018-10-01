@@ -482,6 +482,18 @@ function setup() {
     return graph;
   }
 
+  function makeEnemies() {
+    enemies.push(makeEnemy(672, 256, 1));
+    enemies.push(makeEnemy(0, 128, 2));
+    enemies.push(makeEnemy(320, 352, 3));
+    enemies.push(makeEnemy(288, 32, 4));
+    enemies.push(makeEnemy(928, 704, 5));
+
+    enemies.forEach(enemy => {
+      gameScene.addChild(enemy);
+    });
+  }
+
   /* ****************** GRAPHING AND dijkstra *********************** */
 
   /* ****************** MESSAGING AND KEYS *********************** */
@@ -502,15 +514,7 @@ function setup() {
         skipQuake = undefined;
       }
       if (config.difficulty !== config.difficulties.playground) {
-        enemies.push(makeEnemy(672, 256, 1));
-        enemies.push(makeEnemy(0, 128, 2));
-        enemies.push(makeEnemy(320, 352, 3));
-        enemies.push(makeEnemy(288, 32, 4));
-        enemies.push(makeEnemy(928, 704, 5));
-
-        enemies.forEach(enemy => {
-          gameScene.addChild(enemy);
-        });
+        makeEnemies();
       }
       if (config.difficulty === config.difficulties.easy) {
         rB(645, 2, 32);
@@ -608,10 +612,11 @@ function setup() {
   /* ****************** MESSAGING AND KEYS *********************** */
 
   // set the game state to `play`
-  g.state = title;
+  // g.state = title;
   //  for dev:
   //  g.state = intro;
-  //  g.state = play;
+  g.state = play;
+  makeEnemies();
   //  g.state = win;
   //  g.state = lose;
 }
@@ -1133,7 +1138,7 @@ function Graph(vertices) {
     const nodes = new PriorityQueue();
     const distances = {};
     const previous = {};
-    const path = [];
+    let path = [];
     let smallest;
     let vertex;
     let neighbor;
@@ -1157,7 +1162,7 @@ function Graph(vertices) {
       smallest = nodes.dequeue();
 
       if (smallest === finish) {
-        const path = [];
+        path = [];
 
         while (previous[smallest]) {
           path.push(Number(smallest));
@@ -1166,8 +1171,8 @@ function Graph(vertices) {
         break;
       }
 
-      //  This is custom. In this game, at least, we can assume this means
-      //  that there is no connected path to the player.
+      // This is custom. In this game, at least, we can assume this means
+      // that there is no connected path to the player.
       if (distances[smallest] === INFINITY && smallest === '0') {
         break;
       }
