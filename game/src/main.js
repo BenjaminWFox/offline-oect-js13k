@@ -1,5 +1,6 @@
 import Player from 'Classes/Player';
 import Graph from 'Classes/Graph';
+import Sound from 'Classes/Sound';
 import ga from './ga';
 
 const worldJson = '{"height":24,"infinite":false,"layers":[{"data":[1,1,1,1,1,1,1,1,1,1,1,1,7,7,7,7,7,7,7,1,1,1,1,1,1,1,1,1,1,1,1,1,7,7,1,1,1,1,1,1,1,1,3,2,2,2,2,2,2,2,2,3,2,2,2,2,2,2,2,2,2,2,2,3,2,2,3,2,2,2,2,2,2,2,3,2,1,1,1,1,1,1,1,3,2,7,1,1,1,1,1,1,1,7,2,3,1,1,3,1,1,1,1,1,1,1,3,2,7,7,7,7,7,7,7,3,2,7,1,1,1,1,1,1,1,7,2,3,1,7,3,1,1,1,7,7,7,7,3,2,2,2,2,2,2,2,2,2,2,7,1,1,1,1,1,1,1,7,2,3,3,2,2,1,1,3,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,7,1,1,1,1,1,1,1,7,2,3,3,1,1,1,1,3,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,7,1,1,1,1,1,1,1,7,2,3,3,7,1,1,1,3,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,7,1,1,1,1,1,1,1,7,2,3,2,2,3,1,1,3,7,7,7,7,7,2,7,7,7,7,7,7,7,7,2,1,1,7,1,7,1,7,1,1,2,3,1,1,3,1,3,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,3,1,7,3,1,3,1,1,1,1,1,1,1,1,1,1,7,7,7,7,7,1,1,1,1,1,1,1,1,1,1,7,3,3,2,2,1,3,7,7,1,7,7,1,1,1,1,3,2,2,2,2,2,1,1,1,1,2,2,2,2,2,2,7,3,3,1,1,7,2,2,2,3,2,2,2,7,7,7,3,1,1,7,7,7,7,7,1,1,2,2,2,2,2,2,7,3,3,7,1,7,7,7,7,3,7,7,7,7,7,7,3,1,3,2,2,2,2,2,1,1,2,2,7,7,7,2,7,3,2,2,3,7,2,2,2,3,2,2,2,7,7,7,3,1,3,1,1,7,7,7,7,7,1,2,2,7,7,2,7,3,1,1,3,7,2,7,2,3,2,7,2,7,7,7,3,1,3,1,3,2,2,2,2,2,1,1,2,2,7,2,7,3,1,7,3,7,2,2,2,3,2,2,2,7,7,7,3,1,3,1,3,1,1,7,7,7,7,7,1,2,2,2,7,3,3,2,2,7,1,1,1,3,1,1,1,7,7,7,3,1,3,1,3,1,3,2,2,2,2,2,1,1,1,1,7,3,3,1,1,7,2,2,2,3,2,2,2,7,7,7,3,1,3,1,3,1,3,1,1,7,7,7,7,7,1,1,7,3,3,7,1,7,2,7,2,3,2,7,2,7,7,7,3,1,3,1,3,1,3,1,3,2,2,2,2,2,1,1,7,3,2,2,3,7,2,7,2,3,2,7,2,7,7,7,3,1,3,1,3,1,3,1,3,1,1,7,7,7,7,7,7,3,1,1,3,7,2,2,2,3,2,2,2,7,7,7,3,1,3,1,3,1,3,1,3,1,3,2,2,2,2,2,7,3,4,1,3,1,1,1,1,3,1,1,1,1,1,1,3,1,3,1,3,1,3,1,3,1,3,1,1,1,1,1,7,3,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],"height":24,"name":"level","opacity":1,"type":"tilelayer","visible":true,"width":32,"x":0,"y":0}],"nextobjectid":10,"orientation":"orthogonal","renderorder":"right-down","tiledversion":"1.1.6","tileheight":32,"tilesets":[{"columns":7,"firstgid":1,"image":"../../assets/tileset.png","imageheight":32,"imagewidth":224,"margin":0,"name":"js13k","spacing":0,"tilecount":7,"tileheight":32,"tileproperties":{"0":{"isStable":false,"name":"air"},"1":{"isStable":true,"name":"floor"},"2":{"isStable":true,"name":"ladder"},"3":{"isStable":false,"name":"door"},"4":{"isStable":false,"name":"player"},"5":{"isStable":false,"name":"enemy"},"6":{"isStable":false,"name":"battery"}},"tilepropertytypes":{"0":{"isStable":"bool","name":"string"},"1":{"isStable":"bool","name":"string"},"2":{"isStable":"bool","name":"string"},"3":{"isStable":"bool","name":"string"},"4":{"isStable":"bool","name":"string"},"5":{"isStable":"bool","name":"string"},"6":{"isStable":"bool","name":"string"}},"tilewidth":32}],"tilewidth":32,"type":"map","version":1,"width":32}';
@@ -71,22 +72,17 @@ function updateDifficulty(diff) {
 }
 updateDifficulty(config.difficulties.normal);
 
-//  Remove batteries for easy mode
-//  tile, number, offset
-//  This isn't really a sustainable method, but will work for the initial game version.
-//  Start the Ga engine
-
 g.start();
 //  Declare your global variables (global to this game)
-const enemies = [];
 let player;
 let playerC;
 let exits;
+let sound;
+
 let gameScene;
 let gameOverScene;
-let sound;
 let introScene;
-let titleScreen;
+let titleScene;
 let endMessage;
 let introMessage1;
 let introMessage2;
@@ -96,16 +92,16 @@ let titleMessageSub1;
 let titleMessageSub2;
 let titleMessageSub3;
 let titleMessageMain;
+
 let floors;
 let ladders;
 let batteries;
 let skipQuake;
 let titleMessageSub4;
 let dijkstra2;
-
-// Must be gloabl
 let world;
 
+const enemies = [];
 const destroyedBlocks = {
   queue: [],
   hash: {},
@@ -116,6 +112,17 @@ const closingBlocks = [];
 let totalBatteries = 0;
 let collectedBatteries = 0;
 
+/**
+ * This stands for removeBattery. It was a late-added method to facilitate pre-start battery removal per difficuly level.
+ *
+ * @param  {Number} t @description the tile at which to begin removing batteries
+ * @param  {Number} n @description the number of tiles to remove
+ * @param  {Number} o @description specifies x/y direction to travel removing batteries
+ *  32 = remove FROM bottom TO top
+ *  1 = remove FROM right TO left.
+ *  -32 = remove FROM top TO bottom
+ *  -1 = remove FROM left TO right.
+ */
 function rB(t, n, o) {
   while (n) {
     n--;
@@ -173,21 +180,21 @@ function makeEnemy(sX, sY, id) {
 function lose() {
   gameScene.visible = false;
   gameOverScene.visible = true;
-  titleScreen.visible = false;
+  titleScene.visible = false;
   endMessage.content = "Oh no! You're part of the building, now.";
   endMessage.y = (g.canvas.height / 2) - 35;
 }
 
 function win() {
   gameScene.visible = false;
-  titleScreen.visible = false;
+  titleScene.visible = false;
   gameOverScene.visible = true;
   endMessage.content = "You made it, nice work! We'll be back online in no time!";
   endMessage.y = (g.canvas.height / 2) - 35;
 }
 
 function title() {
-  titleScreen.visible = true;
+  titleScene.visible = true;
   gameScene.visible = false;
   gameOverScene.visible = false;
   introScene.visible = false;
@@ -195,7 +202,7 @@ function title() {
 
 function intro() {
   gameScene.visible = false;
-  titleScreen.visible = false;
+  titleScene.visible = false;
   gameOverScene.visible = false;
   introScene.visible = true;
 }
@@ -203,73 +210,9 @@ function intro() {
 //  The `setup` function will run only once.
 //  Use it for initialization tasks
 function setup() {
+  sound = new Sound(Sound.context);
 
-  class Sound {
-    constructor(context) {
-      this.ctx = context;
-    }
-
-    init() {
-      this.osc = this.ctx.createOscillator();
-      this.gainNode = this.ctx.createGain();
-
-      this.osc.connect(this.gainNode);
-      this.gainNode.connect(this.ctx.destination);
-      this.osc.type = 'sine';
-    }
-
-    play(value, time) {
-      this.init();
-
-      this.osc.frequency.value = value;
-      this.gainNode.gain.setValueAtTime(.5, this.ctx.currentTime);
-
-      this.osc.start(time);
-      this.stop(time);
-
-    }
-
-    stop(time) {
-      this.gainNode.gain.exponentialRampToValueAtTime(0.001, time + .25);
-      this.osc.stop(time + .25);
-    }
-
-    battery() {
-      this.play(8000, this.ctx.currentTime);
-    }
-
-    move() {
-      this.play(5, this.ctx.currentTime);
-      this.play(5, this.ctx.currentTime);
-      this.play(5, this.ctx.currentTime);
-    }
-
-    blast() {
-      this.play(50, this.ctx.currentTime);
-      this.play(99, this.ctx.currentTime + .05);
-    }
-
-    doorOpen() {
-      this.play(261.63, this.ctx.currentTime + .25);
-      this.play(329.63, this.ctx.currentTime + .35);
-    }
-
-    win() {
-      this.play(261.63, this.ctx.currentTime + .25);
-      this.play(329.63, this.ctx.currentTime + .35);
-      this.play(392.00, this.ctx.currentTime + .45);
-      this.play(523.25, this.ctx.currentTime + .55);
-    }
-
-    lose() {
-      this.play(261.63, this.ctx.currentTime + .25);
-      this.play(246.94, this.ctx.currentTime + .35);
-      this.play(233.08, this.ctx.currentTime + .45);
-    }
-  }
-  const ctx = new (window.AudioContext || window.webkitAudioContext)();
-
-  sound = new Sound(ctx);
+  world = g.makeTiledWorld(worldJson, 'tileset.png');
 
   //  Set the canvas border and background color
   g.canvas.style.border = 'none';
@@ -320,11 +263,9 @@ function setup() {
   titleMessageSub3.y = 460;
   titleMessageSub4.y = 510;
   // Create a `gameOverScene` group and add the message sprite to it
-  titleScreen = g.group(titleMessageMain, titleMessageSub1, titleMessageSub2, titleMessageSub3, titleMessageSub4);
+  titleScene = g.group(titleMessageMain, titleMessageSub1, titleMessageSub2, titleMessageSub3, titleMessageSub4);
   // Make the `gameOverScene` invisible for now
-  titleScreen.visible = false;
-
-  world = g.makeTiledWorld(worldJson, 'tileset.png'); // eslint-disable-line
+  titleScene.visible = false;
 
   //  DEV ONLY
   //  world.objects[0].data.filter((el, idx) => {
@@ -474,13 +415,11 @@ function setup() {
     });
   }
 
-  /* ****************** GRAPHING AND dijkstra *********************** */
-
   /* ****************** MESSAGING AND KEYS *********************** */
   // You can also do it the long way, like this:
   g.key.space.press = function () {
     if (g.state === title) {
-      g.shake(titleScreen, 16, false, 120);
+      g.shake(titleScene, 16, false, 120);
       if (!skipQuake) {
         skipQuake = g.wait(2000, () => {
           g.state = intro;
@@ -592,13 +531,16 @@ function setup() {
   /* ****************** MESSAGING AND KEYS *********************** */
 
   // set the game state to `play`
-  // g.state = title;
-  //  for dev:
+  g.state = title;
+  // // // // // // // for dev:
   //  g.state = intro;
-  g.state = play;
-  makeEnemies();
+  // g.state = play;
   //  g.state = win;
   //  g.state = lose;
+
+  makeEnemies();
+
+  // end setup
 }
 
 function doorsOpen() {
