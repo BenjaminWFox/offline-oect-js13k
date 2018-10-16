@@ -1,5 +1,6 @@
-/* global ga world */
-// import Player from './classes/Player';
+/* global ga */
+
+import Player from './classes/Player';
 
 const worldJson = '{"height":24,"infinite":false,"layers":[{"data":[1,1,1,1,1,1,1,1,1,1,1,1,7,7,7,7,7,7,7,1,1,1,1,1,1,1,1,1,1,1,1,1,7,7,1,1,1,1,1,1,1,1,3,2,2,2,2,2,2,2,2,3,2,2,2,2,2,2,2,2,2,2,2,3,2,2,3,2,2,2,2,2,2,2,3,2,1,1,1,1,1,1,1,3,2,7,1,1,1,1,1,1,1,7,2,3,1,1,3,1,1,1,1,1,1,1,3,2,7,7,7,7,7,7,7,3,2,7,1,1,1,1,1,1,1,7,2,3,1,7,3,1,1,1,7,7,7,7,3,2,2,2,2,2,2,2,2,2,2,7,1,1,1,1,1,1,1,7,2,3,3,2,2,1,1,3,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,7,1,1,1,1,1,1,1,7,2,3,3,1,1,1,1,3,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,7,1,1,1,1,1,1,1,7,2,3,3,7,1,1,1,3,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,7,1,1,1,1,1,1,1,7,2,3,2,2,3,1,1,3,7,7,7,7,7,2,7,7,7,7,7,7,7,7,2,1,1,7,1,7,1,7,1,1,2,3,1,1,3,1,3,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,3,1,7,3,1,3,1,1,1,1,1,1,1,1,1,1,7,7,7,7,7,1,1,1,1,1,1,1,1,1,1,7,3,3,2,2,1,3,7,7,1,7,7,1,1,1,1,3,2,2,2,2,2,1,1,1,1,2,2,2,2,2,2,7,3,3,1,1,7,2,2,2,3,2,2,2,7,7,7,3,1,1,7,7,7,7,7,1,1,2,2,2,2,2,2,7,3,3,7,1,7,7,7,7,3,7,7,7,7,7,7,3,1,3,2,2,2,2,2,1,1,2,2,7,7,7,2,7,3,2,2,3,7,2,2,2,3,2,2,2,7,7,7,3,1,3,1,1,7,7,7,7,7,1,2,2,7,7,2,7,3,1,1,3,7,2,7,2,3,2,7,2,7,7,7,3,1,3,1,3,2,2,2,2,2,1,1,2,2,7,2,7,3,1,7,3,7,2,2,2,3,2,2,2,7,7,7,3,1,3,1,3,1,1,7,7,7,7,7,1,2,2,2,7,3,3,2,2,7,1,1,1,3,1,1,1,7,7,7,3,1,3,1,3,1,3,2,2,2,2,2,1,1,1,1,7,3,3,1,1,7,2,2,2,3,2,2,2,7,7,7,3,1,3,1,3,1,3,1,1,7,7,7,7,7,1,1,7,3,3,7,1,7,2,7,2,3,2,7,2,7,7,7,3,1,3,1,3,1,3,1,3,2,2,2,2,2,1,1,7,3,2,2,3,7,2,7,2,3,2,7,2,7,7,7,3,1,3,1,3,1,3,1,3,1,1,7,7,7,7,7,7,3,1,1,3,7,2,2,2,3,2,2,2,7,7,7,3,1,3,1,3,1,3,1,3,1,3,2,2,2,2,2,7,3,4,1,3,1,1,1,1,3,1,1,1,1,1,1,3,1,3,1,3,1,3,1,3,1,3,1,1,1,1,1,7,3,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],"height":24,"name":"level","opacity":1,"type":"tilelayer","visible":true,"width":32,"x":0,"y":0}],"nextobjectid":10,"orientation":"orthogonal","renderorder":"right-down","tiledversion":"1.1.6","tileheight":32,"tilesets":[{"columns":7,"firstgid":1,"image":"../../assets/tileset.png","imageheight":32,"imagewidth":224,"margin":0,"name":"js13k","spacing":0,"tilecount":7,"tileheight":32,"tileproperties":{"0":{"isStable":false,"name":"air"},"1":{"isStable":true,"name":"floor"},"2":{"isStable":true,"name":"ladder"},"3":{"isStable":false,"name":"door"},"4":{"isStable":false,"name":"player"},"5":{"isStable":false,"name":"enemy"},"6":{"isStable":false,"name":"battery"}},"tilepropertytypes":{"0":{"isStable":"bool","name":"string"},"1":{"isStable":"bool","name":"string"},"2":{"isStable":"bool","name":"string"},"3":{"isStable":"bool","name":"string"},"4":{"isStable":"bool","name":"string"},"5":{"isStable":"bool","name":"string"},"6":{"isStable":"bool","name":"string"}},"tilewidth":32}],"tilewidth":32,"type":"map","version":1,"width":32}';
 
@@ -79,6 +80,7 @@ g.start();
 //  Declare your global variables (global to this game)
 const enemies = [];
 let player;
+let playerC;
 let exits;
 let gameScene;
 let gameOverScene;
@@ -102,7 +104,7 @@ let titleMessageSub4;
 let dijkstra2;
 
 // Must be gloabl
-// let world;
+let world;
 
 const destroyedBlocks = {
   queue: [],
@@ -120,30 +122,6 @@ function rB(t, n, o) {
     batteryHash[t - (n * o)].visible = false;
     collectedBatteries++;
   }
-}
-
-// Create and render player
-function makePlayer(sX, sY) {
-  const player = g.sprite({image: 'tileset.png', x: 128, y: 0, width: 32, height: 32});
-
-  player.spawnX = sX;
-  player.spawnY = sY;
-  player.x = player.spawnX;
-  player.y = player.spawnY;
-  player.dead = false;
-  player.won = false;
-  player.hasStarted = false;
-  player.landingTile = undefined;
-  player.lastMove = Date.now();
-  player.movement = {
-    falling: false,
-    moving: false,
-    direction: directions.still,
-  };
-  player.freshSpawn = true;
-  player.currentTile = g.getSpriteIndex(player);
-
-  return player;
 }
 
 function makeEnemy(sX, sY, id) {
@@ -404,7 +382,9 @@ function setup() {
   //  -> test enclosed spawn
   //  player = makePlayer(672, 256)
   //  player = makePlayer(288, 640);
-  player = makePlayer(32, 704); // new Player(32, 704);
+  // player = makePlayer(32, 704); //
+  playerC = new Player(32, 704, g);
+  player = playerC.sprite;
   gameScene.addChild(player);
 
   //  test enemy:
