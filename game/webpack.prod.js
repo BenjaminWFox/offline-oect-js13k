@@ -26,7 +26,9 @@ module.exports = merge(common, {
             comments: false,
             beautify: false,
           },
-          mangle: { toplevel: true },
+          mangle: {
+            toplevel: true,
+          },
         },
       }),
     ],
