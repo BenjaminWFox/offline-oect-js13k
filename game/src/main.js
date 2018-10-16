@@ -1,4 +1,5 @@
-import Player from './classes/Player';
+import Player from 'Classes/Player';
+import Graph from 'Classes/Graph';
 import ga from './ga';
 
 const worldJson = '{"height":24,"infinite":false,"layers":[{"data":[1,1,1,1,1,1,1,1,1,1,1,1,7,7,7,7,7,7,7,1,1,1,1,1,1,1,1,1,1,1,1,1,7,7,1,1,1,1,1,1,1,1,3,2,2,2,2,2,2,2,2,3,2,2,2,2,2,2,2,2,2,2,2,3,2,2,3,2,2,2,2,2,2,2,3,2,1,1,1,1,1,1,1,3,2,7,1,1,1,1,1,1,1,7,2,3,1,1,3,1,1,1,1,1,1,1,3,2,7,7,7,7,7,7,7,3,2,7,1,1,1,1,1,1,1,7,2,3,1,7,3,1,1,1,7,7,7,7,3,2,2,2,2,2,2,2,2,2,2,7,1,1,1,1,1,1,1,7,2,3,3,2,2,1,1,3,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,7,1,1,1,1,1,1,1,7,2,3,3,1,1,1,1,3,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,7,1,1,1,1,1,1,1,7,2,3,3,7,1,1,1,3,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,7,1,1,1,1,1,1,1,7,2,3,2,2,3,1,1,3,7,7,7,7,7,2,7,7,7,7,7,7,7,7,2,1,1,7,1,7,1,7,1,1,2,3,1,1,3,1,3,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,3,1,7,3,1,3,1,1,1,1,1,1,1,1,1,1,7,7,7,7,7,1,1,1,1,1,1,1,1,1,1,7,3,3,2,2,1,3,7,7,1,7,7,1,1,1,1,3,2,2,2,2,2,1,1,1,1,2,2,2,2,2,2,7,3,3,1,1,7,2,2,2,3,2,2,2,7,7,7,3,1,1,7,7,7,7,7,1,1,2,2,2,2,2,2,7,3,3,7,1,7,7,7,7,3,7,7,7,7,7,7,3,1,3,2,2,2,2,2,1,1,2,2,7,7,7,2,7,3,2,2,3,7,2,2,2,3,2,2,2,7,7,7,3,1,3,1,1,7,7,7,7,7,1,2,2,7,7,2,7,3,1,1,3,7,2,7,2,3,2,7,2,7,7,7,3,1,3,1,3,2,2,2,2,2,1,1,2,2,7,2,7,3,1,7,3,7,2,2,2,3,2,2,2,7,7,7,3,1,3,1,3,1,1,7,7,7,7,7,1,2,2,2,7,3,3,2,2,7,1,1,1,3,1,1,1,7,7,7,3,1,3,1,3,1,3,2,2,2,2,2,1,1,1,1,7,3,3,1,1,7,2,2,2,3,2,2,2,7,7,7,3,1,3,1,3,1,3,1,1,7,7,7,7,7,1,1,7,3,3,7,1,7,2,7,2,3,2,7,2,7,7,7,3,1,3,1,3,1,3,1,3,2,2,2,2,2,1,1,7,3,2,2,3,7,2,7,2,3,2,7,2,7,7,7,3,1,3,1,3,1,3,1,3,1,1,7,7,7,7,7,7,3,1,1,3,7,2,2,2,3,2,2,2,7,7,7,3,1,3,1,3,1,3,1,3,1,3,2,2,2,2,2,7,3,4,1,3,1,1,1,1,3,1,1,1,1,1,1,3,1,3,1,3,1,3,1,3,1,3,1,1,1,1,1,7,3,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],"height":24,"name":"level","opacity":1,"type":"tilelayer","visible":true,"width":32,"x":0,"y":0}],"nextobjectid":10,"orientation":"orthogonal","renderorder":"right-down","tiledversion":"1.1.6","tileheight":32,"tilesets":[{"columns":7,"firstgid":1,"image":"../../assets/tileset.png","imageheight":32,"imagewidth":224,"margin":0,"name":"js13k","spacing":0,"tilecount":7,"tileheight":32,"tileproperties":{"0":{"isStable":false,"name":"air"},"1":{"isStable":true,"name":"floor"},"2":{"isStable":true,"name":"ladder"},"3":{"isStable":false,"name":"door"},"4":{"isStable":false,"name":"player"},"5":{"isStable":false,"name":"enemy"},"6":{"isStable":false,"name":"battery"}},"tilepropertytypes":{"0":{"isStable":"bool","name":"string"},"1":{"isStable":"bool","name":"string"},"2":{"isStable":"bool","name":"string"},"3":{"isStable":"bool","name":"string"},"4":{"isStable":"bool","name":"string"},"5":{"isStable":"bool","name":"string"},"6":{"isStable":"bool","name":"string"}},"tilewidth":32}],"tilewidth":32,"type":"map","version":1,"width":32}';
@@ -1071,115 +1072,6 @@ function checkForExitWin() {
 /* ************ MOVEMENT CODE ********************* */
 
 /* *************** DIJKSTRA CODE ***************** */
-
-/** from: https:// github.com/mburst/dijkstras-algorithm/blob/master/dijkstras.js
- * Basic priority queue implementation. If a better priority queue is wanted/needed,
- * this code works with the implementation in google's closure library (https:// code.google.com/p/closure-library/).
- * Use goog.require('goog.structs.PriorityQueue'); and new goog.structs.PriorityQueue()
- */
-
-function PriorityQueue() {
-  this._nodes = [];
-
-  this.enqueue = function (priority, key) {
-    this._nodes.push({
-      key,
-      priority,
-    });
-  };
-  this.dequeue = function () {
-    return this._nodes.shift().key;
-  };
-  this.sort = function () {
-    this._nodes.sort(function (a, b) {
-      return a.priority - b.priority;
-    });
-  };
-  this.isEmpty = function () {
-    return !this._nodes.length;
-  };
-}
-
-// Pathfinding starts here
-function Graph(vertices) {
-  const INFINITY = 1 / 0;
-
-  this.vertices = vertices;
-
-  this.addVertex = function (name, edges) {
-    this.vertices[name] = edges;
-  };
-
-  this.shortestPath = function (start, finish) {
-    start = start.toString();
-    finish = finish.toString();
-
-    const nodes = new PriorityQueue();
-    const distances = {};
-    const previous = {};
-    let path = [];
-    let smallest;
-    let vertex;
-    let neighbor;
-    let alt;
-
-    for (vertex in this.vertices) {
-      if (vertex === start) {
-        distances[vertex] = 0;
-        nodes.enqueue(0, vertex);
-      } else {
-        distances[vertex] = INFINITY;
-        nodes.enqueue(INFINITY, vertex);
-      }
-
-      previous[vertex] = null;
-    }
-
-    nodes.sort();
-
-    while (!nodes.isEmpty()) {
-      smallest = nodes.dequeue();
-
-      if (smallest === finish) {
-        path = [];
-
-        while (previous[smallest]) {
-          path.push(Number(smallest));
-          smallest = previous[smallest];
-        }
-        break;
-      }
-
-      // This is custom. In this game, at least, we can assume this means
-      // that there is no connected path to the player.
-      if (distances[smallest] === INFINITY && smallest === '0') {
-        break;
-      }
-
-      if (!smallest || distances[smallest] === INFINITY) {
-        continue;
-      }
-
-      for (neighbor in this.vertices[smallest]) {
-        alt = distances[smallest] + this.vertices[smallest][neighbor];
-
-        if (alt < distances[neighbor]) {
-          distances[neighbor] = alt;
-          previous[neighbor] = smallest;
-
-          nodes.enqueue(alt, neighbor);
-          nodes.sort();
-        }
-      }
-    }
-
-    return {
-      path: path.concat([Number(start)]).reverse(),
-      distance: path.length,
-      updated: Date.now(),
-    };
-  };
-}
 
 function stateless() {} // eslint-disable-line
 

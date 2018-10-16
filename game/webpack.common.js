@@ -9,7 +9,12 @@ module.exports = {
   },
   output: {
     filename: '[name].js',
-    path: path.resolve(__dirname, 'dist')
+    path: path.resolve(__dirname, 'dist'),
+  },
+  resolve: {
+    alias: {
+      Classes: path.resolve(__dirname, 'src/classes/'),
+    },
   },
   plugins: [
     new HtmlWebpackPlugin({
