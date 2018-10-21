@@ -16,6 +16,18 @@ module.exports = {
       Classes: path.resolve(__dirname, 'src/classes/'),
     },
   },
+  module: {
+    rules: [
+      {
+        test: /\.(png|jpg|gif)$/i,
+        use: [
+          {
+            loader: 'url-loader',
+          },
+        ],
+      },
+    ],
+  },
   plugins: [
     new HtmlWebpackPlugin({
       template: 'src/index.html',
