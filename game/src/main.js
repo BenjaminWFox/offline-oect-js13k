@@ -12,11 +12,12 @@ const g = ga(
 
 function setup() {
   console.log('We are running the setup. We have g:', g);
-  // console.log('We have the world:', worldJson);
 
   const world = new World(g); // g.makeTiledWorld(worldJson, 'tileset.png');
 
   console.log(world.data);
+
+  console.log('G WORLD', g.world);
 }
 
 g.start();
