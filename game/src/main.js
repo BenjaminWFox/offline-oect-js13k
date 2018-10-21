@@ -13,7 +13,7 @@ const g = ga(
 function setup() {
   console.log('We are running the setup. We have g:', g);
 
-  const world = new World(g); // g.makeTiledWorld(worldJson, 'tileset.png');
+  const world = new World(g);
 
   console.log(world.data);
 

@@ -1,5 +1,5 @@
 import json from '../world.json';
-import tileset from '../tileset.png';
+// import tileset from '../tileset.png';
 
 const World = (function () {
   const _worldData = new WeakMap();
@@ -7,7 +7,7 @@ const World = (function () {
 
   class World {
     constructor(g) {
-      _worldData.set(this, g.makeTiledWorld(json, tileset));
+      _worldData.set(this, g.makeTiledWorld(json, 'tileset.png'));
 
       if (this.data.objects[0].name !== 'levels') {
         throw new Error('Unexpected world format. Levels not found.');
@@ -23,7 +23,6 @@ const World = (function () {
     get levels() {
       return _levelData.get(this);
     }
-
   }
 
   return World;
