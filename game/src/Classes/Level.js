@@ -1,12 +1,13 @@
 const Level = (function () {
   // const _privateInstanceNumber = new WeakMap();
   const _levelScene = new WeakMap();
+  const _levelNumber = new WeakMap();
   // const _privateNumberPrint = function (iM, sM) {
   //   console.log('Instance:', iM, 'Static:', sM);
   // };
 
   class Level {
-    constructor(data, types, g) {
+    constructor(data, g) {
       this.spritesByType = {};
 
       const scene = g.group();
@@ -14,18 +15,24 @@ const Level = (function () {
       console.log('Making a new level:', data);
 
       data.children.forEach(sprite => {
-        console.log('ADDING SPRITE', sprite.name);
+        // addChild removes the child from its parent.
+        // undesireable in this case, as the level data shouldn't be modified.
         delete sprite.parent;
         scene.addChild(sprite);
 
-        this.categorizeSprite(sprite, types);
+        this.categorizeSprite(sprite, g.tileTypes);
       });
 
       _levelScene.set(this, scene);
+      _levelNumber.set(this, parseInt(data.name, 10));
     }
 
     get scene() {
       return _levelScene.get(this);
+    }
+
+    get number() {
+      return _levelNumber.get(this);
     }
 
     categorizeSprite(sprite, types) {

@@ -1,8 +1,8 @@
 import ga from './ga';
 import World from 'Classes/World';
-// import tileset from './tileset.png';
+import Level from 'Classes/Level';
 
-//  All of your game code will go here
+// Initialize GA instance
 const g = ga(
   1024, 768, setup,
   [
@@ -10,14 +10,70 @@ const g = ga(
   ],
 );
 
+// Simple refresh-reset
+document.getElementById('restart').addEventListener('click', () => {
+  location.reload();
+});
+
+// // Game configuration object
+// const config = {
+//   playerMoveSpeed: 150,
+//   enemyMoveSpeed: 250,
+//   blockRespawnSpeed: 3300,
+//   pathUpdateFrequency: 500,
+//   enemyUnstuckSpeed: undefined,
+//   allowFallingKills: false,
+//   difficulties: {
+//     playground: 'playground',
+//     easy: 'easy',
+//     normal: 'normal',
+//     hard: 'hard',
+//   },
+//   difficulty: undefined,
+// };
+// //  Left arrow key `press` method
+// const directions = {
+//   up: 'u',
+//   down: 'd',
+//   left: 'l',
+//   right: 'r',
+//   current: 'c',
+//   still: 'still',
+// };
+// // Reference and track batteries
+// const batteryHash = {};
+// let totalBatteries = 0;
+// let collectedBatteries = 0;
+// // Reference and track blocks
+// const destroyedBlocks = {
+//   queue: [],
+//   hash: {},
+// };
+// const closingBlocks = [];
+// // Reference available exits
+// const exitHash = {};
+
+// THE GAME needs to know, on a per-level basis:
+// Batteries
+// Enemies
+// Exits
+// Player
+// Floors
+
 function setup() {
   console.log('We are running the setup. We have g:', g);
 
   const world = new World(g);
+  const levels = [];
 
-  console.log(world.data);
+  world.levelData.forEach(level => {
+    const l = new Level(level, g);
 
-  console.log('G WORLD', g.world);
+    l.scene.visible = false;
+    levels.push(l);
+  });
+
+  console.log('World & Level', world, levels);
 }
 
 g.start();
