@@ -2455,6 +2455,8 @@ GA.create = function(width, height, setup, assetsToLoad, load) {
     ladder: 'ladder',
     door: 'door',
     battery: 'battery',
+    player: 'player',
+    enemy: 'enemy',
   };
 
   // #### getIndex
@@ -2907,7 +2909,6 @@ GA.create = function(width, height, setup, assetsToLoad, load) {
   */
 
   ga.makeTiledWorld = function(tiledMap, tileset) {
-    console.log('make tiled world');
     //Create a group called `world` to contain all the layers, sprites
     //and objects from the `tiledMap`. The `world` object is going to be
     //returned to the main game program
@@ -3145,8 +3146,6 @@ GA.create = function(width, height, setup, assetsToLoad, load) {
     //That's it, we're done!
     //Finally, return the `world` object back to the game program
     ga.world = world;
-
-    console.log(ga, ga.world);
 
     return world;
   };
