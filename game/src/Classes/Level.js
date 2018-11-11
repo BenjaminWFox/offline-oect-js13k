@@ -8,7 +8,8 @@ const Level = (function () {
 
   class Level {
     constructor(data, g) {
-      this.spritesByType = {};
+      console.log('Level Constructor');
+      this.sprites = {};
 
       const scene = g.group();
 
@@ -43,12 +44,20 @@ const Level = (function () {
           throw new Error(`Sprite type mismatch. [${type}] not found in types array.`);
         }
 
-        if (!this.spritesByType.hasOwnProperty(type)) {
-          this.spritesByType[type] = [];
+        if (!this.sprites.hasOwnProperty(type)) {
+          this.sprites[type] = [];
         }
 
-        this.spritesByType[type].push(sprite);
+        this.sprites[type].push(sprite);
       }
+    }
+
+    renderToGroup(group) {
+      Object.keys(this.sprites).forEach(key => {
+        this.sprites[key].forEach(sprite => {
+          group.addChild(sprite);
+        });
+      });
     }
   }
 

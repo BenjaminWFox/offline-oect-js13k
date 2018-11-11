@@ -1,6 +1,6 @@
 import ga from './ga';
 import World from 'Classes/World';
-import Level from 'Classes/Level';
+// import Level from 'Classes/Level';
 
 // Initialize GA instance
 const g = ga(
@@ -64,16 +64,12 @@ function setup() {
   console.log('We are running the setup. We have g:', g);
 
   const world = new World(g);
-  const levels = [];
 
-  world.levelData.forEach(level => {
-    const l = new Level(level, g);
+  world.buildLevels(g);
 
-    l.scene.visible = false;
-    levels.push(l);
-  });
+  world.renderLevel(1);
 
-  console.log('World & Level', world, levels);
+  console.log('World & Level', world, world.levels);
 }
 
 g.start();
