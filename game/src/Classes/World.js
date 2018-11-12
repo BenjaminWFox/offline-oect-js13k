@@ -24,20 +24,39 @@ const World = (function () {
       }
     }
 
+    /**
+     * Getter to read the raw worldData from makeTiledWorld
+     * @return {Object} makeTiledWorld return object
+     */
     get data() {
       return _worldData.get(this);
     }
 
+    /**
+     * Getter to read the raw levelData
+     * @return {Object} levels object extracted from the worldData object
+     */
     get levelData() {
       return _levelData.get(this);
     }
 
+    /**
+     * Returns the total number of levels
+     * @return {Number} the number of levels
+     */
     get totalLevels() {
-      return _totalLevels.get(this);
+      if (this.levels.length !== _totalLevels.get(this)) {
+        return new Error(`Level data mismatch. Array length (${this.levels.length}) !== totalLevels (${_totalLevels.get(this)})`);
+      }
+
+      return this.levels.length;
+    }
+
+    level(levelNumber) {
+      return this.levels[levelToIndex(levelNumber)];
     }
 
     buildLevels(g) {
-      console.log('buildLevels');
       this.levelData.forEach(level => {
         const l = new Level(level, g);
 
@@ -47,12 +66,19 @@ const World = (function () {
     }
 
     renderLevel(levelNumber) {
-      const levelIdx = levelNumber - 1;
-
-      console.log(this.levelData);
+      const levelIdx = levelToIndex(levelNumber);
 
       this.levels[levelIdx].renderToGroup(this.levelGroup);
     }
+  }
+
+  /**
+   * Converts a level number into the appropriate index to pull it from the levels array
+   * @param  {Number} lvl A level number
+   * @return {Number}     An index number
+   */
+  function levelToIndex(lvl) {
+    return lvl - 1;
   }
 
   return World;

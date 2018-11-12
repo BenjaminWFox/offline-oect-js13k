@@ -2450,7 +2450,7 @@ GA.create = function(width, height, setup, assetsToLoad, load) {
 
   // CONFIG
   ga.tileTypes = {
-    air: 'air',
+    air: undefined,
     floor: 'floor',
     ladder: 'ladder',
     door: 'door',
@@ -2479,6 +2479,33 @@ GA.create = function(width, height, setup, assetsToLoad, load) {
     return index.x + (index.y * mapWidthInTiles);
   };
 
+  /*
+  #### surroundingCells
+  The `surroundingCells` helper method returns an array containing 9
+  index numbers of map array cells around any given index number.
+  Use it for an efficient broadphase/narrowphase collision test.
+  The 2 arguments are the index number that represents the center cell,
+  and the width of the map array.
+  */
+  ga.surroundingCells = function (index, widthInTiles) {
+    return [
+      index - widthInTiles - 1,
+      index - widthInTiles,
+      index - widthInTiles + 1,
+      index - 1,
+      index,
+      index + 1,
+      index + widthInTiles - 1,
+      index + widthInTiles,
+      index + widthInTiles + 1,
+    ];
+  };
+
+  /**
+   * returns an object containing surrounding cells in all directions used for 'Offline' game.
+   * @param  {[type]} index [description]
+   * @return {[type]}       [description]
+   */
   ga.getAdjacentTiles = function (index) {
     console.log('getting all tiles');
 

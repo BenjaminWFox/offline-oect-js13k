@@ -1,5 +1,16 @@
+/* TODO:
+- Prevent directly adding new levels to World
+- Load/separate player sprite from level
+- Add player movement
+- Load/separate enemy sprites from level
+- Add enemy movement
+ */
+
 import ga from './ga';
 import World from 'Classes/World';
+import Player from 'Classes/Player';
+import MoveManager from 'Classes/MoveManager';
+import {configDifficulties, configValues} from 'Classes/Settings';
 // import Level from 'Classes/Level';
 
 // Initialize GA instance
@@ -10,66 +21,42 @@ const g = ga(
   ],
 );
 
+let world;
+let player;
+const mm = MoveManager.getInstance(g);
+const difficulty = configDifficulties.normal;
+const settings = configValues[difficulty];
+
+console.log('Settings', configDifficulties, configValues);
+
 // Simple refresh-reset
 document.getElementById('restart').addEventListener('click', () => {
   location.reload();
 });
 
-// // Game configuration object
-// const config = {
-//   playerMoveSpeed: 150,
-//   enemyMoveSpeed: 250,
-//   blockRespawnSpeed: 3300,
-//   pathUpdateFrequency: 500,
-//   enemyUnstuckSpeed: undefined,
-//   allowFallingKills: false,
-//   difficulties: {
-//     playground: 'playground',
-//     easy: 'easy',
-//     normal: 'normal',
-//     hard: 'hard',
-//   },
-//   difficulty: undefined,
-// };
-// //  Left arrow key `press` method
-// const directions = {
-//   up: 'u',
-//   down: 'd',
-//   left: 'l',
-//   right: 'r',
-//   current: 'c',
-//   still: 'still',
-// };
-// // Reference and track batteries
-// const batteryHash = {};
-// let totalBatteries = 0;
-// let collectedBatteries = 0;
-// // Reference and track blocks
-// const destroyedBlocks = {
-//   queue: [],
-//   hash: {},
-// };
-// const closingBlocks = [];
-// // Reference available exits
-// const exitHash = {};
-
-// THE GAME needs to know, on a per-level basis:
-// Batteries
-// Enemies
-// Exits
-// Player
-// Floors
-
 function setup() {
   console.log('We are running the setup. We have g:', g);
 
-  const world = new World(g);
-
+  world = new World(g);
   world.buildLevels(g);
-
   world.renderLevel(1);
 
-  console.log('World & Level', world, world.levels);
+  player = new Player(settings.playerMoveSpeed, world.level(1), g);
+
+  mm.updateSettings(settings);
+
+  // Initializes state on the gameLoop
+  g.state = gameLoop;
 }
 
+function gameLoop() {
+  // Based on prior version, 4 things need to happen here:
+  // 1. Check if players/enemies are in closing blocks
+  // 2. Move the player
+  // 3. Move all the enemies
+  // 4. Respawn blocks
+  mm.move(player);
+}
+
+// Calls 'setup' function
 g.start();
