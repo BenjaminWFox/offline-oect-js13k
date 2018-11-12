@@ -28,14 +28,26 @@ const MoveManager = (function () {
       return didMove;
     }
 
+    /**
+     * a method interface for accessing the `settings` setter
+     * @param  {Object} valuesObj  An object containing settings values from the Settings.js calss
+     */
     updateSettings(valuesObj) {
       this.settings = valuesObj;
     }
 
+    /**
+     * getter for private variable _settings
+     * @return {Object} An object containing settings values stored for movement
+     */
     get settings() {
       return _settings.get(MoveManager);
     }
 
+    /**
+     * setter for private variable _settings
+     * @param  {Object} values  An object containing settings values from the Settings.js calss
+     */
     set settings(values) {
       _settings.set(MoveManager, values);
     }
@@ -72,7 +84,7 @@ const MoveManager = (function () {
       }
     }
 
-    moveOneTile(obj) { // sprite, currentTileIndex, dir) {
+    moveOneTile(obj) {
       const moveDir = obj.movement.falling ? directions.down.code : obj.movement.direction;
       const currentTile = this.g.getAdjacentTile(obj.currentTile, directions.current);
       const moveToTile = this.g.getAdjacentTile(obj.currentTile, moveDir);

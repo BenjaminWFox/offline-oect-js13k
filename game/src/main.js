@@ -1,9 +1,11 @@
 /* TODO:
 - Prevent directly adding new levels to World
-- Load/separate player sprite from level
-- Add player movement
+- Turn Player.js into generic parent class for both Enemy & Player [or just create PC.js & NPC.js]
+- Refactor player code into child class of the new parent
 - Load/separate enemy sprites from level
 - Add enemy movement
+- Add block pickup/collision mechanic
+- Add block destruction/respawn mechanic
  */
 
 import ga from './ga';

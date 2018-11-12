@@ -7,9 +7,7 @@ const Player = (function () {
     constructor(moveSpeed, level, g) {
       this.sprite = level.sprites.player[0];
       this.moveSpeed = moveSpeed;
-      this.hasStarted = false;
       this.dead = false;
-      this.won = false;
       this.landingTile = undefined;
       this.lastMove = Date.now();
       this.currentTile = g.getSpriteIndex(this.sprite);
@@ -18,6 +16,10 @@ const Player = (function () {
         moving: false,
         direction: 'still',
       };
+
+      // Player only
+      this.hasStarted = false;
+      this.won = false;
 
       // Assign all keypresses to player based off values in directions
       Object.entries(directions).forEach(pair => {
