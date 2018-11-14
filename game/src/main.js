@@ -27,6 +27,7 @@ const g = ga(
 let world;
 let player;
 let sounds;
+let levelNumber = 1;
 const mm = MoveManager.getInstance(g);
 const difficulty = configDifficulties.normal;
 const settings = configValues[difficulty];
@@ -43,7 +44,12 @@ function setup() {
 
   world = new World(g);
   world.buildLevels(g);
-  world.renderLevel(1);
+  world.renderLevel(levelNumber);
+
+  // world.currentLevel.batteries = {}
+  // ...
+
+  console.log('WORLD', world.currentLevel.batteries);
 
   player = new Player(settings.playerMoveSpeed, world.level(1), g);
 
