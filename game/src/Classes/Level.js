@@ -2,6 +2,7 @@ const Level = (function () {
   // const _privateInstanceNumber = new WeakMap();
   const _levelScene = new WeakMap();
   const _levelNumber = new WeakMap();
+  const _batteries = new WeakMap();
   // const _privateNumberPrint = function (iM, sM) {
   //   console.log('Instance:', iM, 'Static:', sM);
   // };
@@ -12,6 +13,7 @@ const Level = (function () {
       this.sprites = {};
 
       const scene = g.group();
+      const batteries = {};
 
       console.log('Making a new level:', data);
 
@@ -24,6 +26,19 @@ const Level = (function () {
         this.categorizeSprite(sprite, g.tileTypes);
       });
 
+      batteries.array = this.sprites.battery;
+      batteries.total = batteries.array.length;
+      batteries.collected = 0;
+      batteries.hash = {};
+      batteries.array.forEach((battery, idx) => {
+        batteries.hash[battery.index] = idx;
+      });
+
+      _batteries.set(this, batteries);
+      // .....
+
+      console.log('batteries', batteries);
+
       _levelScene.set(this, scene);
       _levelNumber.set(this, parseInt(data.name, 10));
     }
@@ -34,6 +49,10 @@ const Level = (function () {
 
     get number() {
       return _levelNumber.get(this);
+    }
+
+    get batteries() {
+      return _batteries.get(this);
     }
 
     categorizeSprite(sprite, types) {
