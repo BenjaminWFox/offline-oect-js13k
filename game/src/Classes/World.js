@@ -5,13 +5,13 @@ const World = (function () {
   const _worldData = new WeakMap();
   const _levelData = new WeakMap();
   const _totalLevels = new WeakMap();
+  const _renderedLevel = new WeakMap();
 
   class World {
     constructor(g) {
       console.log('World Constructor');
       this.levels = [];
       this.levelGroup = g.group();
-      // this.g = g;
 
       _worldData.set(this, g.makeTiledWorld(json, 'tileset.png'));
 
@@ -52,6 +52,10 @@ const World = (function () {
       return this.levels.length;
     }
 
+    get currentLevel() {
+      return _renderedLevel.get(this);
+    }
+
     level(levelNumber) {
       return this.levels[levelToIndex(levelNumber)];
     }
@@ -69,6 +73,8 @@ const World = (function () {
       const levelIdx = levelToIndex(levelNumber);
 
       this.levels[levelIdx].renderToGroup(this.levelGroup);
+
+      _renderedLevel.set(this, this.levels[levelIdx]);
     }
   }
 
