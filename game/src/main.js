@@ -12,6 +12,7 @@ import ga from './ga';
 import World from 'Classes/World';
 import Player from 'Classes/Player';
 import MoveManager from 'Classes/MoveManager';
+import Sounds from 'Classes/Sound';
 import {configDifficulties, configValues} from 'Classes/Settings';
 // import Level from 'Classes/Level';
 
@@ -25,6 +26,7 @@ const g = ga(
 
 let world;
 let player;
+let sounds;
 const mm = MoveManager.getInstance(g);
 const difficulty = configDifficulties.normal;
 const settings = configValues[difficulty];
@@ -44,6 +46,8 @@ function setup() {
   world.renderLevel(1);
 
   player = new Player(settings.playerMoveSpeed, world.level(1), g);
+
+  sounds = new Sounds(Sounds.context);
 
   mm.updateSettings(settings);
 
