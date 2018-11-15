@@ -18,11 +18,12 @@ const MoveManager = (function () {
       let didMove = false;
 
       if ((obj.movement.falling || obj.movement.direction !== directions.still) && obj.lastMove < now - obj.moveSpeed) {
-        console.log('Moving object', obj.sprite.name);
+        // console.log('Moving object', obj.sprite.name);
         didMove = this.moveOneTile(obj);
 
         obj.lastMove = now;
-        console.log('Did move?', didMove);
+        console.log(obj.currentTile);
+        // console.log('Did move?', didMove);
       }
 
       return didMove;
@@ -104,10 +105,10 @@ const MoveManager = (function () {
         obj.currentTile = nextTileIndex;
 
         if (this.isFalling(obj)) {
-          console.log('falling');
+          // console.log('falling');
           obj.movement.falling = true;
         } else {
-          console.log('not falling');
+          // console.log('not falling');
           obj.movement.falling = false;
         }
 

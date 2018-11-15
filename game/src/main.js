@@ -68,6 +68,7 @@ function gameLoop() {
   // 3. Move all the enemies
   // 4. Respawn blocks
   mm.move(player);
+  world.currentLevel.checkForBatteryPickup(player.currentTile);
 }
 
 // Calls 'setup' function

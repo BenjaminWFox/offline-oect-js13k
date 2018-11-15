@@ -1,3 +1,5 @@
+import BatteryManager from 'Classes/BatteryManager';
+
 const Level = (function () {
   // const _privateInstanceNumber = new WeakMap();
   const _levelScene = new WeakMap();
@@ -13,7 +15,6 @@ const Level = (function () {
       this.sprites = {};
 
       const scene = g.group();
-      const batteries = {};
 
       console.log('Making a new level:', data);
 
@@ -26,18 +27,18 @@ const Level = (function () {
         this.categorizeSprite(sprite, g.tileTypes);
       });
 
-      batteries.array = this.sprites.battery;
-      batteries.total = batteries.array.length;
-      batteries.collected = 0;
-      batteries.hash = {};
-      batteries.array.forEach((battery, idx) => {
-        batteries.hash[battery.index] = idx;
-      });
+      // batteries.array = this.sprites.battery;
+      // batteries.total = batteries.array.length;
+      // batteries.collected = 0;
+      // batteries.hash = {};
+      // batteries.array.forEach((battery, idx) => {
+      //   batteries.hash[battery.index] = idx;
+      // });
 
-      _batteries.set(this, batteries);
-      // .....
+      _batteries.set(this, new BatteryManager(this.sprites.battery));
 
-      console.log('batteries', batteries);
+      // Now available via getter
+      console.log('batteries', this.batteries);
 
       _levelScene.set(this, scene);
       _levelNumber.set(this, parseInt(data.name, 10));
@@ -77,6 +78,12 @@ const Level = (function () {
           group.addChild(sprite);
         });
       });
+    }
+
+    checkForBatteryPickup(tileIdx) {
+      if (this.batteries.checkForPickup(tileIdx)) {
+        console.log('Done?', this.batteries.allCollected);
+      }
     }
   }
 
