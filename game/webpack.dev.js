@@ -8,6 +8,7 @@ module.exports = merge(common, {
     contentBase: './dist',
     watchOptions: {
       poll: true,
+      // poll: 1000, // option in ms if true is hard on the filesystem
     },
   },
 });
