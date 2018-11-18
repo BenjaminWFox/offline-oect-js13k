@@ -1,4 +1,5 @@
 import directions from 'Classes/Directions';
+import BlockManager from 'Classes/BlockManager';
 
 const Player = (function () {
   // const _direction = new WeakMap();
@@ -12,7 +13,7 @@ const Player = (function () {
       this.lastMove = Date.now();
       this.currentTile = g.getSpriteIndex(this.sprite);
       this.movement = {
-        falling: false,
+        falling: BlockManager.getBlock(this.currentTile, directions.down).isStable,
         moving: false,
         direction: 'still',
       };
@@ -37,6 +38,16 @@ const Player = (function () {
           };
         }
       });
+
+      g.key.a.press = function () {
+        // console.log('CURRENT TILE!', this.currentTile);
+        BlockManager.destroyBlock(this.currentTile, 'dl');
+      }.bind(this);
+
+      g.key.d.press = function () {
+        // console.log('CURRENT TILE!', this.currentTile);
+        BlockManager.destroyBlock(this.currentTile, 'dr');
+      }.bind(this);
     }
 
     updateMovement(dir) {

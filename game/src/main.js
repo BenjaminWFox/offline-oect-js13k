@@ -12,7 +12,8 @@ import ga from './ga';
 import World from 'Classes/World';
 import Player from 'Classes/Player';
 import MoveManager from 'Classes/MoveManager';
-import Sounds from 'Classes/Sound';
+import BlockManager from 'Classes/BlockManager';
+// import Sounds from 'Classes/Sound';
 import {configDifficulties, configValues} from 'Classes/Settings';
 // import Level from 'Classes/Level';
 
@@ -26,11 +27,12 @@ const g = ga(
 
 let world;
 let player;
-let sounds;
-let levelNumber = 1;
-const mm = MoveManager.getInstance(g);
+// let sounds;
+const levelNumber = 4;
 const difficulty = configDifficulties.normal;
 const settings = configValues[difficulty];
+const mm = MoveManager.getInstance(g);
+const bm = BlockManager.getInstance(g, settings.respawnTimer);
 
 console.log('Settings', configDifficulties, configValues);
 
@@ -46,19 +48,30 @@ function setup() {
   world.buildLevels(g);
   world.renderLevel(levelNumber);
 
-  // world.currentLevel.batteries = {}
-  // ...
+  player = new Player(settings.playerMoveSpeed, world.level(levelNumber), g);
 
-  console.log('WORLD', world.currentLevel.batteries);
+  console.log('PLAYER CREATED:', player.currentTile);
 
-  player = new Player(settings.playerMoveSpeed, world.level(1), g);
-
-  sounds = new Sounds(Sounds.context);
+  // sounds = new Sounds(Sounds.context);
 
   mm.updateSettings(settings);
+  bm.updateSettings(settings);
+  bm.setBlocks(world.level(levelNumber).sprites);
 
   // Initializes state on the gameLoop
   g.state = gameLoop;
+
+  // Easy tile debugging
+  const pointer = g.pointer;
+
+  pointer.press = function () {
+    const index = g.getIndex(pointer.centerX, pointer.centerY, 32, 32, 32);
+    const currentCoords = g.getTile(index, g.world.objects[0].data, g.world);
+
+    console.log(`${index} [${currentCoords.x}, ${currentCoords.y}]`);
+    console.log('Tile:', BlockManager.getBlock(index));
+  };
+
 }
 
 function gameLoop() {

@@ -1,4 +1,5 @@
 import BatteryManager from 'Classes/BatteryManager';
+// import BlockManager from 'Classes/BlockManager';
 
 const Level = (function () {
   // const _privateInstanceNumber = new WeakMap();
@@ -16,7 +17,7 @@ const Level = (function () {
 
       const scene = g.group();
 
-      console.log('Making a new level:', data);
+      // console.log('Making a new level:', data);
 
       data.children.forEach(sprite => {
         // addChild removes the child from its parent.
@@ -27,18 +28,10 @@ const Level = (function () {
         this.categorizeSprite(sprite, g.tileTypes);
       });
 
-      // batteries.array = this.sprites.battery;
-      // batteries.total = batteries.array.length;
-      // batteries.collected = 0;
-      // batteries.hash = {};
-      // batteries.array.forEach((battery, idx) => {
-      //   batteries.hash[battery.index] = idx;
-      // });
-
       _batteries.set(this, new BatteryManager(this.sprites.battery));
 
       // Now available via getter
-      console.log('batteries', this.batteries);
+      // console.log('batteries', this.batteries);
 
       _levelScene.set(this, scene);
       _levelNumber.set(this, parseInt(data.name, 10));

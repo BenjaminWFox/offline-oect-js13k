@@ -1,4 +1,5 @@
 import directions from 'Classes/Directions';
+import BlockManager from 'Classes/BlockManager';
 
 const MoveManager = (function () {
   const _settings = new WeakMap();
@@ -87,8 +88,8 @@ const MoveManager = (function () {
 
     moveOneTile(obj) {
       const moveDir = obj.movement.falling ? directions.down.code : obj.movement.direction;
-      const currentTile = this.g.getAdjacentTile(obj.currentTile, directions.current);
-      const moveToTile = this.g.getAdjacentTile(obj.currentTile, moveDir);
+      const currentTile = BlockManager.getBlock(obj.currentTile);
+      const moveToTile = BlockManager.getBlock(obj.currentTile, moveDir);
 
       const canMove = this.canMoveFromTo(obj, currentTile, moveToTile);
 
@@ -120,10 +121,10 @@ const MoveManager = (function () {
     }
 
     isFalling(obj) {
-      const thisTile = this.g.getAdjacentTile(obj.currentTile, directions.current);
-      const belowTile = this.g.getAdjacentTile(obj.currentTile, directions.down.code);
+      const thisTile = BlockManager.getBlock(obj.currentTile);
+      const belowTile = BlockManager.getBlock(obj.currentTile, directions.down.code);
 
-      if (thisTile.type !== this.g.tileTypes.ladder && !belowTile.isStable && belowTile.index) {// adjacentTiles.d.type === this.g.tileTypes.air) {
+      if (!belowTile.isStable && belowTile.index && thisTile.type !== this.g.tileTypes.ladder) {// adjacentTiles.d.type === this.g.tileTypes.air) {
         //  sprite.movement.falling = true;
         return true;
       }
