@@ -1,13 +1,20 @@
 const BlockManager = (function (g) {
   class BlockManager {
     constructor(g) {
+      console.log('Constructing BlockManager');
       this.g;
       if (g) {
         this.g = g;
       }
+      this._fps = this.g._fps;
       this._blockHash = {};
-      // this._destroyedBlocksQueue = [];
+      this._closingBlocks = [];
       this._destroyedBlocksHash = {};
+      this._destroyedBlocksQueue = [];
+      this._fadeOutFrames = 15;
+      this._fadeInFrames = 10;
+      this._fadeOutMS = this._fadeOutFrames * (1000 / this._fps);
+      this._fadeInMS = this._fadeInFrames * (1000 / this._fps);
       this._monitoredTypes = [
         g.tileTypes.floor,
         g.tileTypes.door,
@@ -16,42 +23,67 @@ const BlockManager = (function (g) {
 
       this.blocksObject = undefined;
       this.respawnTime = 3000;
-      console.log('constructed BM', this.g);
     }
 
     updateSettings(settings) {
       this.respawnTime = settings.blockRespawnSpeed;
     }
 
+    updateBlocks() {
+      if (this._destroyedBlocksQueue.length) {
+        const now = Date.now();
+
+        if (now > this._destroyedBlocksQueue[0].destroyedAt + this.respawnTime) {
+          this._restoreBlock(this._destroyedBlocksQueue[0].idx);
+        }
+      }
+    }
+
     setBlocks(blockSpritesObject) {
       this.blocksObject = this.blockArray ? this.blockArray : blockSpritesObject;
-
       this._monitoredTypes.forEach(type => {
         this.blocksObject[type].forEach(block => {
           this._blockHash[block.index] = block;
         });
       });
-
-      // console.log('Blocks are set', this.blockArray);
-      console.log('Block hash is set', this._blockHash);
     }
 
     setBlockType(block, type) {
       block.name = type;
       block.type = type;
+      // This can be used for an `onComplete = Fn` event if needed
+      // let tween;
 
       switch (type) {
         case this.g.tileTypes.floor:
-          block.visible = true;
+          this.g.fadeIn(block, this._fadeInFrames);
           block.isStable = true;
+          this.g.wait(this._fadeInMS * .8, () => {
+            makeStable(block);
+            removeFromClosing.call(this, block.index);
+          });
           break;
         case this.g.tileTypes.air:
-          block.visible = false;
-          block.isStable = false;
+          this.g.fadeOut(block, this._fadeOutFrames);
+          makeUnstable(block);
           break;
         default:
           return false;
       }
+
+      function makeUnstable(block) {
+        block.isStable = false;
+      }
+      function makeStable(block) {
+        block.isStable = true;
+      }
+      function removeFromClosing(idx) {
+        this._closingBlocks.splice(this._closingBlocks.indexOf(idx), 1);
+      }
+    }
+
+    get closingBlocks() {
+      return this._closingBlocks;
     }
 
     _getBlock(idx, inDir = undefined) {
@@ -68,16 +100,8 @@ const BlockManager = (function (g) {
       const tileToDestroy = this._getBlock(fromTileIdx, dir);
 
       if (this._canDestroy(tileToDestroy)) {
-        console.log('Destroying a tile!');
-
         this.setBlockType(this._blockHash[tileToDestroy.index], this.g.tileTypes.air);
-
-        this._addIdxToHash(tileToDestroy.index);
-
-        // this._addBlockToQueue();
-        this.g.wait(this.respawnTime, () => {
-          this._restoreBlock(tileToDestroy.index);
-        });
+        this._addToDBTrackers(tileToDestroy.index);
       }
     }
 
@@ -86,17 +110,20 @@ const BlockManager = (function (g) {
     }
 
     _restoreBlock(blockTileIdx) {
+      this._closingBlocks.push(blockTileIdx);
       this.setBlockType(this._blockHash[blockTileIdx], this.g.tileTypes.floor);
-
-      this._removeIdxFromHash(blockTileIdx);
+      this._removeFromDBTrackers(blockTileIdx);
     }
 
-    _addIdxToHash(idx) {
+    _addToDBTrackers(idx) {
+      const obj = {idx, destroyedAt: Date.now()};
+
       this._destroyedBlocksHash[idx] = idx;
+      this._destroyedBlocksQueue.push(obj);
     }
 
-    _removeIdxFromHash(idx) {
-      delete this._destroyedBlocksHash[idx];
+    _removeFromDBTrackers(idx) {
+      delete this._destroyedBlocksHash[this._destroyedBlocksQueue.shift().idx];
     }
   }
 

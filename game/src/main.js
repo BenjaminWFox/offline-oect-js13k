@@ -80,8 +80,17 @@ function gameLoop() {
   // 2. Move the player
   // 3. Move all the enemies
   // 4. Respawn blocks
+  bm.updateBlocks();
   mm.move(player);
+  checkClosingBlocks(player, bm.closingBlocks);
   world.currentLevel.checkForBatteryPickup(player.currentTile);
+}
+
+function checkClosingBlocks(player, closingBlocks) {
+  if (closingBlocks.indexOf(player.currentTile) !== -1) {
+    // This would be a game over
+    g.pause();
+  }
 }
 
 // Calls 'setup' function

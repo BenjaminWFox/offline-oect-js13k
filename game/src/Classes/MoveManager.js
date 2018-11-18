@@ -6,6 +6,7 @@ const MoveManager = (function () {
 
   class MoveManager {
     constructor(g) {
+      console.log('Constructing MoveManager');
       this.g = g;
     }
 
@@ -124,9 +125,18 @@ const MoveManager = (function () {
       const thisTile = BlockManager.getBlock(obj.currentTile);
       const belowTile = BlockManager.getBlock(obj.currentTile, directions.down.code);
 
-      if (!belowTile.isStable && belowTile.index && thisTile.type !== this.g.tileTypes.ladder) {// adjacentTiles.d.type === this.g.tileTypes.air) {
+      console.log('Checking for FALLING', obj.currentTile);
+      if (!belowTile.isStable && belowTile.index && thisTile.type !== this.g.tileTypes.ladder && !thisTile.isStable) {// adjacentTiles.d.type === this.g.tileTypes.air) {
         //  sprite.movement.falling = true;
+        console.log('YES IM FALLING', obj.currentTile);
+        console.log('Below Tile Data:', belowTile.index, belowTile.isStable, belowTile.type);
+
         return true;
+      }
+
+      // This is where the block has closed around the obj after the obj has entered the block space
+      if (thisTile.type !== this.g.tileTypes.ladder && thisTile.isStable) {
+        console.log('You\'re beached mate!');
       }
 
       //  sprite.movement.falling = false;
