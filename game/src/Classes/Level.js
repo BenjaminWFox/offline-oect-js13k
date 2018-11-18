@@ -12,8 +12,10 @@ const Level = (function () {
 
   class Level {
     constructor(data, g) {
-      console.log('Level Constructor');
       this.sprites = {};
+
+      // Make sure no level starts visible
+      data.visible = false;
 
       const scene = g.group();
 
@@ -66,6 +68,7 @@ const Level = (function () {
     }
 
     renderToGroup(group) {
+      // console.log('Rendering to group', this.sprites);
       Object.keys(this.sprites).forEach(key => {
         this.sprites[key].forEach(sprite => {
           group.addChild(sprite);

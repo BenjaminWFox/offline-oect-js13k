@@ -70,6 +70,7 @@ const World = (function () {
     }
 
     renderLevel(levelNumber) {
+      // console.log('Rendering level', levelNumber);
       const levelIdx = levelToIndex(levelNumber);
 
       this.levels[levelIdx].renderToGroup(this.levelGroup);

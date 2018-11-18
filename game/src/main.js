@@ -28,7 +28,7 @@ const g = ga(
 let world;
 let player;
 // let sounds;
-const levelNumber = 4;
+const levelNumber = 1;
 const difficulty = configDifficulties.normal;
 const settings = configValues[difficulty];
 const mm = MoveManager.getInstance(g);
@@ -66,9 +66,9 @@ function setup() {
 
   pointer.press = function () {
     const index = g.getIndex(pointer.centerX, pointer.centerY, 32, 32, 32);
-    const currentCoords = g.getTile(index, g.world.objects[0].data, g.world);
+    // const currentCoords = g.getTile(index, g.world.objects[0].data, g.world);
 
-    console.log(`${index} [${currentCoords.x}, ${currentCoords.y}]`);
+    console.log(`${index}`);
     console.log('Tile:', BlockManager.getBlock(index));
   };
 
