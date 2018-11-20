@@ -13,6 +13,7 @@ import World from 'Classes/World';
 import Player from 'Classes/Player';
 import MoveManager from 'Classes/MoveManager';
 import BlockManager from 'Classes/BlockManager';
+import GraphManager from 'Classes/GraphManager';
 // import Sounds from 'Classes/Sound';
 import {configDifficulties, configValues} from 'Classes/Settings';
 // import Level from 'Classes/Level';
@@ -33,6 +34,7 @@ const difficulty = configDifficulties.normal;
 const settings = configValues[difficulty];
 const mm = MoveManager.getInstance(g);
 const bm = BlockManager.getInstance(g, settings.respawnTimer);
+const gm = GraphManager.getInstance(g);
 
 console.log('Settings', configDifficulties, configValues);
 
@@ -48,6 +50,8 @@ function setup() {
   world.buildLevels(g);
   world.renderLevel(levelNumber);
 
+  console.log('g.world created', g.world.objects);
+
   player = new Player(settings.playerMoveSpeed, world.level(levelNumber), g);
 
   console.log('PLAYER CREATED:', player.currentTile);
@@ -57,6 +61,7 @@ function setup() {
   mm.updateSettings(settings);
   bm.updateSettings(settings);
   bm.setBlocks(world.level(levelNumber).sprites);
+  gm.createLevelGraph(mm.canMovefromTo, bm.blocksObject);
 
   // Initializes state on the gameLoop
   g.state = gameLoop;
@@ -71,7 +76,6 @@ function setup() {
     console.log(`${index}`);
     console.log('Tile:', BlockManager.getBlock(index));
   };
-
 }
 
 function gameLoop() {
