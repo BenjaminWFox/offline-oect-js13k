@@ -1,3 +1,5 @@
+import BlockManager from 'Classes/BlockManager';
+
 const GraphManager = (function () {
   class GraphManager {
     constructor(g) {
@@ -12,44 +14,48 @@ const GraphManager = (function () {
     }
 
     createLevelGraph(fnCanMoveFromTo, lvlBlocksObj) {
-      const graph = {};
-
       this._collectSolidBlocks(lvlBlocksObj);
 
-      //  There should be 48 tiles in the graph
-      //  object[n].index is the unique ID for this tile.
       const objects = this.solidBlocks;
-      const len = objects.length;
+      // const visitedNodes = [];
 
-      // for (let i = 0; i < len; i++) {
-      //   const co = objects[i];
+      const graph = {};
+      // const childGraph = {};
+      let adjTileIndexes;
+      let adjTiles;
 
-      //   if (co.name !== 'level') {
+      while (objects.length) {
+        const co = objects.shift();
+        const indexToFind = co.type === this.g.tileTypes.floor ? co.index - 32 : co.index;
 
-      //     graph[co.index] = {};
-      //     //  These should all be tiles which are walkable.
-      //     const adjTiles = this.g.getAdjacentTiles(co.index);
+        adjTileIndexes = this.g.getAdjacentTiles(indexToFind);
+        adjTiles = BlockManager.getCardinalTilesData(adjTileIndexes);
 
-      //     console.log('Have adjacent tiles!', adjTiles);
-      //     if (adjTiles.d.isStable) {
-      //       if (fnCanMoveFromTo(this.entityMock, adjTiles.c, adjTiles.u)) {
-      //         graph[co.index][adjTiles.u.index] = 1;
-      //       }
-      //       if (fnCanMoveFromTo(this.entityMock, adjTiles.c, adjTiles.d)) {
-      //         graph[co.index][adjTiles.d.index] = 1;
-      //       }
-      //       if (fnCanMoveFromTo(this.entityMock, adjTiles.c, adjTiles.l)) {
-      //         graph[co.index][adjTiles.l.index] = 1;
-      //       }
-      //       if (fnCanMoveFromTo(this.entityMock, adjTiles.c, adjTiles.r)) {
-      //         graph[co.index][adjTiles.r.index] = 1;
-      //       }
-      //     } else if (!adjTiles.d.isStable) {
-      //       graph[co.index][adjTiles.d.index] = 1;
-      //     }
+        if (adjTiles.u.tileTypes === this.g.tileTypes.ladder) {
+          console.log('dont process this node');
+          continue;
+        }
 
-      //   }
-      // }
+        graph[co.index] = {};
+        //  These should all be tiles which are walkable.
+
+        if (adjTiles.d.isStable) {
+          if (fnCanMoveFromTo(this.entityMock, adjTiles.c, adjTiles.u)) {
+            graph[co.index][adjTiles.u.index] = 1;
+          }
+          if (fnCanMoveFromTo(this.entityMock, adjTiles.c, adjTiles.d)) {
+            graph[co.index][adjTiles.d.index] = 1;
+          }
+          if (fnCanMoveFromTo(this.entityMock, adjTiles.c, adjTiles.l)) {
+            graph[co.index][adjTiles.l.index] = 1;
+          }
+          if (fnCanMoveFromTo(this.entityMock, adjTiles.c, adjTiles.r)) {
+            graph[co.index][adjTiles.r.index] = 1;
+          }
+        } else if (!adjTiles.d.isStable) {
+          graph[co.index][adjTiles.d.index] = 1;
+        }
+      }
 
       this.levelGraph = graph;
       console.log('Graph complete', this.levelGraph);

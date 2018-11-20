@@ -61,7 +61,8 @@ function setup() {
   mm.updateSettings(settings);
   bm.updateSettings(settings);
   bm.setBlocks(world.level(levelNumber).sprites);
-  gm.createLevelGraph(mm.canMovefromTo, bm.blocksObject);
+  // gm.createLevelGraph(() => {}, bm.blocksObject);
+  gm.createLevelGraph(mm.canMoveFromTo.bind(mm), bm.blocksObject);
 
   // Initializes state on the gameLoop
   g.state = gameLoop;

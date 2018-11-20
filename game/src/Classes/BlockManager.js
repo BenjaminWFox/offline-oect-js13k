@@ -87,14 +87,24 @@ const BlockManager = (function (g) {
       return this._closingBlocks;
     }
 
-    _getBlock(idx, inDir = undefined) {
+    _getBlock(idx, inDirection = undefined) {
       let idxToFind = idx;
 
-      if (inDir) {
-        idxToFind = this.g.getAdjacentTile(idx, inDir);
+      if (inDirection) {
+        idxToFind = this.g.getAdjacentTile(idx, inDirection);
       }
 
       return this._blockHash[idxToFind] ? this._blockHash[idxToFind] : {index: idxToFind, isStable: false, type: undefined};
+    }
+
+    _getCardinalTilesData(getAdjacentTilesObject) {
+      const returnObj = {};
+
+      Object.keys(getAdjacentTilesObject).forEach(key => {
+        returnObj[key] = this._getBlock(getAdjacentTilesObject[key]);
+      });
+
+      return returnObj;
     }
 
     _destroyBlock(fromTileIdx, dir) {
@@ -160,6 +170,11 @@ const Singleton = (function (g) {
   if (!BlockManager['getBlock']) {
     staticMethods['getBlock'] = function (tileIdx, dir = undefined) {
       return staticMethods.getInstance(g)._getBlock(tileIdx, dir);
+    };
+  }
+  if (!BlockManager['getCardinalTilesData']) {
+    staticMethods['getCardinalTilesData'] = function (getAdjacentTilesObject) {
+      return staticMethods.getInstance(g)._getCardinalTilesData(getAdjacentTilesObject);
     };
   }
 

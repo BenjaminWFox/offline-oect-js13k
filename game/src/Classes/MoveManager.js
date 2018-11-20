@@ -39,22 +39,6 @@ const MoveManager = (function () {
       this.settings = valuesObj;
     }
 
-    /**
-     * getter for private variable _settings
-     * @return {Object} An object containing settings values stored for movement
-     */
-    get settings() {
-      return _settings.get(MoveManager);
-    }
-
-    /**
-     * setter for private variable _settings
-     * @param  {Object} values  An object containing settings values from the Settings.js calss
-     */
-    set settings(values) {
-      _settings.set(MoveManager, values);
-    }
-
     canMoveFromTo(obj, currentTile, destTile) {
       const dir = currentTile.index - destTile.index;
 
@@ -143,6 +127,21 @@ const MoveManager = (function () {
       return false;
     }
 
+    /**
+     * getter for private variable _settings
+     * @return {Object} An object containing settings values stored for movement
+     */
+    get settings() {
+      return _settings.get(MoveManager);
+    }
+
+    /**
+     * setter for private variable _settings
+     * @param  {Object} values  An object containing settings values from the Settings.js calss
+     */
+    set settings(values) {
+      _settings.set(MoveManager, values);
+    }
   }
 
   return MoveManager;
