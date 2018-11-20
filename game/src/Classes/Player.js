@@ -1,24 +1,16 @@
 import directions from 'Classes/Directions';
 import BlockManager from 'Classes/BlockManager';
+import Entity from 'Classes/Entity';
 
 const Player = (function () {
   // const _direction = new WeakMap();
 
-  class Player {
+  class Player extends Entity {
     constructor(moveSpeed, level, g) {
-      this.sprite = level.sprites.player[0];
-      this.moveSpeed = moveSpeed;
-      this.dead = false;
-      this.landingTile = undefined;
-      this.lastMove = Date.now();
-      this.currentTile = g.getSpriteIndex(this.sprite);
-      this.movement = {
-        falling: BlockManager.getBlock(this.currentTile, directions.down).isStable,
-        moving: false,
-        direction: 'still',
-      };
+      super(moveSpeed, level, g);
 
       // Player only
+      this.landingTile = undefined;
       this.hasStarted = false;
       this.won = false;
 
@@ -50,16 +42,6 @@ const Player = (function () {
       }.bind(this);
     }
 
-    updateMovement(dir) {
-      // console.log('UPDATE MOVEMENT', dir);
-      if (dir === directions.still) {
-        this.movement.direction = directions.still;
-        this.movement.moving = false;
-      } else {
-        this.movement.direction = dir;
-        this.movement.moving = true;
-      }
-    }
   }
 
   return Player;
