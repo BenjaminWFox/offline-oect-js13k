@@ -6,8 +6,8 @@ const Player = (function () {
   // const _direction = new WeakMap();
 
   class Player extends Entity {
-    constructor(moveSpeed, level, g) {
-      super(moveSpeed, level, g);
+    constructor(sprite, moveSpeed, g) {
+      super(sprite, moveSpeed, g);
 
       // Player only
       this.landingTile = undefined;

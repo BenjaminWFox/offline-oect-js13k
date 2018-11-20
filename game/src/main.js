@@ -52,7 +52,7 @@ function setup() {
 
   console.log('g.world created', g.world.objects);
 
-  player = new Player(settings.playerMoveSpeed, world.level(levelNumber), g);
+  player = new Player(world.currentLevel.sprites.player[0], settings.playerMoveSpeed, g);
 
   console.log('PLAYER CREATED:', player.currentTile);
 

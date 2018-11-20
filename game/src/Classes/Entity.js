@@ -5,14 +5,14 @@ const Entity = (function () {
   // const _direction = new WeakMap();
 
   class Entity {
-    constructor(moveSpeed, level, g) {
-      this.sprite = level.sprites.player[0]; // TODO: Fix this. It won't work for enemies.
+    constructor(sprite, moveSpeed, g) {
+      this.sprite = sprite;
       this.moveSpeed = moveSpeed;
       this.dead = false;
       this.lastMove = Date.now();
-      this.currentTile = g.getSpriteIndex(this.sprite);
+      this.currentTile = this.sprite ? g.getSpriteIndex(this.sprite) : null;
       this.movement = {
-        falling: BlockManager.getBlock(this.currentTile, directions.down).isStable,
+        falling: this.currentTile ? BlockManager.getBlock(this.currentTile, directions.down).isStable : false,
         moving: false,
         direction: 'still',
       };

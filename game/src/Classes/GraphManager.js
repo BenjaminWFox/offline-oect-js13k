@@ -1,10 +1,11 @@
 import BlockManager from 'Classes/BlockManager';
+import Entity from 'Classes/Entity';
 
 const GraphManager = (function () {
   class GraphManager {
     constructor(g) {
       this.g = g;
-      this.entityMock = {movement: {falling: false}};
+      this.entityMock = new Entity(null);
       this.allowedBlockTypes = [
         g.tileTypes.floor,
         g.tileTypes.ladder,
