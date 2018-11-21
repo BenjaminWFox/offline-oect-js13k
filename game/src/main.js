@@ -11,6 +11,7 @@
 import ga from './ga';
 import World from 'Classes/World';
 import Player from 'Classes/Player';
+import Enemy from 'Classes/Enemy';
 import MoveManager from 'Classes/MoveManager';
 import BlockManager from 'Classes/BlockManager';
 import GraphManager from 'Classes/GraphManager';
@@ -28,8 +29,9 @@ const g = ga(
 
 let world;
 let player;
+let enemies = [];
 // let sounds;
-const levelNumber = 1;
+const levelNumber = 4;
 const difficulty = configDifficulties.normal;
 const settings = configValues[difficulty];
 const mm = MoveManager.getInstance(g);
@@ -43,26 +45,40 @@ document.getElementById('restart').addEventListener('click', () => {
   location.reload();
 });
 
-function setup() {
-  console.log('We are running the setup. We have g:', g);
-
+function initWorld() {
   world = new World(g);
   world.buildLevels(g);
   world.renderLevel(levelNumber);
 
   console.log('g.world created', g.world.objects);
+}
 
+function initEntities() {
   player = new Player(world.currentLevel.sprites.player[0], settings.playerMoveSpeed, g);
 
   console.log('PLAYER CREATED:', player.currentTile);
 
-  // sounds = new Sounds(Sounds.context);
+  enemies = [];
+  world.currentLevel.sprites.enemy.forEach((enemy, idx) => {
+    enemies.push(new Enemy(world.currentLevel.sprites.enemy[idx], settings.enemyMoveSpeed, settings.pathUpdateFrequency, g));
+  });
 
+  console.log('ENEMIES CREATED!', enemies);
+}
+
+function initManagers() {
   mm.updateSettings(settings);
   bm.updateSettings(settings);
   bm.setBlocks(world.level(levelNumber).sprites);
-  // gm.createLevelGraph(() => {}, bm.blocksObject);
   gm.createLevelGraph(mm.canMoveFromTo.bind(mm), bm.blocksObject);
+}
+
+function setup() {
+  console.log('We are running the setup. We have g:', g);
+
+  initWorld();
+  initEntities();
+  initManagers();
 
   // Initializes state on the gameLoop
   g.state = gameLoop;
@@ -87,6 +103,10 @@ function gameLoop() {
   // 4. Respawn blocks
   bm.updateBlocks();
   mm.move(player);
+  enemies.forEach(enemy => {
+    // enemy.update(player.currentTile);
+    // mm.move(enemy);
+  });
   checkClosingBlocks(player, bm.closingBlocks);
   world.currentLevel.checkForBatteryPickup(player.currentTile);
 }

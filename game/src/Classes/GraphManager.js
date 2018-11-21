@@ -1,3 +1,4 @@
+import Graph from 'Classes/Graph';
 import BlockManager from 'Classes/BlockManager';
 import Entity from 'Classes/Entity';
 
@@ -11,11 +12,14 @@ const GraphManager = (function () {
         g.tileTypes.ladder,
       ];
       this.solidBlocks = [];
+      this.accessibleBlocks = [];
       this.levelGraph = {};
+      this._graph = undefined;
     }
 
     createLevelGraph(fnCanMoveFromTo, lvlBlocksObj) {
       this._collectSolidBlocks(lvlBlocksObj);
+      this._findAccessibleBlocks(fnCanMoveFromTo);
 
       const objects = this.solidBlocks;
       // const visitedNodes = [];
@@ -32,34 +36,57 @@ const GraphManager = (function () {
         adjTileIndexes = this.g.getAdjacentTiles(indexToFind);
         adjTiles = BlockManager.getCardinalTilesData(adjTileIndexes);
 
+        if (co.index === 582) {
+          console.log('Below enemy');
+        }
+
         if (adjTiles.u.tileTypes === this.g.tileTypes.ladder) {
           console.log('dont process this node');
           continue;
         }
 
-        graph[co.index] = {};
+        graph[indexToFind] = {};
         //  These should all be tiles which are walkable.
 
         if (adjTiles.d.isStable) {
           if (fnCanMoveFromTo(this.entityMock, adjTiles.c, adjTiles.u)) {
-            graph[co.index][adjTiles.u.index] = 1;
+            graph[indexToFind][adjTiles.u.index] = 1;
           }
           if (fnCanMoveFromTo(this.entityMock, adjTiles.c, adjTiles.d)) {
-            graph[co.index][adjTiles.d.index] = 1;
+            graph[indexToFind][adjTiles.d.index] = 1;
           }
           if (fnCanMoveFromTo(this.entityMock, adjTiles.c, adjTiles.l)) {
-            graph[co.index][adjTiles.l.index] = 1;
+            graph[indexToFind][adjTiles.l.index] = 1;
           }
           if (fnCanMoveFromTo(this.entityMock, adjTiles.c, adjTiles.r)) {
-            graph[co.index][adjTiles.r.index] = 1;
+            graph[indexToFind][adjTiles.r.index] = 1;
           }
         } else if (!adjTiles.d.isStable) {
-          graph[co.index][adjTiles.d.index] = 1;
+          graph[indexToFind][adjTiles.d.index] = 1;
         }
       }
 
       this.levelGraph = graph;
       console.log('Graph complete', this.levelGraph);
+
+      this._setGraph(this.levelGraph);
+    }
+
+    get graph() {
+
+      return this._graph;
+    }
+
+    _setGraph(graph) {
+      this._graph = new Graph(graph);
+
+      console.log('GRAPH?', this._graph);
+    }
+
+    _findAccessibleBlocks(fnCanMoveFromTo) {
+      this.solidBlocks.forEach(block => {
+        // ...
+      });
     }
 
     _collectSolidBlocks(lvlBlocksObj) {
@@ -70,7 +97,6 @@ const GraphManager = (function () {
           });
         }
       });
-      console.log(this.solidBlocks);
     }
   }
 

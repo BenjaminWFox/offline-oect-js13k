@@ -23,7 +23,6 @@ const BlockManager = (function (g) {
 
       this.blocksObject = undefined;
       this.respawnTime = 3000;
-      this.levelGraph = undefined;
     }
 
     updateSettings(settings) {
