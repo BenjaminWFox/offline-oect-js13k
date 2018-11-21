@@ -104,8 +104,8 @@ function gameLoop() {
   bm.updateBlocks();
   mm.move(player);
   enemies.forEach(enemy => {
-    // enemy.update(player.currentTile);
-    // mm.move(enemy);
+    enemy.update(player.currentTile);
+    mm.move(enemy);
   });
   checkClosingBlocks(player, bm.closingBlocks);
   world.currentLevel.checkForBatteryPickup(player.currentTile);

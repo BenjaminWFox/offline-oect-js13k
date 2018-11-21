@@ -23,7 +23,7 @@ const GraphManager = (function () {
       this._findAccessibleBlocks(fnCanMoveFromTo);
 
       // Clone solidBlocks so it doesn't wind up empty
-      const objects = this.solidBlocks.slice(0);
+      let objects = this.solidBlocks.slice(0);
 
       // Replace all floor blocks with the tile above them
       // - unless they're at the top of the screen
@@ -57,40 +57,37 @@ const GraphManager = (function () {
       let adjTileIndexes;
       let adjTiles;
 
+      objects = this.accessibleTiles.slice(0);
+
       while (objects.length) {
-        const co = objects.shift();
-        const indexToFind = co.type === this.g.tileTypes.floor ? co.index - 32 : co.index;
+        const currentTileIndex = objects.shift();
 
-        adjTileIndexes = this.g.getAdjacentTiles(indexToFind);
+        adjTileIndexes = this.g.getAdjacentTiles(currentTileIndex);
         adjTiles = BlockManager.getCardinalTilesData(adjTileIndexes);
-
-        if (co.index === 582) {
-          console.log('Below enemy');
-        }
 
         if (adjTiles.u.tileTypes === this.g.tileTypes.ladder) {
           console.log('dont process this node');
           continue;
         }
 
-        graph[indexToFind] = {};
+        graph[currentTileIndex] = {};
         //  These should all be tiles which are walkable.
 
         if (adjTiles.d.isStable) {
           if (fnCanMoveFromTo(this.entityMock, adjTiles.c, adjTiles.u)) {
-            graph[indexToFind][adjTiles.u.index] = 1;
+            graph[currentTileIndex][adjTiles.u.index] = 1;
           }
           if (fnCanMoveFromTo(this.entityMock, adjTiles.c, adjTiles.d)) {
-            graph[indexToFind][adjTiles.d.index] = 1;
+            graph[currentTileIndex][adjTiles.d.index] = 1;
           }
           if (fnCanMoveFromTo(this.entityMock, adjTiles.c, adjTiles.l)) {
-            graph[indexToFind][adjTiles.l.index] = 1;
+            graph[currentTileIndex][adjTiles.l.index] = 1;
           }
           if (fnCanMoveFromTo(this.entityMock, adjTiles.c, adjTiles.r)) {
-            graph[indexToFind][adjTiles.r.index] = 1;
+            graph[currentTileIndex][adjTiles.r.index] = 1;
           }
         } else if (!adjTiles.d.isStable) {
-          graph[indexToFind][adjTiles.d.index] = 1;
+          graph[currentTileIndex][adjTiles.d.index] = 1;
         }
       }
 
