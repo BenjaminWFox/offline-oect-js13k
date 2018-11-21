@@ -22,11 +22,11 @@ const Enemey = (function () {
       if (!this._pathData || this._pathData.updated + this._pathUpdateFreq < now) {
         this._pathData = this.gm.graph.shortestPath(this.currentTile, tileIdx);
         this._pathData.updated = now;
-        console.log('Have path data!', this._pathData, this.movement.direction);
+        // console.log('Have path data!', this._pathData, this.movement.direction);
       }
 
       if (this._pathData && this.lastMove + this.moveSpeed < now) {
-        console.log('Moving by path data');
+        // console.log('Moving by path data');
         this._convertPathToDirection(this._pathData.path[0], this._pathData.path[1]);
         this._pathData.path.shift();
       }

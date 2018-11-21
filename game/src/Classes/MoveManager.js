@@ -24,7 +24,7 @@ const MoveManager = (function () {
         didMove = this.moveOneTile(obj);
 
         obj.lastMove = now;
-        console.log(obj.currentTile);
+        // console.log(obj.currentTile);
         // console.log('Did move?', didMove);
       }
 
@@ -109,7 +109,7 @@ const MoveManager = (function () {
       const thisTile = BlockManager.getBlock(obj.currentTile);
       const belowTile = BlockManager.getBlock(obj.currentTile, directions.down.code);
 
-      console.log('Checking for FALLING', obj.currentTile);
+      // console.log('Checking for FALLING', obj.currentTile);
       if (!belowTile.isStable && belowTile.index && thisTile.type !== this.g.tileTypes.ladder && !thisTile.isStable) {// adjacentTiles.d.type === this.g.tileTypes.air) {
         //  sprite.movement.falling = true;
         console.log('YES IM FALLING', obj.currentTile);

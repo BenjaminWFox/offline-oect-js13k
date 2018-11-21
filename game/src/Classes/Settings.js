@@ -5,7 +5,7 @@ const configDifficulties = {
   hard: 'hard',
 };
 
-const pathUpdateFrequency = 1000;
+const pathUpdateFrequency = 500;
 const blockRespawnSpeed = 3300;
 const playerMoveSpeed = 150;
 

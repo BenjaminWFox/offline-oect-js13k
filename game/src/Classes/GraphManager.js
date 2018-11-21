@@ -22,13 +22,10 @@ const GraphManager = (function () {
       this._collectSolidBlocks(lvlBlocksObj);
       this._findAccessibleBlocks(fnCanMoveFromTo);
 
-      // Clone solidBlocks so it doesn't wind up empty
-      let objects = this.solidBlocks.slice(0);
-
       // Replace all floor blocks with the tile above them
       // - unless they're at the top of the screen
       // - or are below another block;
-      objects.forEach((sprite, idx) => {
+      this.solidBlocks.forEach((sprite, idx) => {
         if (sprite.type === this.g.tileTypes.floor) {
           if (sprite.index >= this.g.world.widthInTiles) {
             const tileAbove = BlockManager.getBlock(this.g.getAdjacentTile(sprite.index, Directions.up));
@@ -57,10 +54,8 @@ const GraphManager = (function () {
       let adjTileIndexes;
       let adjTiles;
 
-      objects = this.accessibleTiles.slice(0);
-
-      while (objects.length) {
-        const currentTileIndex = objects.shift();
+      for (let i = 0; i < this.accessibleTiles.length; i++) {
+        const currentTileIndex = this.accessibleTiles[i];
 
         adjTileIndexes = this.g.getAdjacentTiles(currentTileIndex);
         adjTiles = BlockManager.getCardinalTilesData(adjTileIndexes);
@@ -73,22 +68,21 @@ const GraphManager = (function () {
         graph[currentTileIndex] = {};
         //  These should all be tiles which are walkable.
 
-        if (adjTiles.d.isStable) {
-          if (fnCanMoveFromTo(this.entityMock, adjTiles.c, adjTiles.u)) {
-            graph[currentTileIndex][adjTiles.u.index] = 1;
+        Directions.cardinals.forEach(dir => {
+          if (fnCanMoveFromTo(this.entityMock, adjTiles.c, adjTiles[dir.code])) {
+            graph[currentTileIndex][adjTiles[dir.code].index] = 1;
+            // If you're here, it means the following is accessible:
+            //  `adjTiles[dir.code]`
+            //  TODO: I think canMoveFromTo needs to be updated to pervent moving l/r between air tiles
+            // if (!this.accessibleTiles.includes(adjTiles[dir.code].index)) {
+            //   this.accessibleTiles.push(adjTiles[dir.code].index);
+            // }
           }
-          if (fnCanMoveFromTo(this.entityMock, adjTiles.c, adjTiles.d)) {
-            graph[currentTileIndex][adjTiles.d.index] = 1;
-          }
-          if (fnCanMoveFromTo(this.entityMock, adjTiles.c, adjTiles.l)) {
-            graph[currentTileIndex][adjTiles.l.index] = 1;
-          }
-          if (fnCanMoveFromTo(this.entityMock, adjTiles.c, adjTiles.r)) {
-            graph[currentTileIndex][adjTiles.r.index] = 1;
-          }
-        } else if (!adjTiles.d.isStable) {
-          graph[currentTileIndex][adjTiles.d.index] = 1;
-        }
+        });
+
+        // if (!adjTiles.d.isStable) {
+        //   graph[currentTileIndex][adjTiles.d.index] = 1;
+        // }
       }
 
       this.levelGraph = graph;
