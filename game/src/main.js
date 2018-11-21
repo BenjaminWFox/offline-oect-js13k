@@ -31,7 +31,7 @@ let world;
 let player;
 let enemies = [];
 // let sounds;
-const levelNumber = 4;
+const levelNumber = 1;
 const difficulty = configDifficulties.normal;
 const settings = configValues[difficulty];
 const mm = MoveManager.getInstance(g);

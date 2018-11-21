@@ -1,6 +1,7 @@
 import Graph from 'Classes/Graph';
 import BlockManager from 'Classes/BlockManager';
 import Entity from 'Classes/Entity';
+import Directions from 'Classes/Directions';
 
 const GraphManager = (function () {
   class GraphManager {
@@ -12,7 +13,7 @@ const GraphManager = (function () {
         g.tileTypes.ladder,
       ];
       this.solidBlocks = [];
-      this.accessibleBlocks = [];
+      this.accessibleTiles = [];
       this.levelGraph = {};
       this._graph = undefined;
     }
@@ -21,10 +22,37 @@ const GraphManager = (function () {
       this._collectSolidBlocks(lvlBlocksObj);
       this._findAccessibleBlocks(fnCanMoveFromTo);
 
-      const objects = this.solidBlocks;
+      // Clone solidBlocks so it doesn't wind up empty
+      const objects = this.solidBlocks.slice(0);
+
+      // Replace all floor blocks with the tile above them
+      // - unless they're at the top of the screen
+      // - or are below another block;
+      objects.forEach((sprite, idx) => {
+        if (sprite.type === this.g.tileTypes.floor) {
+          if (sprite.index >= this.g.world.widthInTiles) {
+            const tileAbove = BlockManager.getBlock(this.g.getAdjacentTile(sprite.index, Directions.up));
+
+            if (tileAbove.type !== this.g.tileTypes.floor && tileAbove.type !== this.g.tileTypes.ladder) {
+              this.accessibleTiles.push(tileAbove.index);
+            }
+          }
+        }
+        if (sprite.type === this.g.tileTypes.ladder) {
+          const tileAbove = BlockManager.getBlock(this.g.getAdjacentTile(sprite.index, Directions.up));
+
+          this.accessibleTiles.push(sprite.index);
+
+          if (tileAbove.type !== this.g.tileTypes.floor && tileAbove.type !== this.g.tileTypes.ladder) {
+            this.accessibleTiles.push(tileAbove.index);
+          }
+        }
+      });
       // const visitedNodes = [];
 
       const graph = {};
+      // GRAPH: 45 ACCESSIBLE TILES ?
+
       // const childGraph = {};
       let adjTileIndexes;
       let adjTiles;

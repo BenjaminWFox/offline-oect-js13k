@@ -2526,6 +2526,11 @@ GA.create = function(width, height, setup, assetsToLoad, load) {
     let leftTile;
     let rightTile;
 
+    // Allow assignments of direction both ways, code directly or just english name
+    if (dir.hasOwnProperty('code')) {
+      dir = dir.code;
+    }
+
     switch (dir) {
       case 'u':
         if (index < ga.world.widthInTiles) {
