@@ -1,4 +1,4 @@
-export default {
+const directions = {
   up: {
     code: 'u',
     key: 'upArrow',
@@ -18,3 +18,7 @@ export default {
   current: 'c',
   still: 'still',
 };
+
+directions.cardinals = [directions.up, directions.down, directions.left, directions.right];
+
+export default directions;
