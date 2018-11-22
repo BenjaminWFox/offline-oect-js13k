@@ -69,7 +69,7 @@ const GraphManager = (function () {
         //  These should all be tiles which are walkable.
 
         Directions.cardinals.forEach(dir => {
-          // this.entityMock.movement.falling = false;
+          this.entityMock.movement.falling = false;
 
           if (adjTiles.d.type !== this.g.tileTypes.ladder && adjTiles.d.type !== this.g.tileTypes.floor) {
             // console.log('Setting falling');
