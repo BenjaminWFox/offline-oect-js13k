@@ -38,6 +38,14 @@ const Enemey = (function () {
     update(tileIdx) {
       const now = Date.now();
 
+      if (!this.isStuck && BlockManager.currentDestroyedBlocks()[this.currentTile]) {
+        this._makeStuck(now);
+      }
+
+      if (this.isStuck && this.stuckAt + this.unstuckSpeed < now) {
+        this._makeUnstuck();
+      }
+
       if (!this._pathData || this._pathData.updated + this._pathUpdateFreq < now) {
         this._pathData = this.gm.graph.shortestPath(this.currentTile, tileIdx);
         this._pathData.updated = now;
@@ -49,19 +57,14 @@ const Enemey = (function () {
         this._convertPathToDirection(this._pathData.path[0], this._pathData.path[1]);
         this._pathData.path.shift();
       }
-
-      if (BlockManager.currentDestroyedBlocks()[this.currentTile]) {
-        this._makeStuck(now);
-      }
-
-      if (this.stuckAt) {
-        // ...
-      }
     }
 
     _makeStuck(time) {
       this.isStuck = true;
       this.stuckAt = time;
+      this.currentTile = this.currentTile - 32;
+
+      console.log(this.stuckAt);
     }
 
     _makeUnstuck() {
