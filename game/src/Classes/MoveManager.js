@@ -57,12 +57,12 @@ const MoveManager = (function () {
           }
           break;
         case -1:
-          if (destTile.type !== this.g.tileTypes.floor) {
+          if (!obj.movement.falling && destTile.type !== this.g.tileTypes.floor) {
             return true;
           }
           break;
         case 1:
-          if (destTile.type !== this.g.tileTypes.floor) {
+          if (!obj.movement.falling && destTile.type !== this.g.tileTypes.floor) {
             return true;
           }
           break;

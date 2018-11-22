@@ -69,14 +69,21 @@ const GraphManager = (function () {
         //  These should all be tiles which are walkable.
 
         Directions.cardinals.forEach(dir => {
+          // this.entityMock.movement.falling = false;
+
+          if (adjTiles.d.type !== this.g.tileTypes.ladder && adjTiles.d.type !== this.g.tileTypes.floor) {
+            // console.log('Setting falling');
+            this.entityMock.movement.falling = true;
+          }
+
           if (fnCanMoveFromTo(this.entityMock, adjTiles.c, adjTiles[dir.code])) {
             graph[currentTileIndex][adjTiles[dir.code].index] = 1;
             // If you're here, it means the following is accessible:
             //  `adjTiles[dir.code]`
-            //  TODO: I think canMoveFromTo needs to be updated to pervent moving l/r between air tiles
-            // if (!this.accessibleTiles.includes(adjTiles[dir.code].index)) {
-            //   this.accessibleTiles.push(adjTiles[dir.code].index);
-            // }
+            if (!this.accessibleTiles.includes(adjTiles[dir.code].index)) {
+              // console.log('New tile');
+              this.accessibleTiles.push(adjTiles[dir.code].index);
+            }
           }
         });
 
