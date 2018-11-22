@@ -60,7 +60,7 @@ function initEntities() {
 
   enemies = [];
   world.currentLevel.sprites.enemy.forEach((enemy, idx) => {
-    enemies.push(new Enemy(world.currentLevel.sprites.enemy[idx], settings.enemyMoveSpeed, settings.pathUpdateFrequency, g));
+    enemies.push(new Enemy(world.currentLevel.sprites.enemy[idx], settings.enemyMoveSpeed, settings.pathUpdateFrequency, settings.enemyUnstuckSpeed, g));
   });
 
   console.log('ENEMIES CREATED!', enemies);
@@ -107,7 +107,9 @@ function gameLoop() {
     mm.move(player);
     enemies.forEach(enemy => {
       enemy.update(player.currentTile);
-      mm.move(enemy);
+      if (!enemy.isStuck) {
+        mm.move(enemy);
+      }
     });
     checkClosingBlocks(player, bm.closingBlocks);
     world.currentLevel.checkForBatteryPickup(player.currentTile);

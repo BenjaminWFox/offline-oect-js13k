@@ -143,6 +143,10 @@ const BlockManager = (function (g) {
     _removeFromDBTrackers(idx) {
       delete this._destroyedBlocksHash[this._destroyedBlocksQueue.shift().idx];
     }
+
+    _currentDestroyedBlocks() {
+      return this._destroyedBlocksHash;
+    }
   }
 
   return BlockManager;
@@ -177,6 +181,11 @@ const Singleton = (function (g) {
   if (!BlockManager['getBlock']) {
     staticMethods['getBlock'] = function (tileIdx, dir = undefined) {
       return staticMethods.getInstance(g)._getBlock(tileIdx, dir);
+    };
+  }
+  if (!BlockManager['currentDestroyedBlocks']) {
+    staticMethods['currentDestroyedBlocks'] = function (tileIdx, dir = undefined) {
+      return staticMethods.getInstance(g)._currentDestroyedBlocks();
     };
   }
   if (!BlockManager['getCardinalTilesData']) {

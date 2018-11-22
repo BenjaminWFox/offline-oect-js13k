@@ -1,5 +1,5 @@
 import directions from 'Classes/Directions';
-// import BlockManager from 'Classes/BlockManager';
+import BlockManager from 'Classes/BlockManager';
 import Entity from 'Classes/Entity';
 import GraphManager from 'Classes/GraphManager';
 
@@ -7,7 +7,7 @@ const Enemey = (function () {
   // const _direction = new WeakMap();
 
   class Enemey extends Entity {
-    constructor(sprite, moveSpeed, pathUpdateFreq, g) {
+    constructor(sprite, moveSpeed, pathUpdateFreq, unstuckSpeed, g) {
       super(sprite, moveSpeed, g);
 
       this.gm = GraphManager.getInstance(g);
@@ -16,7 +16,9 @@ const Enemey = (function () {
       this._pathData = undefined;
       this.moveVariance = [0, 10, 20];
       this.moveSpeed = this.moveSpeed + getVariantMoveSpeed.call(this);
-      console.log('Enemy:', this.moveSpeed);
+      this.unstuckSpeed = unstuckSpeed;
+      this.isStuck = false;
+      this.stuckAt = Date.now();
 
       function getRandomIntInclusive(min, max) {
         min = Math.ceil(min);
@@ -47,6 +49,23 @@ const Enemey = (function () {
         this._convertPathToDirection(this._pathData.path[0], this._pathData.path[1]);
         this._pathData.path.shift();
       }
+
+      if (BlockManager.currentDestroyedBlocks()[this.currentTile]) {
+        this._makeStuck(now);
+      }
+
+      if (this.stuckAt) {
+        // ...
+      }
+    }
+
+    _makeStuck(time) {
+      this.isStuck = true;
+      this.stuckAt = time;
+    }
+
+    _makeUnstuck() {
+      this.isStuck = false;
     }
 
     _convertPathToDirection(currentTile, nextTile) {
