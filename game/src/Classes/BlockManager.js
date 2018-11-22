@@ -1,3 +1,5 @@
+import Directions from 'Classes/Directions';
+
 const BlockManager = (function (g) {
   class BlockManager {
     constructor(g) {
@@ -116,7 +118,13 @@ const BlockManager = (function (g) {
     }
 
     _canDestroy(tileMeta) {
-      return tileMeta.type === this.g.tileTypes.floor && !this._destroyedBlocksHash[tileMeta.index];
+      if (tileMeta.type === this.g.tileTypes.floor && !this._destroyedBlocksHash[tileMeta.index]) {
+        if (this._getBlock(tileMeta.index, Directions.up).type !== this.g.tileTypes.floor) {
+          return true;
+        }
+      }
+
+      return false;
     }
 
     _restoreBlock(blockTileIdx) {

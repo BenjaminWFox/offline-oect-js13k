@@ -112,8 +112,8 @@ const MoveManager = (function () {
       // console.log('Checking for FALLING', obj.currentTile);
       if (!belowTile.isStable && belowTile.index && thisTile.type !== this.g.tileTypes.ladder && !thisTile.isStable) {// adjacentTiles.d.type === this.g.tileTypes.air) {
         //  sprite.movement.falling = true;
-        console.log('YES IM FALLING', obj.currentTile);
-        console.log('Below Tile Data:', belowTile.index, belowTile.isStable, belowTile.type);
+        // console.log('YES IM FALLING', obj.currentTile);
+        // console.log('Below Tile Data:', belowTile.index, belowTile.isStable, belowTile.type);
 
         return true;
       }

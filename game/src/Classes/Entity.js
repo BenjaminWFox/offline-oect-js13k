@@ -12,7 +12,7 @@ const Entity = (function () {
       this.lastMove = Date.now();
       this.currentTile = this.sprite ? g.getSpriteIndex(this.sprite) : null;
       this.movement = {
-        falling: this.currentTile ? BlockManager.getBlock(this.currentTile, directions.down).isStable : false,
+        falling: this.currentTile ? !BlockManager.getBlock(this.currentTile, directions.down).isStable : false,
         moving: false,
         direction: 'still',
       };

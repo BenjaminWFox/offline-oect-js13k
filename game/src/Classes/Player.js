@@ -21,6 +21,9 @@ const Player = (function () {
 
         if (value.hasOwnProperty('code')) {
           g.key[value.key].press = () => {
+            if (!this.hasStarted) {
+              this.hasStarted = true;
+            }
             this.updateMovement(value.code);
           };
           g.key[value.key].release = () => {

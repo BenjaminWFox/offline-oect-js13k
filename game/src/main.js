@@ -31,7 +31,7 @@ let world;
 let player;
 let enemies = [];
 // let sounds;
-const levelNumber = 2;
+const levelNumber = 4;
 const difficulty = configDifficulties.normal;
 const settings = configValues[difficulty];
 const mm = MoveManager.getInstance(g);
@@ -76,9 +76,10 @@ function initManagers() {
 function setup() {
   console.log('We are running the setup. We have g:', g);
 
+  // Entity creation depends on manager instantiation
   initWorld();
-  initEntities();
   initManagers();
+  initEntities();
 
   // Initializes state on the gameLoop
   g.state = gameLoop;
@@ -101,14 +102,16 @@ function gameLoop() {
   // 2. Move the player
   // 3. Move all the enemies
   // 4. Respawn blocks
-  bm.updateBlocks();
-  mm.move(player);
-  enemies.forEach(enemy => {
-    enemy.update(player.currentTile);
-    mm.move(enemy);
-  });
-  checkClosingBlocks(player, bm.closingBlocks);
-  world.currentLevel.checkForBatteryPickup(player.currentTile);
+  if (player.hasStarted) {
+    bm.updateBlocks();
+    mm.move(player);
+    enemies.forEach(enemy => {
+      enemy.update(player.currentTile);
+      mm.move(enemy);
+    });
+    checkClosingBlocks(player, bm.closingBlocks);
+    world.currentLevel.checkForBatteryPickup(player.currentTile);
+  }
 }
 
 function checkClosingBlocks(player, closingBlocks) {
