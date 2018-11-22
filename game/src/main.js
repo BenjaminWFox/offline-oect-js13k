@@ -30,8 +30,9 @@ const g = ga(
 let world;
 let player;
 let enemies = [];
+const enemyOccupations = {};
 // let sounds;
-const levelNumber = 4;
+const levelNumber = 1;
 const difficulty = configDifficulties.normal;
 const settings = configValues[difficulty];
 const mm = MoveManager.getInstance(g);
@@ -107,6 +108,15 @@ function gameLoop() {
     mm.move(player);
     enemies.forEach(enemy => {
       enemy.update(player.currentTile);
+
+      if (enemy.occupiedBlock) {
+        bm.fillBlock(enemy);
+        enemyOccupations[enemy.id] = enemy.occupiedBlock;
+      } else if (enemyOccupations[enemy.id]) {
+        bm.vacateBlock(enemy);
+        delete enemyOccupations[enemy.id];
+      }
+
       if (!enemy.isStuck) {
         mm.move(enemy);
       }

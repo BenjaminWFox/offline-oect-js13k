@@ -13,6 +13,7 @@ const BlockManager = (function (g) {
       this._closingBlocks = [];
       this._destroyedBlocksHash = {};
       this._destroyedBlocksQueue = [];
+      this._occupiedBlocks = {};
       this._fadeOutFrames = 15;
       this._fadeInFrames = 10;
       this._fadeOutMS = this._fadeOutFrames * (1000 / this._fps);
@@ -31,7 +32,7 @@ const BlockManager = (function (g) {
       this.respawnTime = settings.blockRespawnSpeed;
     }
 
-    updateBlocks() {
+    updateBlocks(enemyOccupations) {
       if (this._destroyedBlocksQueue.length) {
         const now = Date.now();
 
@@ -39,6 +40,14 @@ const BlockManager = (function (g) {
           this._restoreBlock(this._destroyedBlocksQueue[0].idx);
         }
       }
+    }
+
+    fillBlock(obj) {
+      this._enemyInBlock(obj);
+    }
+
+    vacateBlock(obj) {
+      this._enemyLeftBlock(obj);
     }
 
     setBlocks(blockSpritesObject) {
@@ -61,31 +70,52 @@ const BlockManager = (function (g) {
           this.g.fadeIn(block, this._fadeInFrames);
           block.isStable = true;
           this.g.wait(this._fadeInMS * .8, () => {
-            makeStable(block);
+            this._makeStable(block);
             removeFromClosing.call(this, block.index);
           });
           break;
         case this.g.tileTypes.air:
           this.g.fadeOut(block, this._fadeOutFrames);
-          makeUnstable(block);
+          this._makeUnstable(block);
           break;
         default:
           return false;
-      }
-
-      function makeUnstable(block) {
-        block.isStable = false;
-      }
-      function makeStable(block) {
-        block.isStable = true;
       }
       function removeFromClosing(idx) {
         this._closingBlocks.splice(this._closingBlocks.indexOf(idx), 1);
       }
     }
 
+    _enemyInBlock(obj) {
+      const block = this._getBlock(obj.occupiedBlock);
+
+      if (block.type === this.g.tileTypes.air) {
+        this._makeStable(block);
+        console.log('Made block stable', block.index);
+        this._occupiedBlocks[obj.id] = obj.occupiedBlock;
+      }
+    }
+
+    _enemyLeftBlock(obj) {
+      const block = this._getBlock(this._occupiedBlocks[obj.id]);
+
+      if (block.type === this.g.tileTypes.air) {
+        this._makeUnstable(block);
+      }
+
+      delete this._occupiedBlocks[obj.id];
+    }
+
     get closingBlocks() {
       return this._closingBlocks;
+    }
+
+    _makeStable(block) {
+      block.isStable = true;
+    }
+
+    _makeUnstable(block) {
+      block.isStable = false;
     }
 
     _getBlock(idx, inDirection = undefined) {

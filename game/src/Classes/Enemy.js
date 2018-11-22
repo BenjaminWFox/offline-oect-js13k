@@ -11,9 +11,11 @@ const Enemey = (function () {
       super(sprite, moveSpeed, g);
 
       this.gm = GraphManager.getInstance(g);
+      this.id = uuidv4();
       this._pathUpdateFreq = pathUpdateFreq;
       this._isStuck = false;
       this._pathData = undefined;
+      this._occupiedBlock = null;
       this.moveVariance = [0, 10, 20];
       this.moveSpeed = this.moveSpeed + getVariantMoveSpeed.call(this);
       this.unstuckSpeed = unstuckSpeed;
@@ -33,27 +35,45 @@ const Enemey = (function () {
 
         return rndAddDir * this.moveVariance[rndVariance];
       }
+
+      function uuidv4() {
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+          const r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8); // eslint-disable-line
+
+          return v.toString(16);
+        });
+      }
     }
 
-    update(tileIdx) {
+    get occupiedBlock() {
+      return this._occupiedBlock;
+    }
+
+    update(pathDestIdx) {
+      this._updatePath(pathDestIdx);
+      this._checkForStuck();
+    }
+
+    _checkForStuck() {
       const now = Date.now();
 
       if (!this.isStuck && BlockManager.currentDestroyedBlocks()[this.currentTile]) {
         this._makeStuck(now);
       }
-
       if (this.isStuck && this.stuckAt + this.unstuckSpeed < now) {
         this._makeUnstuck();
       }
+    }
+
+    _updatePath(tileIdx) {
+      const now = Date.now();
 
       if (!this._pathData || this._pathData.updated + this._pathUpdateFreq < now) {
         this._pathData = this.gm.graph.shortestPath(this.currentTile, tileIdx);
         this._pathData.updated = now;
-        // console.log('Have path data!', this._pathData, this.movement.direction);
       }
 
       if (this._pathData && this.lastMove + this.moveSpeed < now) {
-        // console.log('Moving by path data');
         this._convertPathToDirection(this._pathData.path[0], this._pathData.path[1]);
         this._pathData.path.shift();
       }
@@ -62,12 +82,12 @@ const Enemey = (function () {
     _makeStuck(time) {
       this.isStuck = true;
       this.stuckAt = time;
+      this._occupiedBlock = this.currentTile;
       this.currentTile = this.currentTile - 32;
-
-      console.log(this.stuckAt);
     }
 
     _makeUnstuck() {
+      this._occupiedBlock = null;
       this.isStuck = false;
     }
 

@@ -19,13 +19,10 @@ const MoveManager = (function () {
       const now = Date.now();
       let didMove = false;
 
-      if ((obj.movement.falling || obj.movement.direction !== directions.still) && obj.lastMove < now - obj.moveSpeed) {
-        // console.log('Moving object', obj.sprite.name);
+      if (obj.lastMove + obj.moveSpeed < now) {
         didMove = this.moveOneTile(obj);
 
         obj.lastMove = now;
-        // console.log(obj.currentTile);
-        // console.log('Did move?', didMove);
       }
 
       return didMove;
@@ -72,6 +69,14 @@ const MoveManager = (function () {
     }
 
     moveOneTile(obj) {
+      if (this.isFalling(obj)) {
+        // console.log('falling');
+        obj.movement.falling = true;
+      } else {
+        // console.log('not falling');
+        obj.movement.falling = false;
+      }
+
       const moveDir = obj.movement.falling ? directions.down.code : obj.movement.direction;
       const currentTile = BlockManager.getBlock(obj.currentTile);
       const moveToTile = BlockManager.getBlock(obj.currentTile, moveDir);
@@ -90,14 +95,6 @@ const MoveManager = (function () {
         obj.sprite.y = nextY;
         obj.currentTile = nextTileIndex;
 
-        if (this.isFalling(obj)) {
-          // console.log('falling');
-          obj.movement.falling = true;
-        } else {
-          // console.log('not falling');
-          obj.movement.falling = false;
-        }
-
         return true;
       }
 
@@ -112,7 +109,7 @@ const MoveManager = (function () {
       // console.log('Checking for FALLING', obj.currentTile);
       if (!belowTile.isStable && belowTile.index && thisTile.type !== this.g.tileTypes.ladder && !thisTile.isStable) {// adjacentTiles.d.type === this.g.tileTypes.air) {
         //  sprite.movement.falling = true;
-        // console.log('YES IM FALLING', obj.currentTile);
+        obj.id ? console.log('Enemy falling into block:', obj.id, belowTile.index) : '';
         // console.log('Below Tile Data:', belowTile.index, belowTile.isStable, belowTile.type);
 
         return true;
