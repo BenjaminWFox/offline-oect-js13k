@@ -14,6 +14,23 @@ const Enemey = (function () {
       this._pathUpdateFreq = pathUpdateFreq;
       this._isStuck = false;
       this._pathData = undefined;
+      this.moveVariance = [0, 10, 20];
+      this.moveSpeed = this.moveSpeed + getVariantMoveSpeed.call(this);
+      console.log('Enemy:', this.moveSpeed);
+
+      function getRandomIntInclusive(min, max) {
+        min = Math.ceil(min);
+        max = Math.floor(max);
+
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+      }
+
+      function getVariantMoveSpeed() {
+        const rndVariance = getRandomIntInclusive(0, this.moveVariance.length - 1);
+        const rndAddDir = getRandomIntInclusive(0, 1) ? 1 : -1;
+
+        return rndAddDir * this.moveVariance[rndVariance];
+      }
     }
 
     update(tileIdx) {
