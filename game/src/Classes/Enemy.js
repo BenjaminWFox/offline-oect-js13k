@@ -1,5 +1,5 @@
 import directions from 'Classes/Directions';
-import BlockManager from 'Classes/BlockManager';
+// import BlockManager from 'Classes/BlockManager';
 import Entity from 'Classes/Entity';
 import GraphManager from 'Classes/GraphManager';
 
@@ -13,23 +13,10 @@ const Enemey = (function () {
       this.gm = GraphManager.getInstance(g);
       this.id = uuidv4();
       this._pathUpdateFreq = pathUpdateFreq;
-      this._isStuck = false;
       this._pathData = undefined;
-      this._occupiedBlock = null;
       this.moveVariance = [0, 10, 20];
       this.moveSpeed = this.moveSpeed + getVariantMoveSpeed.call(this);
       this.unstuckSpeed = unstuckSpeed;
-
-      this.state = {
-        stuck: false,
-        extricating: false,
-        free: true,
-      };
-      this.states = {};
-      Object.keys(this.state).forEach(key => {
-        this.states[key] = key;
-      });
-      this.stateChangedAt = Date.now();
 
       function getRandomIntInclusive(min, max) {
         min = Math.ceil(min);
@@ -63,26 +50,9 @@ const Enemey = (function () {
       this._checkForStateChange();
     }
 
-    _updateState(state) {
-      Object.keys(this.state).forEach(key => {
-        this.state[key] = false;
-      });
-      this.state[state] = true;
-      this.stateChangedAt = Date.now();
-    }
-
-    _checkForStateChange() {
-      const now = Date.now();
-
-      if (!this.state.stuck && BlockManager.currentDestroyedBlocks()[this.currentTile]) {
-        this._makeStuck(now);
-      }
-      if (this.state.stuck && this.stateChangedAt + this.unstuckSpeed < now) {
-        this._makeClimb(now);
-      }
-      if (this.state.extricating && this.stateChangedAt + this.moveSpeed < now) {
-        this._makeFree(now);
-      }
+    _virtualRespawn() {
+      super._virtualRespawn();
+      console.log('The enemy: I am spawning!');
     }
 
     _updatePath(tileIdx) {
@@ -104,25 +74,6 @@ const Enemey = (function () {
       }
 
       // console.log('Path data', this._pathData.path);
-    }
-
-    _makeStuck(time) {
-      console.log('Enemy Stuck');
-      this._updateState(this.states.stuck);
-      this._occupiedBlock = this.currentTile;
-      // Set the current tile to one above for correct path calculation
-      this.currentTile = this.currentTile - 32;
-    }
-
-    _makeClimb(time) {
-      console.log('Enemy climbing out');
-      this._updateState(this.states.extricating);
-    }
-
-    _makeFree(time) {
-      console.log('Enemy free');
-      this._updateState(this.states.free);
-      this._occupiedBlock = null;
     }
 
     _convertPathToDirection(currentTile, nextTile) {

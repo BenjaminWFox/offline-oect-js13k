@@ -32,7 +32,7 @@ let player;
 let enemies = [];
 const enemyOccupations = {};
 // let sounds;
-const levelNumber = 1;
+const levelNumber = 2;
 const difficulty = configDifficulties.normal;
 const settings = configValues[difficulty];
 const mm = MoveManager.getInstance(g);
@@ -105,7 +105,14 @@ function gameLoop() {
   // 4. Respawn blocks
   if (player.hasStarted) {
     bm.updateBlocks();
-    mm.move(player);
+
+    if (!player.dead) {
+      mm.move(player);
+      checkClosingBlocks(player, player.makeDead.bind(player));
+    } else {
+      gameOver();
+    }
+
     enemies.forEach(enemy => {
       enemy.update(player.currentTile);
 
@@ -120,17 +127,27 @@ function gameLoop() {
       if (!enemy.state.stuck) {
         mm.move(enemy);
       }
+
+      if (!enemy.dead) {
+        checkClosingBlocks(enemy, enemy.makeDead.bind(enemy));
+      }
     });
-    checkClosingBlocks(player, bm.closingBlocks);
+
     world.currentLevel.checkForBatteryPickup(player.currentTile);
   }
 }
 
-function checkClosingBlocks(player, closingBlocks) {
-  if (closingBlocks.indexOf(player.currentTile) !== -1) {
+function checkClosingBlocks(entity, callback) {
+  if (bm.closingBlocks.indexOf(entity.currentTile) !== -1) {
     // This would be a game over
-    g.pause();
+    console.log('Closing block check true');
+    callback();
   }
+}
+
+function gameOver() {
+  g.pause();
+  console.log('GAME OVER');
 }
 
 // Calls 'setup' function

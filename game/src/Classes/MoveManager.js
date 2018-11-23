@@ -19,7 +19,7 @@ const MoveManager = (function () {
       const now = Date.now();
       let didMove = false;
 
-      if (obj.lastMove + obj.moveSpeed < now) {
+      if (obj.lastMove + obj.moveSpeed < now && !obj.dead) {
         didMove = this.moveOneTile(obj);
 
         obj.lastMove = now;

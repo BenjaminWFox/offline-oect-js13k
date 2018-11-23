@@ -45,6 +45,10 @@ const Player = (function () {
       }.bind(this);
     }
 
+    _virtualRespawn() {
+      // Do nothing here for player.
+    }
+
   }
 
   return Player;
