@@ -117,7 +117,7 @@ function gameLoop() {
         delete enemyOccupations[enemy.id];
       }
 
-      if (!enemy.isStuck) {
+      if (!enemy.state.stuck) {
         mm.move(enemy);
       }
     });

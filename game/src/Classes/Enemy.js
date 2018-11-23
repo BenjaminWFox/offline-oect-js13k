@@ -19,8 +19,17 @@ const Enemey = (function () {
       this.moveVariance = [0, 10, 20];
       this.moveSpeed = this.moveSpeed + getVariantMoveSpeed.call(this);
       this.unstuckSpeed = unstuckSpeed;
-      this.isStuck = false;
-      this.stuckAt = Date.now();
+
+      this.state = {
+        stuck: false,
+        extricating: false,
+        free: true,
+      };
+      this.states = {};
+      Object.keys(this.state).forEach(key => {
+        this.states[key] = key;
+      });
+      this.stateChangedAt = Date.now();
 
       function getRandomIntInclusive(min, max) {
         min = Math.ceil(min);
@@ -51,17 +60,28 @@ const Enemey = (function () {
 
     update(pathDestIdx) {
       this._updatePath(pathDestIdx);
-      this._checkForStuck();
+      this._checkForStateChange();
     }
 
-    _checkForStuck() {
+    _updateState(state) {
+      Object.keys(this.state).forEach(key => {
+        this.state[key] = false;
+      });
+      this.state[state] = true;
+      this.stateChangedAt = Date.now();
+    }
+
+    _checkForStateChange() {
       const now = Date.now();
 
-      if (!this.isStuck && BlockManager.currentDestroyedBlocks()[this.currentTile]) {
+      if (!this.state.stuck && BlockManager.currentDestroyedBlocks()[this.currentTile]) {
         this._makeStuck(now);
       }
-      if (this.isStuck && this.stuckAt + this.unstuckSpeed < now) {
-        this._makeUnstuck();
+      if (this.state.stuck && this.stateChangedAt + this.unstuckSpeed < now) {
+        this._makeClimb(now);
+      }
+      if (this.state.extricating && this.stateChangedAt + this.moveSpeed < now) {
+        this._makeFree(now);
       }
     }
 
@@ -73,22 +93,36 @@ const Enemey = (function () {
         this._pathData.updated = now;
       }
 
-      if (this._pathData && this.lastMove + this.moveSpeed < now) {
-        this._convertPathToDirection(this._pathData.path[0], this._pathData.path[1]);
+      if (this._pathData && this.lastMove + this.moveSpeed < now && !this.state.stuck) {
+        // I don't think this needs to be used.
+        // It was a way to assign the 2nd and 3rd indexes
+        // if the enemy was not yet free of the hole.
+        const indexes = this.state.free ? [0, 1] : [0, 1];
+
+        this._convertPathToDirection(this._pathData.path[indexes[0]], this._pathData.path[indexes[1]]);
         this._pathData.path.shift();
       }
+
+      // console.log('Path data', this._pathData.path);
     }
 
     _makeStuck(time) {
-      this.isStuck = true;
-      this.stuckAt = time;
+      console.log('Enemy Stuck');
+      this._updateState(this.states.stuck);
       this._occupiedBlock = this.currentTile;
+      // Set the current tile to one above for correct path calculation
       this.currentTile = this.currentTile - 32;
     }
 
-    _makeUnstuck() {
+    _makeClimb(time) {
+      console.log('Enemy climbing out');
+      this._updateState(this.states.extricating);
+    }
+
+    _makeFree(time) {
+      console.log('Enemy free');
+      this._updateState(this.states.free);
       this._occupiedBlock = null;
-      this.isStuck = false;
     }
 
     _convertPathToDirection(currentTile, nextTile) {

@@ -43,11 +43,11 @@ const BlockManager = (function (g) {
     }
 
     fillBlock(obj) {
-      this._enemyInBlock(obj);
+      this._objectInBlock(obj);
     }
 
     vacateBlock(obj) {
-      this._enemyLeftBlock(obj);
+      this._objectLeftBlock(obj);
     }
 
     setBlocks(blockSpritesObject) {
@@ -86,21 +86,22 @@ const BlockManager = (function (g) {
       }
     }
 
-    _enemyInBlock(obj) {
+    _objectInBlock(obj) {
       const block = this._getBlock(obj.occupiedBlock);
 
-      if (block.type === this.g.tileTypes.air) {
+      if (block.type === this.g.tileTypes.air && !block.isStable) {
         this._makeStable(block);
-        console.log('Made block stable', block.index);
+        console.log('Made block STABLE, something is in it!', block.index);
         this._occupiedBlocks[obj.id] = obj.occupiedBlock;
       }
     }
 
-    _enemyLeftBlock(obj) {
+    _objectLeftBlock(obj) {
       const block = this._getBlock(this._occupiedBlocks[obj.id]);
 
       if (block.type === this.g.tileTypes.air) {
         this._makeUnstable(block);
+        console.log('Made block UNSTABLE, nothing in it!', block.index);
       }
 
       delete this._occupiedBlocks[obj.id];
