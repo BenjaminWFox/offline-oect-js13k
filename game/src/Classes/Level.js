@@ -1,4 +1,5 @@
 import BatteryManager from 'Classes/BatteryManager';
+import DoorManager from 'Classes/DoorManager';
 // import BlockManager from 'Classes/BlockManager';
 
 const Level = (function () {
@@ -6,6 +7,7 @@ const Level = (function () {
   const _levelScene = new WeakMap();
   const _levelNumber = new WeakMap();
   const _batteries = new WeakMap();
+  const _doors = new WeakMap();
   // const _privateNumberPrint = function (iM, sM) {
   //   console.log('Instance:', iM, 'Static:', sM);
   // };
@@ -32,6 +34,8 @@ const Level = (function () {
 
       _batteries.set(this, new BatteryManager(this.sprites.battery));
 
+      _doors.set(this, new DoorManager(this.sprites.door));
+
       // Now available via getter
       // console.log('batteries', this.batteries);
 
@@ -49,6 +53,14 @@ const Level = (function () {
 
     get batteries() {
       return _batteries.get(this);
+    }
+
+    get doors() {
+      return _doors.get(this);
+    }
+
+    openDoors() {
+      console.log('Activate doors!');
     }
 
     categorizeSprite(sprite, types) {
@@ -79,6 +91,15 @@ const Level = (function () {
     checkForBatteryPickup(tileIdx) {
       if (this.batteries.checkForPickup(tileIdx)) {
         // console.log('Done?', this.batteries.allCollected);
+        if (this.batteries.allCollected) {
+          this.doors.setAllActive();
+        }
+      }
+    }
+
+    checkForDoorEntry(tileIdx) {
+      if (this.doors.checkForEntry(tileIdx)) {
+        console.log('Made it out, get next level!');
       }
     }
   }

@@ -133,7 +133,9 @@ function gameLoop() {
       }
     });
 
-    world.currentLevel.checkForBatteryPickup(player.currentTile);
+    world.currentLevel.batteries.allCollected ?
+      world.currentLevel.doors.checkForEntry(player.currentTile) :
+      world.currentLevel.checkForBatteryPickup(player.currentTile);
   }
 }
 
