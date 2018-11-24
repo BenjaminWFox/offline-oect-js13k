@@ -90,7 +90,6 @@ const MoveManager = (function () {
       const currentTile = BlockManager.getBlock(obj.currentTile);
       const moveToTile = BlockManager.getBlock(obj.currentTile, moveDir);
 
-      console.log('ct/dt', currentTile, moveToTile);
       const canMove = this.canMoveFromTo(obj, currentTile, moveToTile);
 
       if (canMove) {
@@ -116,16 +115,10 @@ const MoveManager = (function () {
       const thisTile = BlockManager.getBlock(obj.currentTile);
       const belowTile = BlockManager.getBlock(obj.currentTile, directions.down.code);
 
-      // console.log('Checking for FALLING', obj.currentTile);
       if (!belowTile.isStable && belowTile.index && thisTile.type !== this.g.tileTypes.ladder && !thisTile.isStable) {// adjacentTiles.d.type === this.g.tileTypes.air) {
-        //  sprite.movement.falling = true;
-        obj.id ? console.log('Enemy falling into block:', obj.id, belowTile.index) : '';
-        // console.log('Below Tile Data:', belowTile.index, belowTile.isStable, belowTile.type);
-
         return true;
       }
 
-      //  sprite.movement.falling = false;
       return false;
     }
 
