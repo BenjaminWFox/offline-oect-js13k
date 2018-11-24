@@ -32,7 +32,7 @@ let player;
 let enemies = [];
 const enemyOccupations = {};
 // let sounds;
-const levelNumber = 2;
+const levelNumber = 1;
 const difficulty = configDifficulties.normal;
 const settings = configValues[difficulty];
 const mm = MoveManager.getInstance(g);

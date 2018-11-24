@@ -63,7 +63,7 @@ const Enemey = (function () {
         this._pathData.updated = now;
       }
 
-      if (this._pathData && this.lastMove + this.moveSpeed < now && !this.state.stuck) {
+      if (!this.dead && !this.state.stuck && this._pathData && this.lastMove + this.moveSpeed < now) {
         // I don't think this needs to be used.
         // It was a way to assign the 2nd and 3rd indexes
         // if the enemy was not yet free of the hole.
@@ -73,7 +73,7 @@ const Enemey = (function () {
         this._pathData.path.shift();
       }
 
-      // console.log('Path data', this._pathData.path);
+      console.log('Path data', this._pathData.path);
     }
 
     _convertPathToDirection(currentTile, nextTile) {

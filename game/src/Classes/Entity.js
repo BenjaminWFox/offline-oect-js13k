@@ -48,7 +48,7 @@ const Entity = (function () {
     }
 
     makeDead() {
-      console.log('Entity: Dead!');
+      // console.log('Entity: Dead!');
       const tween = this.g.fadeOut(this.sprite, 30);
 
       this.dead = true;
@@ -63,7 +63,7 @@ const Entity = (function () {
     }
 
     _respawn() {
-      console.log('Entity: respawn');
+      // console.log('Entity: respawn');
       const tween = this.g.fadeIn(this.sprite, 120);
 
       this.sprite.x = this.spawnX;
@@ -74,7 +74,7 @@ const Entity = (function () {
     }
 
     _enable() {
-      console.log('Entity: Enabled');
+      // console.log('Entity: Enabled');
       this.dead = false;
     }
 
