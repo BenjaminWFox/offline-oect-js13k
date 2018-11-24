@@ -78,7 +78,7 @@ const Level = (function () {
 
     checkForBatteryPickup(tileIdx) {
       if (this.batteries.checkForPickup(tileIdx)) {
-        console.log('Done?', this.batteries.allCollected);
+        // console.log('Done?', this.batteries.allCollected);
       }
     }
   }

@@ -139,8 +139,6 @@ function gameLoop() {
 
 function checkClosingBlocks(entity, callback) {
   if (bm.closingBlocks.indexOf(entity.currentTile) !== -1) {
-    // This would be a game over
-    console.log('Closing block check true');
     callback();
   }
 }

@@ -103,7 +103,7 @@ const Entity = (function () {
     }
 
     _makeStuck() {
-      console.log('Entity: Stuck');
+      // console.log('Entity: Stuck');
       this._updateState(this.states.stuck);
       this._occupiedBlock = this.currentTile;
       // Set the current tile to one above for correct path calculation
@@ -111,12 +111,12 @@ const Entity = (function () {
     }
 
     _makeClimb() {
-      console.log('Entity: Extricating');
+      // console.log('Entity: Extricating');
       this._updateState(this.states.extricating);
     }
 
     _makeFree() {
-      console.log('Entity: Free');
+      // console.log('Entity: Free');
       this._updateState(this.states.free);
       this._occupiedBlock = null;
     }

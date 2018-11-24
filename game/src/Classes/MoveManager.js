@@ -20,7 +20,6 @@ const MoveManager = (function () {
       let didMove = false;
 
       if (obj.lastMove + obj.moveSpeed < now && !obj.dead) {
-        obj.id ? console.log('Moving enemy:', obj.movement.direction) : '';
         didMove = this.moveOneTile(obj);
 
         obj.lastMove = now;

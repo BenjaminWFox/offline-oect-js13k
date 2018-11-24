@@ -52,7 +52,7 @@ const Enemey = (function () {
 
     _virtualRespawn() {
       super._virtualRespawn();
-      console.log('The enemy: I am spawning!');
+      // console.log('The enemy: I am spawning!');
     }
 
     _updatePath(tileIdx) {
