@@ -1,11 +1,9 @@
 /* TODO:
 - Prevent directly adding new levels to World
-- Turn Player.js into generic parent class for both Enemy & Player [or just create PC.js & NPC.js]
-- Refactor player code into child class of the new parent
-- Load/separate enemy sprites from level
-- Add enemy movement
-- Add block pickup/collision mechanic
-- Add block destruction/respawn mechanic
+- Make generic 'SPRITE' manager for Battery/Door collections
+- Add in level progressions
+- Add in multiple player lives
+- Add bottom bar to disply level/lives/battery pickup/etc...
  */
 
 import ga from './ga';
