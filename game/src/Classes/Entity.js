@@ -90,13 +90,13 @@ const Entity = (function () {
       const now = Date.now();
 
       if (!this.dead) {
-        if (!this.state.stuck && BlockManager.currentDestroyedBlocks()[this.currentTile]) {
+        if (!this.state.stuck && !this.state.extricating && BlockManager.currentDestroyedBlocks()[this.currentTile]) {
           this._makeStuck();
         }
         if (this.state.stuck && this.stateChangedAt + this.unstuckSpeed < now) {
           this._makeClimb();
         }
-        if (this.state.extricating && this.stateChangedAt + this.moveSpeed < now) {
+        if (this.state.extricating && this.stateChangedAt + this.moveSpeed < now && !BlockManager.currentDestroyedBlocks()[this.currentTile]) {
           this._makeFree();
         }
       }

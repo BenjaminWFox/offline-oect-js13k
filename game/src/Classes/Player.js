@@ -19,7 +19,7 @@ const Player = (function () {
         // const key = pair[0];
         const value = pair[1];
 
-        if (value.hasOwnProperty('code')) {
+        if (value.hasOwnProperty('code') && value['key']) {
           g.key[value.key].press = () => {
             if (!this.hasStarted) {
               this.hasStarted = true;

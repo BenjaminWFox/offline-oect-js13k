@@ -59,41 +59,45 @@ const Enemey = (function () {
       const now = Date.now();
 
       if (!this._pathData || this._pathData.updated + this._pathUpdateFreq < now) {
-        this._pathData = this.gm.graph.shortestPath(this.currentTile, tileIdx);
+        const refTile = this.state.stuck || this.state.extricating ? this.currentTile - 32 : this.currentTile;
+
+        this._pathData = this.gm.graph.shortestPath(refTile, tileIdx);
         this._pathData.updated = now;
       }
 
       if (!this.dead && !this.state.stuck && this._pathData && this.lastMove + this.moveSpeed < now) {
-        // I don't think this needs to be used.
-        // It was a way to assign the 2nd and 3rd indexes
-        // if the enemy was not yet free of the hole.
-        const indexes = this.state.free ? [0, 1] : [0, 1];
+        const indexes = this.state.extricating ?
+          [this.currentTile, 1] :
+          [this._pathData.path[0], 1];
 
-        this._convertPathToDirection(this._pathData.path[indexes[0]], this._pathData.path[indexes[1]]);
+        this._convertPathToDirection(indexes[0], this._pathData.path[indexes[1]]);
         this._pathData.path.shift();
       }
-
-      console.log('Path data', this._pathData.path);
     }
 
     _convertPathToDirection(currentTile, nextTile) {
       const dir = currentTile - nextTile;
 
-      switch (dir) {
-        case 32:
-          this.updateMovement(directions.up.code);
-          break;
-        case -32:
-          this.updateMovement(directions.down.code);
-          break;
-        case 1:
-          this.updateMovement(directions.left.code);
-          break;
-        case -1:
-          this.updateMovement(directions.right.code);
-          break;
-        default:
-          this.updateMovement(directions.still);
+      if (this.state.extricating) {
+        dir === 31 ? this.updateMovement(directions.upRight.code) : this.updateMovement(directions.upLeft.code);
+      } else {
+        // console.log('Other path dir', this.state);
+        switch (dir) {
+          case 32:
+            this.updateMovement(directions.up.code);
+            break;
+          case -32:
+            this.updateMovement(directions.down.code);
+            break;
+          case 1:
+            this.updateMovement(directions.left.code);
+            break;
+          case -1:
+            this.updateMovement(directions.right.code);
+            break;
+          default:
+            this.updateMovement(directions.still);
+        }
       }
     }
   }

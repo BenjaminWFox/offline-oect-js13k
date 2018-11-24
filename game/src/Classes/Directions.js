@@ -15,6 +15,14 @@ const directions = {
     code: 'r',
     key: 'rightArrow',
   },
+  upLeft: {
+    code: 'ul',
+    key: null,
+  },
+  upRight: {
+    code: 'ur',
+    key: null,
+  },
   current: 'c',
   still: 'still',
 };

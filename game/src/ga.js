@@ -2517,6 +2517,8 @@ GA.create = function(width, height, setup, assetsToLoad, load) {
       l: ga.getAdjacentTile(index, 'l'),
       dl: ga.getAdjacentTile(index, 'dl'),
       dr: ga.getAdjacentTile(index, 'dr'),
+      ul: ga.getAdjacentTile(index, 'ul'),
+      ur: ga.getAdjacentTile(index, 'ur'),
     };
   };
 
@@ -2525,6 +2527,7 @@ GA.create = function(width, height, setup, assetsToLoad, load) {
     let downTile;
     let leftTile;
     let rightTile;
+    let upTile;
 
     // Allow assignments of direction both ways, code directly or just english name
     if (dir.hasOwnProperty('code')) {
@@ -2569,6 +2572,16 @@ GA.create = function(width, height, setup, assetsToLoad, load) {
         rightTile = ga.getAdjacentTile(index, 'r');
         downTile = ga.getAdjacentTile(index, 'd');
         tileIndex = rightTile ? downTile + 1 : null;
+        break;
+      case 'ul':
+        leftTile = ga.getAdjacentTile(index, 'l');
+        upTile = ga.getAdjacentTile(index, 'u');
+        tileIndex = leftTile ? upTile - 1 : null;
+        break;
+      case 'ur':
+        rightTile = ga.getAdjacentTile(index, 'r');
+        upTile = ga.getAdjacentTile(index, 'u');
+        tileIndex = rightTile ? upTile + 1 : null;
         break;
       default:
         tileIndex = index;

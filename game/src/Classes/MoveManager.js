@@ -20,6 +20,7 @@ const MoveManager = (function () {
       let didMove = false;
 
       if (obj.lastMove + obj.moveSpeed < now && !obj.dead) {
+        obj.id ? console.log('Moving enemy:', obj.movement.direction) : '';
         didMove = this.moveOneTile(obj);
 
         obj.lastMove = now;
@@ -38,6 +39,14 @@ const MoveManager = (function () {
 
     canMoveFromTo(obj, currentTile, destTile) {
       const dir = currentTile.index - destTile.index;
+
+      if (obj.state.extricating) {
+        if (dir === 33 || dir === 31) {
+          return destTile.type !== this.g.tileTypes.floor;
+        }
+
+        return false;
+      }
 
       switch (dir) {
         case 32:
@@ -81,6 +90,7 @@ const MoveManager = (function () {
       const currentTile = BlockManager.getBlock(obj.currentTile);
       const moveToTile = BlockManager.getBlock(obj.currentTile, moveDir);
 
+      console.log('ct/dt', currentTile, moveToTile);
       const canMove = this.canMoveFromTo(obj, currentTile, moveToTile);
 
       if (canMove) {
@@ -113,11 +123,6 @@ const MoveManager = (function () {
         // console.log('Below Tile Data:', belowTile.index, belowTile.isStable, belowTile.type);
 
         return true;
-      }
-
-      // This is where the block has closed around the obj after the obj has entered the block space
-      if (thisTile.type !== this.g.tileTypes.ladder && thisTile.isStable) {
-        console.log('You\'re beached mate!');
       }
 
       //  sprite.movement.falling = false;
