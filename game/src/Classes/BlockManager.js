@@ -91,7 +91,7 @@ const BlockManager = (function (g) {
 
       if (block.type === this.g.tileTypes.air && !block.isStable) {
         this._makeStable(block);
-        console.log('Made block STABLE, something is in it!', block.index);
+        // console.log('Made block STABLE, something is in it!', block.index);
         this._occupiedBlocks[obj.id] = obj.occupiedBlock;
       }
     }
@@ -101,7 +101,7 @@ const BlockManager = (function (g) {
 
       if (block.type === this.g.tileTypes.air) {
         this._makeUnstable(block);
-        console.log('Made block UNSTABLE, nothing in it!', block.index);
+        // console.log('Made block UNSTABLE, nothing in it!', block.index);
       }
 
       delete this._occupiedBlocks[obj.id];
