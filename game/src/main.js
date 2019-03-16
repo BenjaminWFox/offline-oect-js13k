@@ -2,6 +2,10 @@
 - Prevent directly adding new levels to World
 - Make generic 'SPRITE' manager for Battery/Door collections
 - Add in level progressions
+- - This requires a couple new methods:
+- - - Notify the game that the level has been complete
+- - - Destroy the current level
+- - - Load the new level
 - Add in multiple player lives
 - Add bottom bar to disply level/lives/battery pickup/etc...
  */
@@ -101,6 +105,7 @@ function gameLoop() {
   // 2. Move the player
   // 3. Move all the enemies
   // 4. Respawn blocks
+  // ?. Check if enemies have captured player...
   if (player.hasStarted) {
     bm.updateBlocks();
 
