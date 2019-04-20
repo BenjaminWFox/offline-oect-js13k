@@ -22,6 +22,8 @@ const World = (function () {
       } else {
         throw new Error('Unexpected world format. Levels not found.');
       }
+
+      this.buildLevels(g);
     }
 
     /**
@@ -70,12 +72,31 @@ const World = (function () {
     }
 
     renderLevel(levelNumber) {
-      // console.log('Rendering level', levelNumber);
+      this.clearLevelGroup();
+
       const levelIdx = levelToIndex(levelNumber);
 
       this.levels[levelIdx].renderToGroup(this.levelGroup);
 
       _renderedLevel.set(this, this.levels[levelIdx]);
+    }
+
+    clearLevelGroup(levelNumber) {
+      let spritesToRemove = this.levelGroup.children.length;
+
+      while (spritesToRemove > 0) {
+        const removeIndex = --spritesToRemove;
+
+        this.levelGroup.removeChild(this.levelGroup.children[removeIndex]);
+      }
+    }
+
+    checkForCompletedLevel(currentPlayerTile) {
+      const levelComplete = this.currentLevel.doors.checkForEntry(currentPlayerTile);
+
+      if (levelComplete) {
+        return true;
+      }
     }
   }
 

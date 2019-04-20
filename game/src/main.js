@@ -48,12 +48,13 @@ document.getElementById('restart').addEventListener('click', () => {
   location.reload();
 });
 
-function initWorld() {
-  world = new World(g);
-  world.buildLevels(g);
-  world.renderLevel(levelNumber);
+function startNewLevel(currentLevel) {
+  world.renderLevel(currentLevel);
 
-  console.log('g.world created', g.world.objects);
+  initManagers(currentLevel);
+  initEntities();
+
+  console.log('The current level is', world.currentLevel);
 }
 
 function initEntities() {
@@ -69,20 +70,31 @@ function initEntities() {
   console.log('ENEMIES CREATED!', enemies);
 }
 
-function initManagers() {
+function initManagers(currentLevel) {
   mm.updateSettings(settings);
+
   bm.updateSettings(settings);
-  bm.setBlocks(world.level(levelNumber).sprites);
+
+  console.log('Sprites for current level', world.level(currentLevel).sprites);
+
+  bm.setBlocks(world.level(currentLevel).sprites);
+
+  console.log('Blocks are set', bm.blocksObject);
+
   gm.createLevelGraph(mm.canMoveFromTo.bind(mm), bm.blocksObject);
+}
+
+function initWorld(currentLevel) {
+  world = new World(g);
+
+  startNewLevel(currentLevel);
 }
 
 function setup() {
   console.log('We are running the setup. We have g:', g);
 
   // Entity creation depends on manager instantiation
-  initWorld();
-  initManagers();
-  initEntities();
+  initWorld(levelNumber);
 
   // Initializes state on the gameLoop
   g.state = gameLoop;
@@ -97,6 +109,7 @@ function setup() {
     console.log(`${index}`);
     console.log('Tile:', BlockManager.getBlock(index));
   };
+
 }
 
 function gameLoop() {
@@ -137,9 +150,13 @@ function gameLoop() {
     });
 
     world.currentLevel.batteries.allCollected ?
-      world.currentLevel.doors.checkForEntry(player.currentTile) :
+      world.checkForCompletedLevel(player.currentTile) ? goToNextLevel() : '' :
       world.currentLevel.checkForBatteryPickup(player.currentTile);
   }
+}
+
+function goToNextLevel() {
+  startNewLevel(world.currentLevel.number + 1);
 }
 
 function checkClosingBlocks(entity, callback) {

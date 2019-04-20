@@ -9,7 +9,6 @@ const BlockManager = (function (g) {
         this.g = g;
       }
       this._fps = this.g._fps;
-      this._blockHash = {};
       this._closingBlocks = [];
       this._destroyedBlocksHash = {};
       this._destroyedBlocksQueue = [];
@@ -24,8 +23,14 @@ const BlockManager = (function (g) {
         g.tileTypes.ladder,
       ];
 
-      this.blocksObject = undefined;
+      this._resetCollections();
+
       this.respawnTime = 3000;
+    }
+
+    _resetCollections() {
+      this._blockHash = {};
+      this.blocksObject = undefined;
     }
 
     updateSettings(settings) {
@@ -51,6 +56,8 @@ const BlockManager = (function (g) {
     }
 
     setBlocks(blockSpritesObject) {
+      this._resetCollections();
+
       this.blocksObject = this.blockArray ? this.blockArray : blockSpritesObject;
       this._monitoredTypes.forEach(type => {
         this.blocksObject[type].forEach(block => {

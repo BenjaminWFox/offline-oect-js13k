@@ -80,7 +80,6 @@ const Level = (function () {
     }
 
     renderToGroup(group) {
-      // console.log('Rendering to group', this.sprites);
       Object.keys(this.sprites).forEach(key => {
         this.sprites[key].forEach(sprite => {
           group.addChild(sprite);

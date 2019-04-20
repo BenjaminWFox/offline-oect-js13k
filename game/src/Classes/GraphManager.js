@@ -12,6 +12,10 @@ const GraphManager = (function () {
         g.tileTypes.floor,
         g.tileTypes.ladder,
       ];
+      this._resetCollections();
+    }
+
+    _resetCollections() {
       this.solidBlocks = [];
       this.accessibleTiles = [];
       this.levelGraph = {};
@@ -19,6 +23,7 @@ const GraphManager = (function () {
     }
 
     createLevelGraph(fnCanMoveFromTo, lvlBlocksObj) {
+      this._resetCollections();
       this._collectSolidBlocks(lvlBlocksObj);
       this._findAccessibleBlocks(fnCanMoveFromTo);
 
