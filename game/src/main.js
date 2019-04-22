@@ -17,6 +17,7 @@ import Enemy from 'Classes/Enemy';
 import MoveManager from 'Classes/MoveManager';
 import BlockManager from 'Classes/BlockManager';
 import GraphManager from 'Classes/GraphManager';
+import SceneManager from 'Classes/SceneManager';
 // import Sounds from 'Classes/Sound';
 import {configDifficulties, configValues} from 'Classes/Settings';
 // import Level from 'Classes/Level';
@@ -40,6 +41,7 @@ const settings = configValues[difficulty];
 const mm = MoveManager.getInstance(g);
 const bm = BlockManager.getInstance(g, settings.respawnTimer);
 const gm = GraphManager.getInstance(g);
+const sm = new SceneManager(g, configDifficulties.normal);
 
 console.log('Settings', configDifficulties, configValues);
 
@@ -87,6 +89,9 @@ function initManagers(currentLevel) {
 function initWorld(currentLevel) {
   world = new World(g);
 
+  sm.setGameScene(world.levelGroup);
+  sm.setGameLoop(gameLoop);
+
   startNewLevel(currentLevel);
 }
 
@@ -97,7 +102,13 @@ function setup() {
   initWorld(levelNumber);
 
   // Initializes state on the gameLoop
-  g.state = gameLoop;
+  // console.log('World level', world.levelGroup.visible = false);
+  // g.state = sm.title;
+
+  // g.state = sm.game;
+  g.state = sm.title;
+
+  // g.state = gameLoop;
 
   // Easy tile debugging
   const pointer = g.pointer;
@@ -113,6 +124,7 @@ function setup() {
 }
 
 function gameLoop() {
+  console.log('GL running');
   // Based on prior version, 4 things need to happen here:
   // 1. Check if players/enemies are in closing blocks
   // 2. Move the player
