@@ -1,3 +1,5 @@
+**See the [rewrite branch](https://github.com/BenjaminWFox/offline-oect-js13k/tree/rewrite) for (currently in progress) updates & extensions to the codebase made after the competition.**
+
 ### About
 
 This project is a game for the [JS13K](http://js13kgames.com/) 2018 competition. It's currently weighing in at 12,911 bytes. 
