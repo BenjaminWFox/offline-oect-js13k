@@ -8,6 +8,13 @@ This branch is a rewrite of the original codebase. It includes:
 - Code optimizations
 - Additional levels
 
+## TODO:
+
+- Implement button navigation on pre-game/title screens
+- Implement difficulty level selection
+- Implement losing & final winning conditions
+
+
 ### Running
 
 Clone the project

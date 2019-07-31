@@ -2396,6 +2396,7 @@ GA.create = function(width, height, setup, assetsToLoad, load) {
     //Assign the arrow keys and the space bar
     o.a = keyboard(65);
     o.d = keyboard(68);
+    o.c = keyboard(67);
     o.leftArrow = keyboard(37);
     o.upArrow = keyboard(38);
     o.rightArrow = keyboard(39);

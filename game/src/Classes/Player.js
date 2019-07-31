@@ -21,6 +21,7 @@ const Player = (function () {
 
         if (value.hasOwnProperty('code') && value['key']) {
           g.key[value.key].press = () => {
+            console.log('Player press...');
             if (!this.hasStarted) {
               this.hasStarted = true;
             }

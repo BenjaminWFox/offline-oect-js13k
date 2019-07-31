@@ -106,7 +106,10 @@ function setup() {
   // g.state = sm.title;
 
   // g.state = sm.game;
-  g.state = sm.title;
+  // g.state = sm.title;
+  // g.state = sm.intro;
+  // g.state = sm.gameOverWon;
+  g.state = sm.gameOverLost;
 
   // g.state = gameLoop;
 

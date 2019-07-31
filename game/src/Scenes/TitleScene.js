@@ -26,6 +26,10 @@ export default class TitleScene extends Scene {
       this.titleMessageSub3,
       this.titleMessageSub4,
     );
+
+    g.key.c.press = () => {
+      console.log('Challange rating change!');
+    };
   }
 
   get scene() {
@@ -37,6 +41,6 @@ export default class TitleScene extends Scene {
   }
 
   setDifficultyMessage(difficulty) {
-    return this.gInstance.text(`[ D ] -> Difficulty: ${difficulty.toUpperCase()}`, '24px Courier', '#0098ff', 0, 0);
+    return this.gInstance.text(`[ C ] -> Challenge: ${difficulty.toUpperCase()}`, '24px Courier', '#0098ff', 0, 0);
   }
 }
