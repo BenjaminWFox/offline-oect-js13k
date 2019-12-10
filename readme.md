@@ -14,7 +14,7 @@ The enemy AI uses Dijkstra's algorithm, a slightly modified version of the one f
 
 ### Run & Build
 
-Run with `npm start` from the `game/` directory.
+Run with `npm start` from the `game/` directory..
 
 Build with `npm run build` to minify and copy files to `dist`.
 
