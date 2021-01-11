@@ -42,7 +42,7 @@ let difficulty = configDifficulties.playground;
 let settings = configValues[difficulty];
 
 const enemyOccupations = {};
-const levelNumber = 1; // 4 total
+const levelNumber = 4; // 4 total
 const mm = MoveManager.getInstance(g);
 const bm = BlockManager.getInstance(g, settings.respawnTimer);
 const gm = GraphManager.getInstance(g);

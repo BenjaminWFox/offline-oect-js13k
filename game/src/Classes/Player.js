@@ -13,6 +13,7 @@ const Player = (function () {
       this.landingTile = undefined;
       this.hasStarted = false;
       this.won = false;
+      this.killIfStuck = true;
 
       // Assign all keypresses to player based off values in directions
       Object.entries(directions).forEach(pair => {

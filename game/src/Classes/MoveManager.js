@@ -29,6 +29,14 @@ const MoveManager = (function () {
         obj.lastMove = now;
       }
 
+      if (!didMove && obj.killIfStuck && now > obj.lastMove + 2000) {
+        if (this.isStuck(obj)) {
+          obj.dead = true;
+        } else {
+          // console.log('Not stuck, just chillin');
+        }
+      }
+
       return didMove;
     }
 
@@ -132,6 +140,20 @@ const MoveManager = (function () {
         return true;
       }
 
+      return false;
+    }
+
+    isStuck(obj) {
+      const l = BlockManager.getBlock(obj.currentTile, directions.left.code);
+      const r = BlockManager.getBlock(obj.currentTile, directions.right.code);
+      const d = BlockManager.getBlock(obj.currentTile, directions.down.code);
+
+      if (l.type === this.g.tileTypes.floor && r.type === this.g.tileTypes.floor && d.type === this.g.tileTypes.floor) {
+        // makePlayerDead();
+        return true;
+      }
+
+      // player.lastMove = Date.now();
       return false;
     }
 
