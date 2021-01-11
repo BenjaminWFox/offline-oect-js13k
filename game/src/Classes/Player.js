@@ -21,14 +21,14 @@ const Player = (function () {
 
         if (value.hasOwnProperty('code') && value['key']) {
           g.key[value.key].press = function () {
-            console.log('Player press...', value.key);
+            // console.log('Player press...', value.key);
             if (!this.hasStarted) {
               this.hasStarted = true;
             }
             this.updateMovement(value.code);
           }.bind(this);
           g.key[value.key].release = function () {
-            console.log('Player UNpress...', value.key);
+            // console.log('Player UNpress...', value.key);
             if (this.movement.direction === value.code) {
               this.updateMovement(directions.still);
             }

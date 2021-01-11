@@ -19,8 +19,6 @@ const MoveManager = (function () {
       const now = Date.now();
       let didMove = false;
 
-      console.log('moving', now, obj.lastMove + obj.moveSpeed, obj);
-
       if (
         obj.lastMove + obj.moveSpeed < now
         && !obj.dead
@@ -83,8 +81,6 @@ const MoveManager = (function () {
     }
 
     moveOneTile(obj) {
-      console.log('Attempting to move...');
-
       // Check if landed...
       if (this.isFalling(obj)) {
         // console.log('falling');

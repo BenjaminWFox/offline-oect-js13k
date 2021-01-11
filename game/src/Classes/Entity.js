@@ -41,10 +41,6 @@ const Entity = (function () {
         this.movement.direction = directions.still;
         this.movement.moving = false;
       } else {
-        if (this.sprite.name === 'player') {
-          console.log('UPDATE MOVEMENT', dir);
-        }
-
         this.movement.direction = dir;
         this.movement.moving = true;
       }
