@@ -20,18 +20,18 @@ const Player = (function () {
         const value = pair[1];
 
         if (value.hasOwnProperty('code') && value['key']) {
-          g.key[value.key].press = () => {
-            console.log('Player press...');
+          g.key[value.key].press = function () {
+            console.log('Player press...', value.key);
             if (!this.hasStarted) {
               this.hasStarted = true;
             }
             this.updateMovement(value.code);
-          };
-          g.key[value.key].release = () => {
+          }.bind(this);
+          g.key[value.key].release = function () {
             if (this.movement.direction === value.code) {
               this.updateMovement(directions.still);
             }
-          };
+          }.bind(this);
         }
       });
 

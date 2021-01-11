@@ -4,13 +4,13 @@ export default class TitleScene extends Scene {
   constructor(g) {
     super(g);
 
-    this.difficulty = 'normal';
+    this.difficulty = g.custom.getDifficulty();
     this.gInstance = g;
 
-    this.titleMessageMain = g.text('- OFFLINE: O.E.C.T. -', '64px Courier', '#15e815', 0, 0);
-    this.titleMessageSub1 = g.text('By Ben Fox.', '32px Courier', '#15e815', 0, 0);
-    this.titleMessageSub2 = g.text('[ SPACE ] to page/pause.', '32px Courier', '#15e815', 0, 0);
-    this.titleMessageSub3 = g.text('[ A/D ] to blast the floor. [ ARROWS ] to move.', '32px Courier', '#15e815', 0, 0);
+    this.titleMessageMain = this.gInstance.text('- OFFLINE: O.E.C.T. -', '64px Courier', '#15e815', 0, 0);
+    this.titleMessageSub1 = this.gInstance.text('By Ben Fox.', '32px Courier', '#15e815', 0, 0);
+    this.titleMessageSub2 = this.gInstance.text('[ SPACE ] to page/pause.', '32px Courier', '#15e815', 0, 0);
+    this.titleMessageSub3 = this.gInstance.text('[ A/D ] to blast the floor. [ ARROWS ] to move.', '32px Courier', '#15e815', 0, 0);
     this.titleMessageSub4 = this.setDifficultyMessage(this.difficulty);
 
     this.titleMessageMain.y = 275;
@@ -19,7 +19,7 @@ export default class TitleScene extends Scene {
     this.titleMessageSub3.y = 460;
     this.titleMessageSub4.y = 510;
 
-    this.group = g.group(
+    this.group = this.gInstance.group(
       this.titleMessageMain,
       this.titleMessageSub1,
       this.titleMessageSub2,
@@ -29,6 +29,10 @@ export default class TitleScene extends Scene {
 
     g.key.c.press = () => {
       console.log('Challange rating change!');
+      this.setDifficulty(g.custom.changeDifficulty());
+      this.difficulty = g.custom.getDifficulty();
+
+      this.titleMessageSub4.content = `[ C ] -> Challenge: ${this.difficulty.toUpperCase()}`;
     };
   }
 

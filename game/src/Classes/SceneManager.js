@@ -6,10 +6,14 @@ class SceneManager {
   constructor(g) {
     this.gameLoop;
     this.gameScene;
-
+    this.g = g;
     this.titleScene = new TitleScene(g);
     this.introScene = new IntroScene(g);
     this.gameOverScene = new GameOverScene(g);
+
+    this.introScene.visible = false;
+    this.titleScene.visible = false;
+    this.gameOverScene.visible = false;
 
     g.key.space.press = () => {
       console.log('Spacebar pressed!');
@@ -17,25 +21,38 @@ class SceneManager {
   }
 
   setGameScene(gameScene) {
+    console.log('Game Scene Set');
     this.gameScene = gameScene;
   }
 
   setGameLoop(gameLoop) {
+    console.log('Game Loop Set');
     this.gameLoop = gameLoop;
   }
 
   get title() {
+    this.g.key.space.press = () => {
+      this.g.state = this.intro;
+    };
+
     return () => {
+      this.introScene.visible = false;
       this.titleScene.visible = true;
       this.gameScene.visible = false;
+      this.gameOverScene.visible = false;
     };
   }
 
   get intro() {
+    this.g.key.space.press = () => {
+      this.g.state = this.game;
+    };
+
     return () => {
       this.introScene.visible = true;
       this.titleScene.visible = false;
       this.gameScene.visible = false;
+      this.gameOverScene.visible = false;
     };
   }
 
@@ -60,8 +77,13 @@ class SceneManager {
   }
 
   get game() {
+    this.g.key.space.press = () => {};
+
     return () => {
+      this.introScene.visible = false;
       this.titleScene.visible = false;
+      this.gameOverScene.visible = false;
+      this.gameScene.visible = true;
       this.gameLoop();
     };
   }

@@ -10,6 +10,14 @@ const blockRespawnSpeed = 3300;
 const playerMoveSpeed = 150;
 
 const configValues = {
+  playground: {
+    playerMoveSpeed,
+    enemyMoveSpeed: 300,
+    blockRespawnSpeed: blockRespawnSpeed * 1.5,
+    pathUpdateFrequency,
+    enemyUnstuckSpeed: blockRespawnSpeed / 2.5,
+    allowFallingKills: false,
+  },
   easy: {
     playerMoveSpeed,
     enemyMoveSpeed: 300,

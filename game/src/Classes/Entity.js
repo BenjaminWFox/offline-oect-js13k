@@ -37,11 +37,14 @@ const Entity = (function () {
     }
 
     updateMovement(dir) {
-      // console.log('UPDATE MOVEMENT', dir);
       if (dir === directions.still) {
         this.movement.direction = directions.still;
         this.movement.moving = false;
       } else {
+        if (this.sprite.name === 'player') {
+          console.log('UPDATE MOVEMENT', dir);
+        }
+
         this.movement.direction = dir;
         this.movement.moving = true;
       }

@@ -30,18 +30,24 @@ const g = ga(
   ],
 );
 
+g.custom = {
+  changeDifficulty,
+  getDifficulty,
+};
+
 let world;
+const isGameScene = false;
 let player;
 let enemies = [];
+let difficulty = configDifficulties.playground;
+let settings = configValues[difficulty];
+
 const enemyOccupations = {};
-// let sounds;
-const levelNumber = 1;
-const difficulty = configDifficulties.normal;
-const settings = configValues[difficulty];
+const levelNumber = 1; // 4 total
 const mm = MoveManager.getInstance(g);
 const bm = BlockManager.getInstance(g, settings.respawnTimer);
 const gm = GraphManager.getInstance(g);
-const sm = new SceneManager(g, configDifficulties.normal);
+const sm = new SceneManager(g);
 
 console.log('Settings', configDifficulties, configValues);
 
@@ -49,6 +55,35 @@ console.log('Settings', configDifficulties, configValues);
 document.getElementById('restart').addEventListener('click', () => {
   location.reload();
 });
+
+function changeDifficulty() {
+  // difficulty = diff;
+  // settings = configValues[diff];
+  switch (difficulty) {
+    default:
+    case configDifficulties.playground:
+      difficulty = configDifficulties.easy;
+      break;
+    case configDifficulties.easy:
+      difficulty = configDifficulties.normal;
+      break;
+    case configDifficulties.normal:
+      difficulty = configDifficulties.hard;
+      break;
+    case configDifficulties.hard:
+      difficulty = configDifficulties.playground;
+      break;
+  }
+
+  settings = configValues[difficulty];
+
+  initManagers(levelNumber);
+  initEntities();
+}
+
+function getDifficulty() {
+  return difficulty;
+}
 
 function startNewLevel(currentLevel) {
   world.renderLevel(currentLevel);
@@ -65,11 +100,14 @@ function initEntities() {
   console.log('PLAYER CREATED:', player.currentTile);
 
   enemies = [];
-  world.currentLevel.sprites.enemy.forEach((enemy, idx) => {
-    enemies.push(new Enemy(world.currentLevel.sprites.enemy[idx], settings.enemyMoveSpeed, settings.pathUpdateFrequency, settings.enemyUnstuckSpeed, g));
-  });
 
-  console.log('ENEMIES CREATED!', enemies);
+  if (difficulty !== configDifficulties.playground) {
+    world.currentLevel.sprites.enemy.forEach((enemy, idx) => {
+      enemies.push(new Enemy(world.currentLevel.sprites.enemy[idx], settings.enemyMoveSpeed, settings.pathUpdateFrequency, settings.enemyUnstuckSpeed, g));
+    });
+
+    console.log('ENEMIES CREATED!', enemies);
+  }
 }
 
 function initManagers(currentLevel) {
@@ -105,11 +143,11 @@ function setup() {
   // console.log('World level', world.levelGroup.visible = false);
   // g.state = sm.title;
 
-  // g.state = sm.game;
-  // g.state = sm.title;
+  g.state = sm.title;
   // g.state = sm.intro;
+  // g.state = sm.game;
   // g.state = sm.gameOverWon;
-  g.state = sm.gameOverLost;
+  // g.state = sm.gameOverLost;
 
   // g.state = gameLoop;
 
@@ -123,18 +161,18 @@ function setup() {
     console.log(`${index}`);
     console.log('Tile:', BlockManager.getBlock(index));
   };
-
 }
 
 function gameLoop() {
-  console.log('GL running');
+  // console.log('GL running', g.state);
+
   // Based on prior version, 4 things need to happen here:
   // 1. Check if players/enemies are in closing blocks
   // 2. Move the player
   // 3. Move all the enemies
   // 4. Respawn blocks
   // ?. Check if enemies have captured player...
-  if (player.hasStarted) {
+  if (sm.gameScene.visible && player.hasStarted) {
     bm.updateBlocks();
 
     if (!player.dead) {
@@ -171,7 +209,11 @@ function gameLoop() {
 }
 
 function goToNextLevel() {
-  startNewLevel(world.currentLevel.number + 1);
+  if (world.currentLevel.number === world.totalLevels) {
+    g.state = sm.gameOverWon;
+  } else {
+    startNewLevel(world.currentLevel.number + 1);
+  }
 }
 
 function checkClosingBlocks(entity, callback) {
