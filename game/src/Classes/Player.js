@@ -28,6 +28,7 @@ const Player = (function () {
             this.updateMovement(value.code);
           }.bind(this);
           g.key[value.key].release = function () {
+            console.log('Player UNpress...', value.key);
             if (this.movement.direction === value.code) {
               this.updateMovement(directions.still);
             }

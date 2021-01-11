@@ -19,7 +19,13 @@ const MoveManager = (function () {
       const now = Date.now();
       let didMove = false;
 
-      if (obj.lastMove + obj.moveSpeed < now && !obj.dead) {
+      console.log('moving', now, obj.lastMove + obj.moveSpeed, obj);
+
+      if (
+        obj.lastMove + obj.moveSpeed < now
+        && !obj.dead
+        && (obj.movement.falling || obj.movement.direction !== directions.still)
+      ) {
         didMove = this.moveOneTile(obj);
 
         obj.lastMove = now;
@@ -77,6 +83,9 @@ const MoveManager = (function () {
     }
 
     moveOneTile(obj) {
+      console.log('Attempting to move...');
+
+      // Check if landed...
       if (this.isFalling(obj)) {
         // console.log('falling');
         obj.movement.falling = true;
@@ -102,6 +111,15 @@ const MoveManager = (function () {
         obj.sprite.x = nextX;
         obj.sprite.y = nextY;
         obj.currentTile = nextTileIndex;
+
+        // Check if stepped off edge...
+        if (this.isFalling(obj)) {
+        // console.log('falling');
+          obj.movement.falling = true;
+        } else {
+        // console.log('not falling');
+          obj.movement.falling = false;
+        }
 
         return true;
       }

@@ -36,7 +36,6 @@ g.custom = {
 };
 
 let world;
-const isGameScene = false;
 let player;
 let enemies = [];
 let difficulty = configDifficulties.playground;
