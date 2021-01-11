@@ -106,7 +106,21 @@ function initEntities() {
       enemies.push(new Enemy(world.currentLevel.sprites.enemy[idx], settings.enemyMoveSpeed, settings.pathUpdateFrequency, settings.enemyUnstuckSpeed, g));
     });
 
-    console.log('ENEMIES CREATED!', enemies);
+    for (let i = world.levelGroup.children.length - 1; i >= 0; i--) {
+      const t = world.levelGroup.children[i];
+
+      if (t.name === 'enemy') {
+        world.levelGroup.children[i].visible = true;
+      }
+    }
+  } else {
+    for (let i = world.levelGroup.children.length - 1; i >= 0; i--) {
+      const t = world.levelGroup.children[i];
+
+      if (t.name === 'enemy') {
+        world.levelGroup.children[i].visible = false;
+      }
+    }
   }
 }
 
