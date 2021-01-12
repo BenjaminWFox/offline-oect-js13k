@@ -8,13 +8,6 @@ This branch is a rewrite of the original codebase. It includes:
 - Code optimizations
 - Additional levels
 
-## TODO:
-
-- Implement button navigation on pre-game/title screens
-- Implement difficulty level selection
-- Implement losing & final winning conditions
-
-
 ### Running
 
 Clone the project
@@ -22,5 +15,3 @@ Clone the project
 `cd game && npm install`
 
 `npm run start`
-
-Note that this branch may not be in a playable state.
