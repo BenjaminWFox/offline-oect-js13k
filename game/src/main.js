@@ -38,11 +38,11 @@ g.custom = {
 let world;
 let player;
 let enemies = [];
-let difficulty = configDifficulties.playground;
+let difficulty = configDifficulties.easy;
 let settings = configValues[difficulty];
 
 const enemyOccupations = {};
-const levelNumber = 4; // 4 total
+const levelNumber = 1; // 4 total
 const mm = MoveManager.getInstance(g);
 const bm = BlockManager.getInstance(g, settings.respawnTimer);
 const gm = GraphManager.getInstance(g);
@@ -56,6 +56,7 @@ document.getElementById('restart').addEventListener('click', () => {
 });
 
 function changeDifficulty() {
+  console.log('Changing Difficulty!');
   // difficulty = diff;
   // settings = configValues[diff];
   switch (difficulty) {
@@ -91,6 +92,7 @@ function startNewLevel(currentLevel) {
   initEntities();
 
   console.log('The current level is', world.currentLevel);
+  console.log('The difficulty is:', difficulty, settings);
 }
 
 function initEntities() {
@@ -176,6 +178,14 @@ function setup() {
   };
 }
 
+function checkForPlayerKill(enemy) {
+  if (enemy.currentTile === player.currentTile &&
+    (settings.allowFallingKills || (!settings.allowFallingKills && !player.movement.falling))) {
+    console.log('DEV ONLY: You Died!');
+    gameOver();
+  }
+}
+
 function gameLoop() {
   // console.log('GL running', g.state);
 
@@ -197,6 +207,7 @@ function gameLoop() {
 
     enemies.forEach(enemy => {
       enemy.update(player.currentTile);
+      checkForPlayerKill(enemy);
 
       if (enemy.occupiedBlock) {
         bm.fillBlock(enemy);
@@ -236,8 +247,8 @@ function checkClosingBlocks(entity, callback) {
 }
 
 function gameOver() {
-  g.pause();
-  console.log('GAME OVER');
+  g.state = sm.gameOverLost;
+  // g.pause();
 }
 
 // Calls 'setup' function

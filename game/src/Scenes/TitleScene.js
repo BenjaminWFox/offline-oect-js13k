@@ -9,7 +9,7 @@ export default class TitleScene extends Scene {
 
     this.titleMessageMain = this.gInstance.text('- OFFLINE: O.E.C.T. -', '64px Courier', '#15e815', 0, 0);
     this.titleMessageSub1 = this.gInstance.text('By Ben Fox.', '32px Courier', '#15e815', 0, 0);
-    this.titleMessageSub2 = this.gInstance.text('[ SPACE ] to page/pause.', '32px Courier', '#15e815', 0, 0);
+    this.titleMessageSub2 = this.gInstance.text('[ SPACE ] to page/pause (game)/restart (gameover).', '32px Courier', '#15e815', 0, 0);
     this.titleMessageSub3 = this.gInstance.text('[ A/D ] to blast the floor. [ ARROWS ] to move.', '32px Courier', '#15e815', 0, 0);
     this.titleMessageSub4 = this.setDifficultyMessage(this.difficulty);
 

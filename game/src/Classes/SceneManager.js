@@ -47,6 +47,7 @@ class SceneManager {
     this.g.key.space.press = () => {
       this.g.state = this.game;
     };
+    this.g.key.c.press = () => {};
 
     return () => {
       this.introScene.visible = true;
@@ -57,6 +58,10 @@ class SceneManager {
   }
 
   get gameOverWon() {
+    this.g.key.space.press = function () {
+      window.location.reload();
+    };
+
     return () => {
       this.introScene.visible = false;
       this.titleScene.visible = false;
@@ -67,17 +72,26 @@ class SceneManager {
   }
 
   get gameOverLost() {
+    this.g.key.space.press = function () {
+      window.location.reload();
+    };
+
     return () => {
+      this.gameOverScene.setLose();
       this.introScene.visible = false;
       this.titleScene.visible = false;
       this.gameScene.visible = false;
-      this.gameOverScene.setLose();
       this.gameOverScene.visible = true;
     };
   }
 
   get game() {
-    this.g.key.space.press = () => {};
+    this.g.key.space.press = () => {
+      this.g.paused
+        ? this.g.resume()
+        : this.g.pause();
+    };
+    this.g.key.c.press = () => {};
 
     return () => {
       this.introScene.visible = false;

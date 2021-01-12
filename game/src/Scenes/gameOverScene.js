@@ -6,7 +6,8 @@ export default class GameOverScene extends Scene {
 
     this.gInstance = g;
     // Add some text for the game over message
-    this.endMessage = g.text('Placeholder Text', '32px Helvetica', '#15e815', 0, 0);
+    this.endMessage = g.text('', '32px Helvetica', '#15e815', 0, 0);
+    this.endMessage.y = (this.gInstance.canvas.height / 2) - 35;
     // Create a `gameOver` group and add the message sprite to it
     this.group = g.group(this.endMessage);
   }
