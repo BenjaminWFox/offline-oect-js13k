@@ -152,7 +152,11 @@ const BlockManager = (function (g) {
       if (this._canDestroy(tileToDestroy)) {
         this.setBlockType(this._blockHash[tileToDestroy.index], this.g.tileTypes.air);
         this._addToDBTrackers(tileToDestroy.index);
+
+        return true;
       }
+
+      return false;
     }
 
     _canDestroy(tileMeta) {
@@ -213,7 +217,7 @@ const Singleton = (function (g) {
   // Trigger instance method via static access
   if (!BlockManager['destroyBlock']) {
     staticMethods['destroyBlock'] = function (fromTileIdx, dir) {
-      staticMethods.getInstance(g)._destroyBlock(fromTileIdx, dir);
+      return staticMethods.getInstance(g)._destroyBlock(fromTileIdx, dir);
     };
   }
   if (!BlockManager['getBlock']) {

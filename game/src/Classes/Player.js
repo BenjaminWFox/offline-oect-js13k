@@ -37,21 +37,41 @@ const Player = (function () {
         }
       });
 
+      const blastLine = (adjust) => {
+        const line = g.line(
+          'yellow',
+          3,
+          this.sprite.centerX + (10 * adjust),
+          this.sprite.centerY,
+          this.sprite.centerX + (27.5 * adjust),
+          this.sprite.centerY + 15,
+        );
+
+        g.wait(35, () => {
+          g.remove(line);
+        });
+      };
+
       g.key.a.press = function () {
         // console.log('CURRENT TILE!', this.currentTile);
-        BlockManager.destroyBlock(this.currentTile, 'dl');
+
+        if (BlockManager.destroyBlock(this.currentTile, 'dl')) {
+          blastLine(-1);
+        }
       }.bind(this);
 
       g.key.d.press = function () {
         // console.log('CURRENT TILE!', this.currentTile);
-        BlockManager.destroyBlock(this.currentTile, 'dr');
+
+        if (BlockManager.destroyBlock(this.currentTile, 'dr')) {
+          blastLine(1);
+        }
       }.bind(this);
     }
 
     _virtualRespawn() {
       // Do nothing here for player.
     }
-
   }
 
   return Player;
