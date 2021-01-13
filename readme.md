@@ -1,8 +1,15 @@
+# What is this?
+
+This is a [loderunner](https://en.wikipedia.org/wiki/Lode_Runner) style game in JavaScript created for the 2018 [Js13kGames](http://js13kgames.com/) competetion. You can see the [original entry here](https://js13kgames.com/entries/offline-oect)!
+
+## Why is it cool? 
+
+The compo takes place over 30 days, and requires building a game that totals (zipped) under 13k. Offline O.E.C.T came in at 12,911 bytes!
+
 **See the [rewrite branch](https://github.com/BenjaminWFox/offline-oect-js13k/tree/rewrite) for (currently in progress) updates & extensions to the codebase made after the competition.**
 
 ### About
 
-This project is a game for the [JS13K](http://js13kgames.com/) 2018 competition. It's currently weighing in at 12,911 bytes. 
 
 For best performance, use Chrome.
 
